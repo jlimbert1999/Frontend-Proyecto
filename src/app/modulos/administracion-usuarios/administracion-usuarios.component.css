@@ -1,0 +1,12 @@
+table {
+    width: 100%;
+}
+
+.mat-toolbar.mat-primary {
+    background: #2a9d8f;
+    color: #fff;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+}

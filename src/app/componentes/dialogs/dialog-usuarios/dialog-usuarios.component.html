@@ -1,0 +1,33 @@
+<h1 mat-dialog-title>Edicion de Usuario</h1>
+<div mat-dialog-content>
+    <p>Ingrese los nuevos datos</p>
+    <mat-form-field appearance="fill">
+        <mat-label>Nombre</mat-label>
+        <input matInput [(ngModel)]="data.Nombre">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Apellido Paterno</mat-label>
+        <input matInput [(ngModel)]="data.Apellio_P">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Apellido Materno</mat-label>
+        <input matInput [(ngModel)]="data.Apellido_M">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>DNI</mat-label>
+        <input matInput [(ngModel)]="data.Dni">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Telefono</mat-label>
+        <input matInput [(ngModel)]="data.Telefono">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Direccion</mat-label>
+        <input matInput [(ngModel)]="data.Direccion">
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <!-- <button mat-button mat-dialog-close>Cancelar</button> -->
+    <button mat-button (click)="onNoClick()">Cancelar</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Guardar</button>
+</div>

@@ -1,0 +1,10 @@
+/* :host {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+} */
+
+.mat-toolbar.mat-primary {
+    background: #264653;
+    color: #fff;
+}

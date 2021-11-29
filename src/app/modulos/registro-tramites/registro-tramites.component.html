@@ -1,0 +1,83 @@
+<mat-toolbar color="primary">
+    <span>Registro de tramites</span>
+</mat-toolbar>
+<mat-card>
+    <div class="container">
+        <mat-card-title>Tipo de tramite</mat-card-title>
+        <!-- Tipoos tramite -->
+        <mat-form-field appearance="fill">
+            <mat-label>Tipo de tramite</mat-label>
+            <mat-select #tipo [(ngModel)]="tipoTramite">
+                <mat-option (click)="seleccionarTramite(elemento)" *ngFor="let elemento of listaTiposTramites" [value]="elemento">
+                    {{elemento.nombre_TipoTramite|uppercase}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-selection-list #listReq>
+            <mat-list-option *ngFor="let requisito of listaRequisitos" value={{requisito}}>
+                {{requisito|uppercase}}
+            </mat-list-option>
+        </mat-selection-list>
+
+    </div>
+</mat-card>
+
+<mat-card>
+    <div class="container">
+        <mat-card-title>Seleccion tipo de tramite</mat-card-title>
+        <mat-form-field appearance="fill">
+            <mat-label>Nro de hojas</mat-label>
+            <input [(ngModel)]="datosSolicitante.cantidad" matInput>
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Observaciones</mat-label>
+            <textarea [(ngModel)]="datosSolicitante.detalle" matInput placeholder=""></textarea>
+        </mat-form-field>
+    </div>
+</mat-card>
+
+
+
+<!-- <button (click)="registrarTramite(listReq.selectedOptions.selected)" mat-button color="primary">Guardar</button> -->
+
+<mat-card>
+    <div class="container">
+        <mat-card-title>Datos solicitante</mat-card-title>
+        <mat-form-field appearance="fill">
+            <mat-label>Nombre</mat-label>
+            <input [(ngModel)]="datosSolicitante.nombre" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Apellido Paterno</mat-label>
+            <input [(ngModel)]="datosSolicitante.apellido_p" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Apellido Materno</mat-label>
+            <input [(ngModel)]="datosSolicitante.apellido_m" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Telefono de Ref.</mat-label>
+            <input [(ngModel)]="datosSolicitante.telefono" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Tipo de documento</mat-label>
+            <mat-select>
+                <mat-option *ngFor="let elemento of docSolicitante" [value]=" elemento.value ">
+                    {{ elemento.viewValue}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>DNI</mat-label>
+            <input [(ngModel)]="datosSolicitante.dni " matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Expedido</mat-label>
+            <input [(ngModel)]="datosSolicitante.expedido " matInput>
+        </mat-form-field>
+        <button mat-button color="accent" (click)="ejemplo() ">Guardar</button>
+    </div>
+
+
+</mat-card>
