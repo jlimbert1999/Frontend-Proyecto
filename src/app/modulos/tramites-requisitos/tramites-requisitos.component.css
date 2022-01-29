@@ -1,12 +1,4 @@
-.example-spacer {
-    flex: 1 1 auto;
-}
-
-table {
-    width: 100%;
-}
-
-.mat-toolbar.mat-primary {
-    background: #e9c46a;
-    color: #fff;
+.mat-form-field {
+    font-size: 14px;
+    width: 80%;
 }

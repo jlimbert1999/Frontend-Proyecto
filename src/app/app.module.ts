@@ -1,24 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-//ANGULAR MATERIAL
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatInputModule } from '@angular/material/input';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import {MatSelectModule} from '@angular/material/select';
-import {MatTooltipModule} from '@angular/material/tooltip';
-
+//UTILIDADES
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-//UTILIDADES
-import { FormsModule } from '@angular/forms';
+//material
+import { MaterialModule } from './material/material.module'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,7 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InicioComponent } from './paginas/inicio/inicio.component';
 import { LoginComponent } from './paginas/login/login.component';
 import { TramitesRequisitosComponent } from './modulos/tramites-requisitos/tramites-requisitos.component';
-import { DialogTramitesRequisitosComponent } from './componentes/dialogs/dialog-tramites-requisitos/dialog-tramites-requisitos.component';
+import { DialogTramitesRequisitosComponent } from './componentes/dialogs/dialogs-m2/dialog-tramites-requisitos/dialog-tramites-requisitos.component';
 import { RegistroTramitesComponent } from './modulos/registro-tramites/registro-tramites.component';
 
 //providers
@@ -34,6 +22,27 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { AdministracionUsuariosComponent } from './modulos/administracion-usuarios/administracion-usuarios.component';
 import { DialogUsuariosComponent } from './componentes/dialogs/dialog-usuarios/dialog-usuarios.component';
 import { DialogListaTramitesComponent } from './componentes/dialogs/dialog-lista-tramites/dialog-lista-tramites.component';
+import { AdmInstitucionComponent } from './modulos/administracion-usuarios/adm-institucion/adm-institucion.component';
+import { DialogInstitucionComponent } from './componentes/dialogs/dialog-institucion/dialog-institucion.component';
+import { AdmDependenciaComponent } from './modulos/administracion-usuarios/adm-dependencia/adm-dependencia.component';
+import { DialogDependenciaComponent } from './componentes/dialogs/dialog-dependencia/dialog-dependencia.component';
+import { FiltroComponent } from './componentes/filtro/filtro.component';
+import { TablaComponent } from './componentes/tabla/tabla.component';
+import { ToolbarComponent } from './componentes/toolbar/toolbar.component';
+import { AdmCargoComponent } from './modulos/administracion-usuarios/adm-cargo/adm-cargo.component';
+import { DialogCargoComponent } from './componentes/dialogs/dialog-cargo/dialog-cargo.component';
+import { LayoutModule } from '@angular/cdk/layout';
+
+import { AdmCuentaComponent } from './modulos/administracion-usuarios/adm-cuenta/adm-cuenta.component';
+import { DialogCuentaComponent } from './componentes/dialogs/dialog-cuenta/dialog-cuenta.component';
+import { DialogDetallesComponent } from './componentes/dialogs/dialog-detalles/dialog-detalles.component';
+import { NavegacionComponent } from './componentes/navegacion/navegacion.component';
+import { AdmFuncionarioComponent } from './modulos/administracion-usuarios/adm-funcionario/adm-funcionario.component';
+import { AdmConfiguracionComponent } from './modulos/administracion-usuarios/adm-configuracion/adm-configuracion.component';
+import { AdmTramiteComponent } from './modulos/registro-tramites/adm-tramite/adm-tramite.component';
+import { BandejaEntradaComponent } from './modulos/registro-tramites/bandeja-entrada/bandeja-entrada.component';
+import { BandejaSalidaComponent } from './modulos/registro-tramites/bandeja-salida/bandeja-salida.component';
+import { DialogRequisitosComponent } from './componentes/dialogs/dialogs-m2/dialog-requisitos/dialog-requisitos.component';
 
 @NgModule({
   declarations: [
@@ -45,33 +54,36 @@ import { DialogListaTramitesComponent } from './componentes/dialogs/dialog-lista
     RegistroTramitesComponent,
     AdministracionUsuariosComponent,
     DialogUsuariosComponent,
-    DialogListaTramitesComponent
+    DialogListaTramitesComponent,
+    AdmInstitucionComponent,
+    DialogInstitucionComponent,
+    AdmDependenciaComponent,
+    DialogDependenciaComponent,
+    FiltroComponent,
+    TablaComponent,
+    ToolbarComponent,
+    AdmCargoComponent,
+    DialogCargoComponent,
+    AdmCuentaComponent,
+    DialogCuentaComponent,
+    DialogDetallesComponent,
+    NavegacionComponent,
+    AdmFuncionarioComponent,
+    AdmConfiguracionComponent,
+    AdmTramiteComponent,
+    BandejaEntradaComponent,
+    BandejaSalidaComponent,
+    DialogRequisitosComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
-
-    //UTILIDADES
     FormsModule,
-
-    // MATERIAL 
-    MatToolbarModule,
-    MatIconModule,
-    MatSidenavModule,
-    MatListModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatDialogModule,
-    MatInputModule,
-    MatCardModule,
-    MatTableModule,
-    MatSelectModule,
-    MatTooltipModule
-
-
-
+    MaterialModule,
+    LayoutModule,
+    ReactiveFormsModule
   ],
   providers: [
     { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },

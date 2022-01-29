@@ -1,0 +1,32 @@
+<p>
+    <mat-toolbar>
+        <span>ADMINISTRACION INSTITUCIONES</span>
+        <span class="example-spacer"></span>
+        <button [matMenuTriggerFor]="menu" mat-icon-button class="example-icon">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="registrarIntitucion()">
+                <mat-icon>add_circle</mat-icon>
+                Agregar institucion
+            </button>
+            <button mat-menu-item (click)="verhabilitados=!verhabilitados;cargar_Tabla(); ">
+                <mat-icon>visibility</mat-icon>
+                {{titulo_OpcionVista}}
+            </button>
+        </mat-menu>
+
+    </mat-toolbar>
+</p>
+
+<div class="container">
+
+    <mat-form-field appearance="standard">
+        <mat-label>Buscar</mat-label>
+
+        <input matInput (keyup)="aplicarFiltro($event, opcionElim.checked)" placeholder="Ingrese el nombre o sigla" #input>
+    </mat-form-field>
+    <mat-slide-toggle #opcionElim [(ngModel)]='checked' (change)="mostrarNoHabilitados()">Mostrar No habilitiados</mat-slide-toggle>
+
+    <app-tabla (llamarEditar)="editarInstitucion($event)" (llamarEliminar)="eliminarInstitucion($event)" [data]="dataSource" [displayedColumns]="displayedColumns" [palabraFiltro]="input.value" [TiposOpciones]="['Editar', 'Eliminar']"></app-tabla>
+</div>

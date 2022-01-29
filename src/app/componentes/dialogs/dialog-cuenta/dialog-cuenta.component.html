@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Edicion cuenta</h1>
+<div mat-dialog-content>
+
+
+    <mat-accordion>
+        <mat-expansion-panel hideToggle>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Inicio de sesion
+                </mat-panel-title>
+                <mat-panel-description>
+                    Configurar Login y Password
+                    <mat-icon>account_circle</mat-icon>
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Login</mat-label>
+                <input matInput>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Ingrese la contraña</mat-label>
+                <input matInput [type]="hide ? 'password' : 'text'">
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+            </mat-form-field>
+
+        </mat-expansion-panel>
+    </mat-accordion>
+    <p>Finalizar cargo?</p>
+    <button mat-raised-button color="warn">Finalizar</button>
+
+</div>
+<div mat-dialog-actions>
+    <button mat-button>No Thanks</button>
+    <button mat-button cdkFocusInitial>Ok</button>
+</div>

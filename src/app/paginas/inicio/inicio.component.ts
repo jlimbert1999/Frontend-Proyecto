@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import decode from 'jwt-decode'
 
 @Component({
   selector: 'app-inicio',
@@ -7,16 +8,27 @@ import { Router } from '@angular/router';
   styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit {
-  mostrarSideBar:boolean=false;
+  DatoSesion: any = {}
+  constructor(private router: Router) {
+    this.decodificarToken()
+  }
 
-  constructor(private router:Router) { }
 
   ngOnInit(): void {
   }
-  cerrarSesion(){
+
+  cerrarSesion() {
     localStorage.removeItem('token');
     this.router.navigate(['login'])
-
+  }
+  decodificarToken(): any {
+    if(!localStorage.getItem('token')){
+      this.router.navigate(['login'])
+    }
+    else{
+      let token=localStorage.getItem('token')!
+      this.DatoSesion=decode(token)
+    }
   }
 
 }

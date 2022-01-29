@@ -1,0 +1,19 @@
+<mat-toolbar>
+    <span routerLink="inicio">My APP</span>
+    <button *ngFor="let modulo of Modulos" routerLink='/{{modulo}}' mat-button (click)="irModulo(modulo)">{{modulo}}</button>
+    <span class="example-spacer"></span>
+    <p> {{DatoSesion.NombreUser}}</p>
+    <button [matMenuTriggerFor]="menu" mat-icon-button class="example-icon">
+        <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item>
+              <mat-icon>add_circle</mat-icon>
+              Opciones cuenta
+        </button>
+        <button mat-menu-item (click)="cerrarSesion()">
+            <mat-icon>logout</mat-icon>
+            Cerrar sesion
+      </button>
+    </mat-menu>
+</mat-toolbar>

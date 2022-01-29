@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
 //sevicios
-import { TipoTramitesService } from '../../servicios/tipo-tramites.service'
+import { TipoTramitesService } from '../../servicios/servicios-m2/tipo-tramites.service'
 import { RegistroTramitesService } from '../../servicios/registro-tramites.service'
 
 //modelos
-import { TiposTramite } from '../../modelos/tramites-requisitos'
+import { TipoTramite } from '../../modelos/tramites-requisitos/Tipo_Tramite.model'
 import { TramiteModel } from '../../modelos/resistro-tramites.model'
 //materials
 import { MatListOption } from '@angular/material/list'
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 //generacion ficha
 import { jsPDF } from 'jspdf';
@@ -20,7 +20,7 @@ import { ThrowStmt } from '@angular/compiler';
   styleUrls: ['./registro-tramites.component.css']
 })
 export class RegistroTramitesComponent implements OnInit {
-  listaTiposTramites: TiposTramite[] = [];
+  listaTiposTramites: TipoTramite[] = [];
   listaRequisitos: string[] = [];
   tipoTramite: any = "";
   //datos para el registro solicitante
@@ -46,21 +46,26 @@ export class RegistroTramitesComponent implements OnInit {
     { value: 'Libreta', viewValue: 'Libreta' }
   ];
 
-  constructor(private tipoTramitesService: TipoTramitesService, private registroTramitesService: RegistroTramitesService, private router: Router) { }
+  constructor(
+    private tipoTramitesService: TipoTramitesService, 
+    private registroTramitesService: RegistroTramitesService, 
+    private router: Router,
+    private activatedRoute:ActivatedRoute
+    ) { }
   ngOnInit(): void {
-    this.cargarTiposTramites()
+    // this.cargarTiposTramites()
   }
-  cargarTiposTramites() {
+  // cargarTiposTramites() {
 
-    this.tipoTramitesService.getTipoTramite().subscribe((resp: any) => {
-      this.listaTiposTramites = resp.tipoTramite//arreglo de objetos de la bd con id tramite, nombre tramite y requistos
-    })
-  }
-  seleccionarTramite(registro: TiposTramite) {
-    let lista = registro.requistos_tramite.toString()
-    this.listaRequisitos = lista.split(',')
-    console.log(this.listaRequisitos)
-  }
+  //   this.tipoTramitesService.getTipoTramite().subscribe((resp: any) => {
+  //     this.listaTiposTramites = resp.tipoTramite//arreglo de objetos de la bd con id tramite, nombre tramite y requistos
+  //   })
+  // }
+  // seleccionarTramite(registro: TipoTramite) {
+  //   let lista = registro.requistos_tramite.toString()
+  //   this.listaRequisitos = lista.split(',')
+  //   console.log(this.listaRequisitos)
+  // }
 
   registrarTramite(requisitosSelec: MatListOption[]) {
     console.log(requisitosSelec.map(o => o.value));
@@ -111,6 +116,17 @@ export class RegistroTramitesComponent implements OnInit {
     doc.text(txtFecha, 100, 40);
 
     doc.save("ficha.pdf");
+  }
+
+  Administrar_Tramites(){
+    this.router.navigate(['administrar-tramite'], {relativeTo: this.activatedRoute})
+  }
+  Abrir_BandejaEntrada(){
+    this.router.navigate(['bandeja-entrada'], {relativeTo: this.activatedRoute})
+
+  }
+  Abrir_BandejaSalida(){
+    this.router.navigate(['bandeja-salida'], {relativeTo: this.activatedRoute})
   }
 
 

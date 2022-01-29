@@ -1,0 +1,19 @@
+<!-- <h1 mat-dialog-title>{{tituloDialog}}</h1> -->
+<div mat-dialog-content>
+    <mat-form-field appearance="legacy">
+        <mat-label>Titulo</mat-label>
+        <input matInput [(ngModel)]="requisito.detalle">
+    </mat-form-field>
+    <mat-form-field appearance="legacy">
+        <mat-label>Tipo documento</mat-label>
+        <mat-select [(ngModel)]="requisito.id_documento">
+            <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
+                {{documento.titulo}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-button [mat-dialog-close]="requisito" cdkFocusInitial>Guardar</button>
+</div>

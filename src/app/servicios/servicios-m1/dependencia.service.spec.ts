@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TipoTramitesService } from './tipo-tramites.service';
+import { DependenciaService } from './dependencia.service';
 
-describe('TipoTramitesService', () => {
-  let service: TipoTramitesService;
+describe('DependenciaService', () => {
+  let service: DependenciaService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(TipoTramitesService);
+    service = TestBed.inject(DependenciaService);
   });
 
   it('should be created', () => {

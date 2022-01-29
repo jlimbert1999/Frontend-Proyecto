@@ -1,0 +1,21 @@
+table {
+    width: 100%;
+}
+
+
+/*ESTILO CABEZERAS TABLAS*/
+
+.mat-header-cell {
+    /* text-align: center; */
+    background-color: #2E4053;
+    color: seashell;
+    /* font-weight: bold; */
+}
+
+
+/* RESALTAR FILAS */
+
+.mat-row:hover {
+    background-color: #D0D3D4;
+    cursor: pointer;
+}

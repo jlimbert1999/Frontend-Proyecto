@@ -1,0 +1,40 @@
+<div class="mat-elevation-z8">
+    <table mat-table [dataSource]="data">
+        <ng-container [matColumnDef]=datosCelda.key *ngFor="let datosCelda of displayedColumns">
+
+            <th mat-header-cell *matHeaderCellDef> {{datosCelda.titulo}} </th>
+            <td mat-cell *matCellDef="let element; let i=index" [ngSwitch]="datosCelda.key">
+                <ng-container *ngSwitchCase="'Nro'">{{i+1}}</ng-container>
+                <ng-container *ngSwitchCase="'Activo'">
+                    <div *ngIf="element[datosCelda.key]==true || element[datosCelda.key]=='1'">
+                        SI
+                    </div>
+                    <div *ngIf="element[datosCelda.key]==false || element[datosCelda.key]=='0'">
+                        NO
+                    </div>
+                </ng-container>
+                <ng-container *ngSwitchDefault> {{element[datosCelda.key]}}</ng-container>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Opciones">
+            <th mat-header-cell *matHeaderCellDef>Opciones</th>
+            <td mat-cell *matCellDef="let row; let element">
+                <button *ngIf="TiposOpciones.includes('Editar')" (click)="editarDatos(element)" mat-icon-button> <mat-icon>edit</mat-icon></button>
+                <button *ngIf="TiposOpciones.includes('Eliminar')" (click)="eliminarDatos(element)" mat-icon-button color="warn"> <mat-icon>delete</mat-icon></button>
+                <button *ngIf="TiposOpciones.includes('VerDetalles')" (click)="verDetallesUsuario(element)" mat-icon-button color="primary"> <mat-icon>info</mat-icon></button>
+                <button *ngIf="TiposOpciones.includes('Finalizar')" (click)="finalizarCargo(element)" mat-icon-button> <mat-icon>logout</mat-icon></button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="TitulosTabla"></tr>
+        <tr mat-row *matRowDef="let row; columns: TitulosTabla;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No se econtraron registros con: "{{palabraFiltro}}"</td>
+        </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator>
+
+</div>

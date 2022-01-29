@@ -1,6 +1,6 @@
 .example-container {
     width: 100%;
-    height: 100%;
+    height: 85%;
     border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
@@ -17,13 +17,15 @@
 
 .example-sidenav {
     padding: 5px;
+    /* ancho sidenav */
+    /* background-color: #2b3a39; */
 }
 
 .example-spacer {
     flex: 1 1 auto;
 }
 
-.mat-toolbar.mat-primary {
+.mat-toolbar {
     background: rgb(0, 0, 0);
     color: #fff;
 }
