@@ -2,32 +2,19 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
-
+import { entorno } from '../api-config'
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
-  private URL: string = 'http://localhost:3000'
+  private URL: string = entorno.baseUrl
   constructor(
     private http: HttpClient,
     private jwtHelper: JwtHelperService
   ) { }
 
-  login(datosLogin: object) {
-    return this.http.post(`${this.URL}/login`, datosLogin)
-  }
-
-  estaAuntentificado(): boolean {
-    let token = localStorage.getItem('token')
-    if (!token) {
-      return false
-    }
-    // if (this.jwtHelper.isTokenExpired(token!)) {
-    //   return false
-    // }
-    return true
-  }
+  
 
 
   //API USUARIOS
@@ -60,7 +47,6 @@ export class UsuariosService {
   }
 
   //API CUENTAS
-
   addCuenta(datos: any) {
     return this.http.post(`${this.URL}/cuentas`, datos)
   }
@@ -85,6 +71,10 @@ export class UsuariosService {
     return this.http.put(`${this.URL}/cuentas-finalizar/${id}`, null)
   }
 
+  //obtener detalles compeltos de la cuenta
+  getDetallesCuenta(id:number){
+    return this.http.get(`${this.URL}/detalles-cuenta/${id}`)
+  }
 
   //API TRABAJOS
   addTrabajo(datos: any) {
@@ -95,5 +85,13 @@ export class UsuariosService {
   }
   getTrabajo(id:number){
     return this.http.get(`${this.URL}/cuentas/trabajos/${id}`)
+  }
+
+  //Permisos
+  getPermisos(id_cuenta:number){
+    return this.http.get(`${this.URL}/permisos/${id_cuenta}`)
+  }
+  postPermisos(data:any){
+    return this.http.post(`${this.URL}/permiso`, data)
   }
 }

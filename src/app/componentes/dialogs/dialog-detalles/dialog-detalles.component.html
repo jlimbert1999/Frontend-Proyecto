@@ -1,9 +1,27 @@
 <h1 mat-dialog-title>Detalles Funcionario</h1>
 
 <div mat-dialog-content>
-    <mat-list role="list">
-        <mat-list-item role="listitem" *ngFor="let detalle of Detalles">{{detalle}}</mat-list-item>
-    </mat-list>
+    <ng-container>
+        Nombre: {{Nombre_Funcionario}}
+    </ng-container>
+
+    <mat-table *ngIf="dataSource" [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" class="mat-elevation-z8">
+        <ng-container matColumnDef="Fecha">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element"> {{element.fecha | date}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Detalle">
+            <mat-header-cell mat-sort-header *matHeaderCellDef> Movilidad funcional </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">{{element.detalle|uppercase}} EL CARGO</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="Cargo">
+            <mat-header-cell mat-header-cell *matHeaderCellDef> Cargo</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">{{element.NombreCar}}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row matRipple *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
 
 </div>
 

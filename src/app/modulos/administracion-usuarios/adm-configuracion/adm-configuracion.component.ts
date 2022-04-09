@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { DialogCargoComponent } from 'src/app/componentes/dialogs/dialog-cargo/dialog-cargo.component';
+import { DialogCargoComponent } from 'src/app/componentes/dialogs/dialogs-m1/dialog-cargo/dialog-cargo.component';
 import { DialogDependenciaComponent } from 'src/app/componentes/dialogs/dialog-dependencia/dialog-dependencia.component';
-import { DialogInstitucionComponent } from 'src/app/componentes/dialogs/dialog-institucion/dialog-institucion.component';
+import { DialogInstitucionComponent } from 'src/app/componentes/dialogs/dialogs-m1/dialog-institucion/dialog-institucion.component';
 import { ConfiguracionService } from 'src/app/servicios/servicios-m1/configuracion.service';
 import { Mensajes } from '../../../componentes/mensaje/mensaje'
 import { Router, ActivatedRoute } from '@angular/router';
 import { DialogTramitesRequisitosComponent } from 'src/app/componentes/dialogs/dialogs-m2/dialog-tramites-requisitos/dialog-tramites-requisitos.component';
 import { Subject } from 'rxjs';
+import { InstitucionModel } from 'src/app/modelos/administracion-usuarios/institucion.model';
 @Component({
   selector: 'app-adm-configuracion',
   templateUrl: './adm-configuracion.component.html',
@@ -20,38 +21,59 @@ export class AdmConfiguracionComponent implements OnInit {
 
   mostrarTabla: boolean = false;
   displayedColumns: any;
-  dataSource = new MatTableDataSource();
+  dataSource: any = new MatTableDataSource();
   msg = new Mensajes();
   TipoTabla: string = ''
   OpcionesTabla: string[] = []
   verHabilitados: boolean = true
-  tituloOpcionVista: string = ''
   Dependencia: any
-  Institucion: any
+  Institucion: InstitucionModel;
   Cargo: any
-  DepenNoHabilitadas: any
-  InstiNoHabilitadas: any
-  CargoNoHabilitadas: any
   eventsSubject: Subject<void> = new Subject<void>();
-
+  eventsSubject2: Subject<void> = new Subject<void>();
 
   constructor(
     public dialog: MatDialog,
     private configService: ConfiguracionService,
-    private router:Router,
-    private activatedRoute:ActivatedRoute) { 
-    }
+    private router: Router,
+    private activatedRoute: ActivatedRoute) {
+  }
 
   ngOnInit(): void {
   }
   obtener_Instihabilitadas() {
     this.verHabilitados = true
-    this.tituloOpcionVista = "Ver Instituciones no habilitadas"
+    this.OpcionesTabla = ['Editar', 'Eliminar']
     this.configService.getInsti_Habilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        this.Institucion = resp.Instituciones
-        this.dataSource.data = this.Institucion
+        if (resp.Instituciones.length > 0) {
 
+          this.Institucion = resp.Instituciones
+          this.dataSource.data = resp.Instituciones
+        }
+        else {
+          this.msg.mostrarMensaje('info', "No hay insituciones habilitadas")
+        }
+
+      }
+      else {
+        this.msg.mostrarMensaje('error', resp.message)
+      }
+    })
+  }
+  obtener_InstNohabilitadas() {
+
+    this.configService.getInsti_noHabilitadas().subscribe((resp: any) => {
+      if (resp.ok) {
+        if (resp.Instituciones.length > 0) {
+          this.dataSource.data = resp.Instituciones
+          this.OpcionesTabla = ['Editar']
+
+        }
+        else {
+          this.msg.mostrarMensaje('info', "No hay insituciones no habilitadas")
+          this.verHabilitados = true
+        }
       }
       else {
         this.msg.mostrarMensaje('info', resp.message)
@@ -59,49 +81,153 @@ export class AdmConfiguracionComponent implements OnInit {
     })
   }
   obtener_Dephabilitadas() {
+    this.OpcionesTabla = ['Editar', 'Eliminar']
     this.verHabilitados = true
-    this.tituloOpcionVista = "Ver Dependencias no habilitadas"
     this.configService.getDepen_Habilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        this.Dependencia = resp.Dependencias
-        this.dataSource.data = this.Dependencia
+        if (resp.Dependencias.length > 0) {
+          this.Dependencia = resp.Dependencias
+          this.dataSource.data = this.Dependencia
+
+        } else {
+          this.msg.mostrarMensaje('info', "No hay dependencias habilitadas")
+        }
       }
       else {
-        this.msg.mostrarMensaje('info', resp.message)
+        this.msg.mostrarMensaje('error', resp.message)
       }
     })
   }
+
   obtener_DepNohabilitadas() {
     this.configService.getDepen_noHabilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        this.DepenNoHabilitadas = resp.Dependencias
-        this.dataSource.data = this.DepenNoHabilitadas
-        this.tituloOpcionVista = "Ver Dependencias habilitadas"
+        if (resp.Dependencias.length > 0) {
+          this.dataSource.data = resp.Dependencias
+          this.OpcionesTabla = ['Editar']
+        }
+        else {
+          this.msg.mostrarMensaje('info', "No hay dependencias no habilitadas")
+          this.verHabilitados = true
+        }
       }
       else {
-        this.msg.mostrarMensaje('info', resp.message)
+        this.msg.mostrarMensaje('error', resp.message)
       }
     })
   }
-  obtener_InstNohabilitadas() {
-    this.configService.getInsti_noHabilitadas().subscribe((resp: any) => {
+  obtener_CargosHabilitados() {
+    this.verHabilitados = true
+    this.OpcionesTabla = ['Editar', 'Eliminar']
+    this.configService.getCargos_Habilitados().subscribe((resp: any) => {
       if (resp.ok) {
-        this.InstiNoHabilitadas = resp.Instituciones
-        this.dataSource.data = this.InstiNoHabilitadas
-        this.tituloOpcionVista = "Ver instituciones habilitadas"
+        if (resp.Cargos.length > 0) {
+          this.Cargo = resp.Cargos
+          this.dataSource.data = this.Cargo
+
+        }
+        else {
+          this.msg.mostrarMensaje('info', "No hay cargos habilitadas")
+        }
       }
       else {
-        this.msg.mostrarMensaje('info', resp.message)
+        this.msg.mostrarMensaje('error', resp.message)
+      }
+    })
+  }
+  obtener_CargosNoHabilitados() {
+
+    this.configService.getCargos_NoHabilitados().subscribe((resp: any) => {
+      if (resp.ok) {
+        if (resp.Cargos.length > 0) {
+
+          this.dataSource.data = resp.Cargos
+          this.OpcionesTabla = ['Editar']
+        }
+        else {
+          this.msg.mostrarMensaje('info', "No hay cargos no habilitados")
+        }
+      }
+      else {
+        this.msg.mostrarMensaje('error', resp.message)
       }
     })
   }
 
 
+
+  //METODO EDITAR
+  editar_Datos(datos: any) {
+    if (this.TipoTabla == "Instituciones") {
+      this.editar_Instituciones(datos)
+    }
+    if (this.TipoTabla == "Dependencias") {
+      this.editar_Dependecia(datos)
+    }
+    if (this.TipoTabla == "Cargos") {
+      this.editar_Cargo(datos)
+    }
+  }
+  eliminar_Datos(datos: any) {
+    if (this.TipoTabla == "Instituciones") {
+      this.configService.putInstitucion(datos.id_institucion, { Activo: false }).subscribe((resp: any) => {
+        if (resp.ok) {
+          this.msg.mostrarMensaje('success', 'La institucion fue desabilidata')
+          this.obtener_Instihabilitadas()
+        }
+      })
+    }
+    if (this.TipoTabla == "Dependencias") {
+      this.configService.putDependencia(datos.id_dependencia, { Activo: false }).subscribe((resp: any) => {
+        if (resp.ok) {
+          this.msg.mostrarMensaje('success', 'La dependencia fue desabilidata')
+          this.obtener_Dephabilitadas()
+        }
+      })
+    }
+    if (this.TipoTabla == "Cargos") {
+      this.configService.putCargo(datos.id_cargo, { Activo: false }).subscribe((resp: any) => {
+        if (resp.ok) {
+          this.msg.mostrarMensaje('success', 'El cargo fue desabilidato')
+          this.obtener_CargosHabilitados()
+        }
+      })
+    }
+
+  }
+
+  agregar_Institucion() {
+    const dialogRef = this.dialog.open(DialogInstitucionComponent, {
+      data: { Activo: true }//enviar una lalve para que sea registro
+    })
+
+    dialogRef.afterClosed().subscribe((DataDialog: any) => {
+      if (DataDialog) { //si se recibe la llave enviada, registrar
+        this.obtener_Instihabilitadas()
+      }
+    });
+  }
+
+  editar_Instituciones(datos: InstitucionModel) {
+    if (datos.Activo == true) {
+      datos.Activo = true
+    }
+    if (datos.Activo == false) {
+      datos.Activo = false
+    }
+    const dialogRef = this.dialog.open(DialogInstitucionComponent, {
+      data: datos
+    })
+    dialogRef.afterClosed().subscribe(DataDialog => {
+      if (DataDialog) {
+        this.obtener_Instihabilitadas()
+      }
+    });
+  }
 
   agregar_Dependencia() {
-    let vacio = { Activo: true }  //varible a enviar y poder registrar
     const dialogRef = this.dialog.open(DialogDependenciaComponent, {
-      data: vacio
+      data: { Activo: true } 
     })
     dialogRef.afterClosed().subscribe(datosFormulario => {
       if (datosFormulario) {
@@ -140,245 +266,10 @@ export class AdmConfiguracionComponent implements OnInit {
       }
     });
   }
-  agregar_Institucion() {
-    const dialogRef = this.dialog.open(DialogInstitucionComponent, {
-      data: { Activo: true }
-    })
-
-    dialogRef.afterClosed().subscribe((DataDialog: any) => {
-      if (DataDialog) {
-        DataDialog.Fecha_creacion = DataDialog.Fecha_actualizacion = this.getFecha();
-        this.Institucion = DataDialog
-        this.configService.addInstitucion(this.Institucion).subscribe((resp: any) => {
-          if (resp.ok) {
-            this.msg.mostrarMensaje('success', resp.message)
-          }
-
-          this.obtener_Instihabilitadas()
-        })
-      }
-    });
-  }
-
-  editar_Instituciones(datos: any) {
-    let id: number = datos.id_institucion
-    if (datos.Activo == '0') {
-      datos.Activo = false
-    }
-    else if (datos.Activo == '1') {
-      datos.Activo = true
-    }
-    const dialogRef = this.dialog.open(DialogInstitucionComponent, {
-      data: datos
-    })
-
-    dialogRef.afterClosed().subscribe(DataDialog => {
-      if (DataDialog) {
-        DataDialog.Fecha_actualizacion = this.getFecha()
-        this.configService.putInstitucion(id, DataDialog).subscribe((resp: any) => {
-          if (resp.ok) {
-            this.msg.mostrarMensaje('success', resp.message)
-            this.obtener_Instihabilitadas()
-          }
-        })
-      }
-    });
-  }
-
-
-  Cargar_tablaInsti() {
-    this.router.navigate(['Configuraciones'])
-    this.verHabilitados = true
-    this.TipoTabla = "Instituciones";
-    this.tituloOpcionVista = "Ver Instituciones no habilitadas"
-    this.OpcionesTabla = ['Editar', 'Eliminar']
-    this.mostrarTabla = true;
-    this.generar_titulosTabla_Insti();
-    this.obtener_Instihabilitadas();
-  }
-  Cargar_tablaDep() {
-    this.router.navigate(['Configuraciones'])
-    this.verHabilitados = true
-    this.TipoTabla = "Dependencias";
-    this.tituloOpcionVista = "Ver Dependencias no habilitadas"
-    this.OpcionesTabla = ['Editar', 'Eliminar']
-    this.mostrarTabla = true;
-    this.generar_titulosTabla_Dep();
-    this.obtener_Dephabilitadas();
-  }
-  Cargar_tablaCargo() {
-    this.router.navigate(['Configuraciones'])
-    this.verHabilitados = true
-    this.TipoTabla = "Cargos";
-    this.tituloOpcionVista = "Ver Cargos no habilitadas"
-    this.OpcionesTabla = ['Editar', 'Eliminar']
-    this.mostrarTabla = true;
-    this.generar_titulosTabla_Carg();
-    this.obtener_CargosHabilitados()
-  }
-
-  generar_titulosTabla_Insti() {
-    this.displayedColumns = [
-      { key: "Nro", titulo: "NUMERO" },
-      { key: "Nombre", titulo: "NOMBRE" },
-      { key: "Sigla", titulo: "SIGAL" },
-      { key: "Direccion", titulo: "DIRECCION" },
-      { key: "Telefono", titulo: "TELEFONO" },
-      { key: "Fecha_creacion", titulo: "FECHA CREACION" },
-      { key: "Activo", titulo: "HABILITADO" }
-    ]
-  }
-  generar_titulosTabla_Dep() {
-    this.displayedColumns = [
-      { key: "SiglaInst", titulo: "INSTITUCION" },
-      { key: "Nombre", titulo: "NOMBRE" },
-      { key: "Sigla", titulo: "SIGLA" },
-      { key: "Fecha_creacion", titulo: "FECHA CREACION" },
-      { key: "Activo", titulo: "HABILITADO" }
-    ]
-  }
-  generar_titulosTabla_Carg() {
-    this.displayedColumns = [
-      { key: "Nombre", titulo: "NOMBRE" },
-      { key: "Responsable_regis", titulo: "RESPONSABLE DE REGISTRO" },
-      { key: "Fecha_creacion", titulo: "CREACION" },
-      { key: "Activo", titulo: "HABILITADO" }
-    ]
-  }
-
-  getFecha(): string {
-    let dateObj = new Date();
-    return `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
-  }
-  aplicarFiltro(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    if (filterValue !== "") {
-      if (this.TipoTabla == "Instituciones") {
-        if (this.verHabilitados) {
-          this.dataSource = new MatTableDataSource(this.Institucion)
-
-        }
-        else {
-          this.dataSource = new MatTableDataSource(this.InstiNoHabilitadas)
-        }
-      }
-      if (this.TipoTabla == "Dependencias") {
-        if (this.verHabilitados) {
-          this.dataSource = new MatTableDataSource(this.Dependencia)
-        }
-        else {
-          this.dataSource = new MatTableDataSource(this.DepenNoHabilitadas)
-        }
-      }
-      if (this.TipoTabla == "Cargos") {
-        if (this.verHabilitados) {
-          this.dataSource = new MatTableDataSource(this.Cargo)
-        }
-        else {
-          this.dataSource = new MatTableDataSource(this.CargoNoHabilitadas)
-        }
-      }
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-    }
-    else {
-      if (this.TipoTabla == "Instituciones") {
-        if (this.verHabilitados) {
-          this.dataSource = new MatTableDataSource(this.Institucion)
-          // this.obtener_Instihabilitadas()
-          //para evitar peticion de nuevo
-          //cambir este metodo y solo usar la variabel Instituciones para cargar la tabla
-        }
-        else {
-          this.dataSource = new MatTableDataSource(this.InstiNoHabilitadas)
-        }
-      }
-      if (this.TipoTabla == "Dependencias") {
-        if (this.verHabilitados) {
-          this.dataSource = new MatTableDataSource(this.Dependencia)
-        }
-        else {
-          this.dataSource = new MatTableDataSource(this.DepenNoHabilitadas)
-        }
-      }
-      if (this.TipoTabla == "Cargos") {
-        if (this.verHabilitados) {
-          this.dataSource = new MatTableDataSource(this.Cargo)
-        }
-        else {
-          this.dataSource = new MatTableDataSource(this.CargoNoHabilitadas)
-        }
-      }
-    }
-  }
-  ver_Habilitados() {
-    if (this.verHabilitados) {
-      if (this.TipoTabla == "Instituciones") {
-        this.generar_titulosTabla_Insti()
-        this.dataSource.data = this.Institucion
-        this.tituloOpcionVista = "Ver instituciones no habilitadas"
-      }
-      if (this.TipoTabla == "Dependencias") {
-        this.generar_titulosTabla_Dep()
-        this.dataSource.data = this.Dependencia
-        this.tituloOpcionVista = "Ver dependencias no habilitadas"
-      }
-      if (this.TipoTabla == "Cargos") {
-        this.generar_titulosTabla_Carg()
-        this.dataSource.data = this.Cargo
-        this.tituloOpcionVista = "Ver cargos no habilitadas"
-      }
-
-    }
-    else {
-      if (this.TipoTabla == "Instituciones") {
-        this.generar_titulosTabla_Insti()
-        this.obtener_InstNohabilitadas()
-
-      }
-      if (this.TipoTabla == "Dependencias") {
-        this.generar_titulosTabla_Dep()
-        this.obtener_DepNohabilitadas()
-      }
-      if (this.TipoTabla == "Cargos") {
-        this.generar_titulosTabla_Carg()
-        this.obtener_CargosNoHabilitados()
-      }
-    }
-  }
-  //METODO EDITAR
-  editar_Datos(datos: any) {
-    if (this.TipoTabla == "Instituciones") {
-      this.editar_Instituciones(datos)
-    }
-    if (this.TipoTabla == "Dependencias") {
-      this.editar_Dependecia(datos)
-    }
-    if (this.TipoTabla == "Cargos") {
-      this.editar_Cargo(datos)
-    }
-  }
 
 
 
-  obtener_CargosHabilitados() {
-    this.configService.getCargos_Habilitados().subscribe((resp: any) => {
-      if (resp.ok) {
-        this.verHabilitados = true
-        this.Cargo = resp.cargo
-        this.dataSource.data = this.Cargo
-        this.tituloOpcionVista = "Ver cargos No habilitadas"
-      }
-    })
-  }
-  obtener_CargosNoHabilitados() {
-    this.configService.getCargos_NoHabilitados().subscribe((resp: any) => {
-      if (resp.ok) {
-        this.CargoNoHabilitadas = resp.cargo
-        this.dataSource.data = this.CargoNoHabilitadas
-        this.tituloOpcionVista = "Ver Cargos habilitadas"
-      }
-    })
-  }
+
 
   agregar_Cargo() {
     const vacio = { Activo: true } //para que dialog inicie en vacion
@@ -424,13 +315,112 @@ export class AdmConfiguracionComponent implements OnInit {
       }
     });
   }
-  AdministrarTramites(){
-    this.TipoTabla='Tramites'
-    this.mostrarTabla=false
-    this.router.navigate(['Tipos-Tramites'], {relativeTo: this.activatedRoute})
+  AdministrarTramites() {
+    this.TipoTabla = 'Tramites'
+    this.mostrarTabla = false
+    this.router.navigate(['Tipos-Tramites'], { relativeTo: this.activatedRoute })
   }
-  agregar_Tramite(){
+  agregar_Tramite() {
     this.eventsSubject.next();
+  }
+  alternarVista_TiposTramite(){ //ca,biar vista del compoente admin tramites y requisitos
+    this.eventsSubject2.next()
+  }
+
+  generar_tabla_Intituciones() {
+    this.router.navigate(['Configuraciones'])
+    this.verHabilitados = true
+    this.TipoTabla = "Instituciones";
+    this.OpcionesTabla = ['Editar', 'Eliminar']
+    this.mostrarTabla = true;
+    this.displayedColumns = [
+      // { key: "Nro", titulo: "NUMERO" },
+      { key: "Nombre", titulo: "Nombre" },
+      { key: "Sigla", titulo: "Sigla" },
+      { key: "Direccion", titulo: "Direccion" },
+      { key: "Telefono", titulo: "Telefono" },
+      { key: "Fecha_creacion", titulo: "Fecha creacion" }
+      // { key: "Activo", titulo: "HABILITADO" }
+    ]
+    this.obtener_Instihabilitadas()
+  }
+  generar_tabla_Dependencias() {
+    this.router.navigate(['Configuraciones'])
+    this.verHabilitados = true
+    this.TipoTabla = "Dependencias";
+
+    this.OpcionesTabla = ['Editar', 'Eliminar']
+    this.mostrarTabla = true;
+    this.displayedColumns = [
+      { key: "SiglaInst", titulo: "INSTITUCION" },
+      { key: "Nombre", titulo: "NOMBRE" },
+      { key: "Sigla", titulo: "SIGLA" },
+      { key: "Fecha_creacion", titulo: "FECHA CREACION" },
+      // { key: "Activo", titulo: "HABILITADO" }
+    ]
+    this.obtener_Dephabilitadas();
+  }
+  generar_tabla_Cargos() {
+    this.router.navigate(['Configuraciones'])
+    this.verHabilitados = true
+    this.TipoTabla = "Cargos";
+
+    this.OpcionesTabla = ['Editar', 'Eliminar']
+    this.mostrarTabla = true;
+    this.displayedColumns = [
+      { key: "Nombre", titulo: "NOMBRE" },
+      { key: "Responsable_regis", titulo: "RESPONSABLE DE REGISTRO" },
+      { key: "Fecha_creacion", titulo: "CREACION" }
+      // { key: "Activo", titulo: "HABILITADO" }
+    ]
+    this.obtener_CargosHabilitados()
+
+  }
+
+
+  getFecha() {
+    return Date.now()
+  }
+  aplicarFiltro(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+  ver_Habilitados() {
+    this.verHabilitados = !this.verHabilitados
+    if (this.verHabilitados) {
+      if (this.TipoTabla == "Instituciones") {
+        this.dataSource.data = this.Institucion
+        this.OpcionesTabla = ['Editar', 'Eliminar']
+
+      }
+      if (this.TipoTabla == "Dependencias") {
+        this.dataSource.data = this.Dependencia
+        this.OpcionesTabla = ['Editar', 'Eliminar']
+      }
+      if (this.TipoTabla == "Cargos") {
+        this.dataSource.data = this.Cargo
+        this.OpcionesTabla = ['Editar', 'Eliminar']
+      }
+
+    }
+    else {
+      if (this.TipoTabla == "Instituciones") {
+        this.obtener_InstNohabilitadas()
+
+      }
+      if (this.TipoTabla == "Dependencias") {
+
+        this.obtener_DepNohabilitadas()
+
+      }
+      if (this.TipoTabla == "Cargos") {
+        this.obtener_CargosNoHabilitados()
+
+      }
+    }
   }
 
 

@@ -5,12 +5,13 @@ table {
 
 /*ESTILO CABEZERAS TABLAS*/
 
-.mat-header-cell {
-    /* text-align: center; */
+
+/* .mat-header-cell {
+    text-align: center;
     background-color: #2E4053;
     color: seashell;
-    /* font-weight: bold; */
-}
+    font-weight: bold;
+} */
 
 
 /* RESALTAR FILAS */
@@ -18,4 +19,12 @@ table {
 .mat-row:hover {
     background-color: #D0D3D4;
     cursor: pointer;
+}
+
+.mat-column-Opciones {
+    align-items: center;
+    width: 100px;
+    border-left: 1px solid currentColor;
+    padding-left: 1px;
+    text-align: center;
 }

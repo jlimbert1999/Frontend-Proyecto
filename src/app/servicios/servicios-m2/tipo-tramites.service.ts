@@ -25,26 +25,30 @@ export class TipoTramitesService {
   deleteTipoTramite(id: number) {
     return this.http.put(`${this.URL}/eliminar_tipo_tramite/${id}`, null)
   }
-  putTipoTramite(id:number, datos:TipoTramite){
-    return this.http.put(`${this.URL}/tipos_tramites/${id}`,  datos)
+  putTipoTramite(id: number, datos: TipoTramite) {
+    return this.http.put(`${this.URL}/tipos_tramites/${id}`, datos)
   }
 
   //API REQUERIMIENTOS
   addRequerimientos(requerimientos: Requerimientos) {
     return this.http.post(`${this.URL}/requerimientos`, requerimientos)
   }
-  getRequerimientos(id: number) {
-    return this.http.get(`${this.URL}/requerimientos/${id}`)
+  getRequerimientos_Habilitados(id: number) {
+    return this.http.get(`${this.URL}/requerimientos_Habilitados/${id}`)
   }
+  getRequerimientos_noHabilitados(id: number) {
+    return this.http.get(`${this.URL}/requerimientos_noHabilitados/${id}`)
+  }
+
   //METODO PARA ELIMINAR LOGICAMENTE
   // deleteRequerimiento(id:number){
   //   return this.http.put(`${this.URL}/eliminar-requerimientos/${id}`, null)
   // }
-   putRequisito(id:number, datos:Requerimientos) {
+  putRequisito(id: number, datos: any) {
     return this.http.put(`${this.URL}/requerimientos/${id}`, datos)
   }
 
-  deleteRequerimiento(id:number){
+  deleteRequerimiento(id: number) {
     return this.http.delete(`${this.URL}/requerimientos/${id}`)
   }
 

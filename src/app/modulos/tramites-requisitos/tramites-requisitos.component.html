@@ -1,8 +1,8 @@
 <div class="container">
     <mat-form-field appearance="standard">
+        <mat-icon matSuffix>search</mat-icon>
         <mat-label>Buscar tipo tramite</mat-label>
         <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ingrese un caracter" #input>
     </mat-form-field>
-    <button (click)="Ver_NoHabilitados()" mat-raised-button color="primary">Ver {{(VerHabilitados ? "No Habilitados":"Habilitados")}}</button>
     <app-tabla [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla" (llamarEliminar)="eliminar_TipoTramite($event)" (llamarEditar)="editar_TipoTramite($event)"></app-tabla>
 </div>

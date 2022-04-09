@@ -2,9 +2,8 @@ export interface Requerimientos {
     id_requerimiento?:number,
     id_documento?:string,
     detalle:string,
-    funcionario:string,
-    fecha_creacion:string,
-    fecha_actualizacion:string,
+    Fecha_creacion:number,
+    Fecha_actualizacion:number,
     Activo:boolean,
     id_TipoTramite?:number
 }

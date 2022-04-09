@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>Agregar observacion</h1>
+<mat-dialog-content>
+    <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Obserbacion.....</mat-label>
+        <input matInput name="observacion" [(ngModel)]="data">
+    </mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Agregar</button>
+</mat-dialog-actions>

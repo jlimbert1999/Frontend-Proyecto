@@ -5,43 +5,61 @@
         <mat-step label="Funcionario">
             <form>
                 <!-- Contenido creacion funcionario -->
-                <mat-form-field appearance="legacy">
-                    <mat-label>Nombre</mat-label>
-                    <input matInput [(ngModel)]="data.datosFuncionario.Nombre" name="Nombre">
-                </mat-form-field>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Nombre</mat-label>
+                                <input matInput [(ngModel)]="data.datosFuncionario.Nombre" name="Nombre">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Apellido Paterno</mat-label>
+                                <input matInput [(ngModel)]="data.datosFuncionario.Apellido_P" name="ApellidoM">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Apellido Materno</mat-label>
+                                <input matInput [(ngModel)]="data.datosFuncionario.Apellido_M" name="ApellidoP">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>DNI</mat-label>
+                                <input matInput [(ngModel)]="data.datosFuncionario.Dni" name="Dni">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Lugar</mat-label>
+                                <mat-select [(ngModel)]="data.datosFuncionario.Expedido" name="Expedido">
+                                    <mat-option *ngFor="let lugar of Expedido" [value]="lugar.Abreviacion">
+                                        {{lugar.NombreLugar}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Telefono</mat-label>
+                                <input matInput [(ngModel)]="data.datosFuncionario.Telefono" name="Telefono">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Direccion</mat-label>
+                                <input matInput [(ngModel)]="data.datosFuncionario.Direccion" name="Direccion">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
 
-                <mat-form-field appearance="legacy">
-                    <mat-label>Apellido Paterno</mat-label>
-                    <input matInput [(ngModel)]="data.datosFuncionario.Apellido_P" name="ApellidoM">
-                </mat-form-field>
-
-                <mat-form-field appearance="legacy">
-                    <mat-label>Apellido Materno</mat-label>
-                    <input matInput [(ngModel)]="data.datosFuncionario.Apellido_M" name="ApellidoP">
-                </mat-form-field>
-
-                <mat-form-field appearance="legacy">
-                    <mat-label>DNI</mat-label>
-                    <input matInput [(ngModel)]="data.datosFuncionario.Dni" name="Dni">
-                </mat-form-field>
-
-                <mat-form-field appearance="legacy">
-                    <mat-label>Lugar</mat-label>
-                    <mat-select [(ngModel)]="data.datosFuncionario.Expedido" name="Expedido">
-                        <mat-option *ngFor="let lugar of Expedido" [value]="lugar.Abreviacion">
-                            {{lugar.NombreLugar}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <mat-form-field appearance="legacy">
-                    <mat-label>Telefono</mat-label>
-                    <input matInput [(ngModel)]="data.datosFuncionario.Telefono" name="Telefono">
-                </mat-form-field>
-                <mat-form-field appearance="legacy">
-                    <mat-label>Direccion</mat-label>
-                    <input matInput [(ngModel)]="data.datosFuncionario.Direccion" name="Direccion">
-                </mat-form-field>
+                        </div>
+                    </div>
+                </div>
                 <mat-checkbox [(ngModel)]="data.datosFuncionario.Activo" class="example-margin" name="Activo">Activado</mat-checkbox>
                 <p>Estado: {{data.datosFuncionario.Activo}}</p>
                 <!-- ============= -->
@@ -65,27 +83,26 @@
                     <div *ngIf="PoseeCuenta==true">
                         <div class="container">
                             <div class="row">
-
                                 <div class="col-sm">
-                                    <p>EDICION CUENTA</p>
-                                    <mat-form-field appearance="legacy">
-                                        <mat-label>Login</mat-label>
-                                        <input matInput [(ngModel)]="data.datosCuenta.login" name="Login">
-                                    </mat-form-field>
-
-                                    <p>Nueva contraseña</p>
-                                    <mat-form-field appearance="legacy">
-                                        <mat-label>Password</mat-label>
-                                        <input matInput [(ngModel)]="data.datosCuenta.Password" type="password" name="Password">
-                                    </mat-form-field>
+                                    <img src="../../../../assets/img-Administracion Usuarios/user-logo.png" style="width: 100px; height: 100px;" class="center">
                                 </div>
                                 <div class="col-sm">
-                                    <p>CUENTA ACTUAL</p>
-                                    <br> Login actual: {{data.datosCuenta.login}}
-                                    <br> Asignado: {{data.datosFuncionario.Nombre}} {{data.datosFuncionario.Apellido_P}}
-                                    <br> Fecha creacion: {{DetallesCuenta.FechaA}}
-                                    <br> Ultima Actualizacion: {{DetallesCuenta.FechaC}}
+                                    <p>Asignado: <span style="font-style: italic;">{{data.datosFuncionario.Nombre|uppercase }} {{data.datosFuncionario.Apellido_P|uppercase}} {{data.datosFuncionario.Apellido_M|uppercase}}</span></p>
+                                    <p>Creacion: {{DetallesCuenta.FechaA |date}} </p>
+                                    <p>Actualizacion: {{DetallesCuenta.FechaC|date}}</p>
+                                    <p>
+                                        <mat-form-field appearance="legacy">
+                                            <mat-label>Login</mat-label>
+                                            <input matInput [(ngModel)]="data.datosCuenta.login" name="Login">
+                                        </mat-form-field>
+                                        <mat-form-field appearance="legacy">
+                                            <mat-label>Nueva contraseña</mat-label>
+                                            <input matInput [(ngModel)]="data.datosCuenta.Password" type="password" name="Password">
+                                        </mat-form-field>
+                                    </p>
+
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -103,7 +120,7 @@
 
 
                 <!-- CREACION CUENTA -->
-                <div [ngSwitch]="data.TipoCuenta">
+                <div [ngSwitch]="data.Tipo_Registro">
                     <div *ngSwitchCase="'Crear'">
 
                         <mat-form-field appearance="legacy">
@@ -152,7 +169,6 @@
                         </mat-form-field>
 
                         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
                             <ng-container matColumnDef="Cuenta">
                                 <th mat-header-cell *matHeaderCellDef> Login </th>
                                 <td mat-cell *matCellDef="let element"> {{element.login}} </td>
@@ -185,15 +201,24 @@
                     </div>
                 </div>
             </form>
+
         </mat-step>
-        <mat-step label="Permisos">
-            <p>Seleccione los permisos a otorgar</p>
+        <mat-step label="Permisos" *ngIf="TipoRegistroCuenta!='Editar cuenta'">
+            <mat-selection-list #shoes [multiple]="false" [(ngModel)]="data.Tipo">
+                <mat-list-option *ngFor="let tipo of Tipo_Permisos" [value]="tipo.value" name="permisos">
+                    {{tipo.viewValue|uppercase}}
+                </mat-list-option>
+            </mat-selection-list>
+
+            <p style="margin-top: 10px;">
+                Los permisos de la cuenta seran de: {{shoes.selectedOptions.selected[0]?.value|uppercase}}
+            </p>
+
         </mat-step>
     </mat-stepper>
 
 </div>
 <div mat-dialog-actions>
-    <!-- <button mat-button mat-dialog-close>Cancelar</button> -->
     <button mat-button (click)="cancelar()">Cancelar</button>
     <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Guardar</button>
 </div>

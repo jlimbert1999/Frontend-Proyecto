@@ -1,19 +1,31 @@
-<!-- <h1 mat-dialog-title>{{tituloDialog}}</h1> -->
+<h1 mat-dialog-title>Registro de requisito tramite</h1>
 <div mat-dialog-content>
-    <mat-form-field appearance="legacy">
-        <mat-label>Titulo</mat-label>
-        <input matInput [(ngModel)]="requisito.detalle">
-    </mat-form-field>
-    <mat-form-field appearance="legacy">
-        <mat-label>Tipo documento</mat-label>
-        <mat-select [(ngModel)]="requisito.id_documento">
-            <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
-                {{documento.titulo}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Nombre del requisito</mat-label>
+                    <input matInput [(ngModel)]="requisito.detalle">
+                </mat-form-field>
+            </div>
+            <div class="col-sm">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Tipo documento</mat-label>
+                    <mat-select [(ngModel)]="requisito.id_documento">
+                        <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
+                            {{documento.titulo}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <mat-checkbox [(ngModel)]="requisito.Activo" class="example-margin" name="Activo">Habilitar</mat-checkbox>
+
+        </div>
+    </div>
+
+
 </div>
 <div mat-dialog-actions>
-    <button mat-button mat-dialog-close>Cancelar</button>
-    <button mat-button [mat-dialog-close]="requisito" cdkFocusInitial>Guardar</button>
+    <button mat-button mat-dialog-close color="warn">Cancelar</button>
+    <button mat-button [mat-dialog-close]="requisito" cdkFocusInitial color="primary">Guardar</button>
 </div>

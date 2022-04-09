@@ -1,0 +1,41 @@
+<h1 mat-dialog-title>{{tituloDialog}}</h1>
+<div mat-dialog-content>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput [(ngModel)]="Institucion.Nombre">
+                </mat-form-field>
+
+            </div>
+            <div class="col-sm">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Sigla</mat-label>
+                    <input matInput [(ngModel)]="Institucion.Sigla">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Direccion</mat-label>
+                    <input matInput [(ngModel)]="Institucion.Direccion">
+                </mat-form-field>
+            </div>
+            <div class="col-sm">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Telefono</mat-label>
+                    <input matInput [(ngModel)]="Institucion.Telefono">
+                </mat-form-field>
+            </div>
+        </div>
+        <mat-checkbox [(ngModel)]="Institucion.Activo" class="example-margin">{{(Institucion.Activo ? "Habilitar":"Desabilitar")}}</mat-checkbox>
+    </div>
+
+
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="cerrarDialog()">Cancelar</button>
+    <button mat-button [mat-dialog-close]="data" (click)="guardar_registro()" cdkFocusInitial>Guardar</button>
+</div>

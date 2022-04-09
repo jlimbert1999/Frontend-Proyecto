@@ -21,7 +21,7 @@ export class TramitesRequisitosComponent implements OnInit {
     { key: "titulo", titulo: "Titulo" },
     { key: "sigla", titulo: "Sigla" },
     { key: "segmento", titulo: "Segmento" },
-    { key: "fecha_creacion", titulo: "Fecha Creacion" }
+    { key: "Fecha_creacion", titulo: "Fecha Creacion" }
     // { key: "Activo", titulo: "Habilitado" }
   ]
   OpcionesTabla: string[] = ['Editar', 'Eliminar']
@@ -33,7 +33,7 @@ export class TramitesRequisitosComponent implements OnInit {
   Requisitos: Requerimientos[] = []
   msg = new Mensajes()
   @Input() eventoAgregar: any; //es un evento @Input() events: Observable<void>;
-
+  @Input() eventoVer:any  //es un evento para cambiar vista
   constructor(
     public dialog: MatDialog,
     private tipoTramitesService: TipoTramitesService
@@ -43,6 +43,7 @@ export class TramitesRequisitosComponent implements OnInit {
     this.obtner_TiposTramites_Habilitados()
     //evento se recibirar del compomete padre, que es adm-configuraiones
     this.eventoAgregar.subscribe(() => this.agregar_TipoTramite());
+    this.eventoVer.subscribe(()=>this.Ver_NoHabilitados())
   }
 
   obtner_TiposTramites_Habilitados() {
@@ -50,7 +51,7 @@ export class TramitesRequisitosComponent implements OnInit {
     this.OpcionesTabla = ['Editar', 'Eliminar']
     this.tipoTramitesService.getTipoTramite_Habilitados().subscribe((resp: any) => {
       if (resp.ok) {
-        if(resp.TiposTramites.length==0){
+        if (resp.TiposTramites.length == 0) {
           this.msg.mostrarMensaje('info', resp.message)
         }
         this.TramitesHabilitados = resp.TiposTramites
@@ -62,7 +63,7 @@ export class TramitesRequisitosComponent implements OnInit {
   obtner_TiposTramites_NoHabilitados() {
     this.tipoTramitesService.getTipoTramite_NoHabilitados().subscribe((resp: any) => {
       if (resp.ok) {
-        if(resp.TiposTramites.length==0){
+        if (resp.TiposTramites.length == 0) {
           this.msg.mostrarMensaje('info', resp.message)
         }
         this.TramitesNoHabilitados = resp.TiposTramites
@@ -82,72 +83,27 @@ export class TramitesRequisitosComponent implements OnInit {
 
   agregar_TipoTramite() {
     const dialogRef = this.dialog.open(DialogTramitesRequisitosComponent, {
-      data: { TipoTramite: {}, Requisitos: [] } //no se endia datos
+      width: '50%',
+      data: {} //no se endia datos
     })
     dialogRef.afterClosed().subscribe(dataDialog => {
       if (dataDialog) {
-        dataDialog.TipoTramite.Activo = true
-        dataDialog.TipoTramite.fecha_creacion = dataDialog.TipoTramite.fecha_actualizacion = this.getFecha()
-        if (dataDialog.Requisitos.length == 0) {
-          this.tipoTramitesService.addTipoTramite(dataDialog.TipoTramite).subscribe((resp: any) => {
-            if (resp.ok) {
-              this.msg.mostrarMensaje('success', resp.message)
-              this.obtner_TiposTramites_Habilitados()
-            }
-          })
-        }
-        else {
-          this.tipoTramitesService.addTipoTramite(dataDialog.TipoTramite).subscribe((resp: any) => {
-            if (resp.ok) {
-              dataDialog.Requisitos.forEach((requerimiento: Requerimientos) => {
-                requerimiento.id_TipoTramite = resp.TipoTramite.insertId
-                this.registrar_Requerimientos(requerimiento)
-              })
-              this.msg.mostrarMensaje("success", resp.message)
-              this.obtner_TiposTramites_Habilitados()
-            }
-          })
-        }
+        this.obtner_TiposTramites_Habilitados()
       }
     })
   }
-  registrar_Requerimientos(datos: Requerimientos) {
-    this.tipoTramitesService.addRequerimientos(datos).subscribe((resp: any) => {
-      if (resp.ok) {
-        console.log(resp);
-      }
-    })
-  }
+ 
 
 
 
   editar_TipoTramite(datos: any) {
     const dialogRef = this.dialog.open(DialogTramitesRequisitosComponent, {
-      data: { TipoTramite: datos, Requisitos: [], id_TipoTramite: datos.id_TipoTramite }
+      width: '60%',
+      data: datos
     })
     dialogRef.afterClosed().subscribe(datosFormulario => {
       if (datosFormulario) {
-        datosFormulario.TipoTramite.fecha_actualizacion = this.getFecha()
-        if (datosFormulario.NuevosRequitos) { //actualizacion con registo de tramites
-          this.tipoTramitesService.putTipoTramite(datos.id_TipoTramite, datosFormulario.TipoTramite).subscribe((resp: any) => {
-            if (resp.ok) {
-              datosFormulario.Requisitos.forEach((requerimiento: Requerimientos) => {
-                requerimiento.id_TipoTramite = datos.id_TipoTramite
-                this.registrar_Requerimientos(requerimiento)
-              })
-              this.obtner_TiposTramites_Habilitados()
-              this.msg.mostrarMensaje('success', resp.message)
-            }
-          })
-        }
-        else {
-          this.tipoTramitesService.putTipoTramite(datos.id_TipoTramite, datosFormulario.TipoTramite).subscribe((resp: any) => {
-            if (resp.ok) {
-              this.msg.mostrarMensaje('success', resp.message)
-              this.obtner_TiposTramites_Habilitados()
-            }
-          })
-        }
+        this.obtner_TiposTramites_Habilitados()
       }
     })
   }
@@ -171,8 +127,7 @@ export class TramitesRequisitosComponent implements OnInit {
       this.OpcionesTabla = ['Editar']
     }
   }
-  getFecha(): string {
-    let dateObj = new Date();
-    return `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
+  getFecha() {
+    return Date.now()
   }
 }

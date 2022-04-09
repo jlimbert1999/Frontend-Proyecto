@@ -1,3 +1,12 @@
 <div class="container">
-
+    <mat-form-field appearance="standard">
+        <mat-label>Buscar tipo tramite</mat-label>
+        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ingrese un caracter" #input>
+    </mat-form-field>
+    <span class="example-spacer"></span>
+    <button (click)="registrar_Tramite()" mat-mini-fab color="primary">
+        <mat-icon>add</mat-icon>
+      </button>
+    <app-tabla [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="opcionesTabla" (llamarImprimir)="imprimir_ficha($event)" (llamarEditar)="editar_tramite($event)" (llamarRemision)="abrir_DialogRemision($event)" (llamarRevision)="abrir_FichaTramite($event)"
+        (llamarVerFlujo)="abrir_Workflow($event)"></app-tabla>
 </div>

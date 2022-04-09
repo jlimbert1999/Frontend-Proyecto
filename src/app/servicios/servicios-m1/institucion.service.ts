@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { entorno } from '../api-config'
-import { IntitucionModel } from '../../modelos/administracion-usuarios/institucion.model'
+import { InstitucionModel } from '../../modelos/administracion-usuarios/institucion.model'
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +12,11 @@ export class InstitucionService {
   
   constructor(private http:HttpClient) { }
 
-  addInstitucion(institucion:IntitucionModel) {
+  addInstitucion(institucion:InstitucionModel) {
     return this.http.post(`${this.URL}/institucion`, institucion)
   }
   getInstituciones_Habilitadas(){
-    return this.http.get(`${this.URL}/institucion-habilitados`)
+    return this.http.get(`${this.URL}/instituciones/1`)
   }
   getInstituciones_NoHabilitadas(){
     return this.http.get(`${this.URL}/institucion-no_habilitados`)

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { entorno } from '../api-config'
 import { DependenciaModel } from 'src/app/modelos/administracion-usuarios/dependencia.model';
-import { IntitucionModel } from 'src/app/modelos/administracion-usuarios/institucion.model';
+import { InstitucionModel } from 'src/app/modelos/administracion-usuarios/institucion.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,15 +12,16 @@ export class ConfiguracionService {
 
   constructor(private http: HttpClient) { }
   //INSTITUCIONES
-  addInstitucion(institucion: IntitucionModel) {
-    return this.http.post(`${this.URL}/institucion`, institucion)
-  }
   getInsti_Habilitadas() {
     return this.http.get(`${this.URL}/instituciones/1`)
   }
   getInsti_noHabilitadas() {
     return this.http.get(`${this.URL}/instituciones/0`)
   }
+  addInstitucion(institucion: InstitucionModel) {
+    return this.http.post(`${this.URL}/institucion`, institucion)
+  }
+  
   putInstitucion(id: number, datos: any) {
     return this.http.put(`${this.URL}/instituciones/${id}`, datos)
   }

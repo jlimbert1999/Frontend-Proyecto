@@ -13,13 +13,16 @@ export class DependenciaService {
   addDependencia(dependencia:DependenciaModel) {
     return this.http.post(`${this.URL}/dependencia`, dependencia)
   }
-  getDependencia(){
-    return this.http.get(`${this.URL}/dependencia`)
+  getDependencia_Habilitadas(){
+    return this.http.get(`${this.URL}/dependencias/1`)
   }
   putDependencia(id:number, datos:object){
     return this.http.put(`${this.URL}/dependencia/${id}`, datos)
   }
   deleteDependencia(id:number){
     return this.http.delete(`${this.URL}/dependencia/${id}`)
+  }
+  getDependencias_de_Instituto(id_institucion:number){
+    return this.http.get(`${this.URL}/dependencias-instituto/${id_institucion}`)
   }
 }

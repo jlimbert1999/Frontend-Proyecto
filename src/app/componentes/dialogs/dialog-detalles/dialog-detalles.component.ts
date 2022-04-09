@@ -1,6 +1,9 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UsuariosService } from 'src/app/servicios/servicios-m1/usuarios.service';
+import {MatTableDataSource} from '@angular/material/table';
+import { MatSort, Sort } from '@angular/material/sort';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-dialog-detalles',
@@ -8,33 +11,41 @@ import { UsuariosService } from 'src/app/servicios/servicios-m1/usuarios.service
   styleUrls: ['./dialog-detalles.component.css']
 })
 export class DialogDetallesComponent implements OnInit {
+  displayedColumns: string[] = ['Fecha', 'Detalle', 'Cargo'];
+  dataSource=new MatTableDataSource();
+  Nombre_Funcionario:any
 
   constructor(
     public dialogRef: MatDialogRef<DialogDetallesComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private usuariosService: UsuariosService
+    private usuariosService: UsuariosService,
+    private _liveAnnouncer: LiveAnnouncer
   ) { }
-  Detalles: string[] = []
+  @ViewChild(MatSort) sort!: MatSort;
+  
   ngOnInit(): void {
     // data=contiene el id del funcionario recibido desde admin usuarios
     this.usuariosService.getDetallesUsuarios(this.data).subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Detalles.length <= 0) {
-          this.Detalles.push("EL FUNCIONARIO NO TIENE REGISTROS SOBRE CARGOS INICIADOS O FINALIZADOS")
+        if (resp.Detalles.length > 0) {
+          this.Nombre_Funcionario=`${resp.Detalles[0].Nombre} ${resp.Detalles[0].Apellido_P} ${resp.Detalles[0].Apellido_M}`
+          this.dataSource.data=resp.Detalles
         }
-        else {
-          let texto: string
-          resp.Detalles.forEach((element: any) => {
-            texto = `El funcionario ${element.Nombre} ${element.Apellido_P} ${element.Apellido_M} ${element.detalle} el cargo ${element.NombreCar} en fecha: ${element.fecha}`
-            this.Detalles.push(texto)
-          });
-          
-
-        }
-        
-
       }
     })
+  }
+  
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+  }
+
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
   }
 
 }

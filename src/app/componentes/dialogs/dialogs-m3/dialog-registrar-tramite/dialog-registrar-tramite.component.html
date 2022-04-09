@@ -1,0 +1,226 @@
+<h1 mat-dialog-title>{{tituloDialog}}</h1>
+<mat-dialog-content>
+    <mat-tab-group mat-align-tabs="center">
+        <mat-tab>
+            <ng-template mat-tab-label>
+                Tramite
+            </ng-template>
+            <form>
+                <div>
+                    <ng-container *ngIf="tituloDialog == 'Nuevo tramite'">
+                        <h2 style="font-size: 18px; margin-bottom: 0%; margin-top: 20px;">Seleccion tipo</h2>
+                        <mat-form-field appearance="legacy" class="selector-tramite">
+                            <mat-label>Seleccion del tipo de tramite a realizar</mat-label>
+                            <mat-select [(ngModel)]='tramite.id_TipoTramite' name="TipoTramite">
+                                <mat-option *ngFor="let tipo of lista_TiposTramites; let i=index" [value]="tipo.id_TipoTramite" (click)="seleccionar_TipoTramite(tipo)">
+                                    {{i+1}} .- {{tipo.titulo| uppercase}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <ng-container *ngIf="CodigoUnicoTramite!=''">
+                            <h2 style="font-size: 18px; margin-bottom: 0%; margin-top: 20px;">Requisitos</h2>
+                            <button mat-raised-button (click)="selectAll()">Marcar todo</button>
+                            <!-- Lista requisitos -->
+                            <mat-selection-list #listaRequerimientos (selectionChange)="onGroupsChange(listaRequerimientos.selectedOptions.selected)">
+                                <mat-list-option *ngFor="let requerimiento of lista_Requerimientos" [value]="requerimiento.id_requerimiento">
+                                    <mat-icon mat-list-icon>text_snippet</mat-icon>{{requerimiento.detalle|uppercase}}
+                                </mat-list-option>
+                            </mat-selection-list>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngIf="tituloDialog == 'Edicion de tramite'">
+                        <h2 style="font-size: 18px; margin-bottom: 0%; margin-top: 20px;">Requisitos presentados</h2>
+
+                        <!-- Lista requisitos -->
+                        <mat-selection-list #listaRequerimientos (selectionChange)="onGroupsChange(listaRequerimientos.selectedOptions.selected)">
+                            <mat-list-option *ngFor="let requerimiento of lista_Requerimientos" [value]="requerimiento.id_requerimiento" [selected]="Ids_requisitos_presentados.includes(requerimiento.id_requerimiento!)">
+                                <mat-icon mat-list-icon>text_snippet</mat-icon>{{requerimiento.detalle|uppercase}}
+                            </mat-list-option>
+                        </mat-selection-list>
+                    </ng-container>
+
+                    <h2 style="font-size: 18px; margin-bottom: 0%; margin-top: 20px;">Detalles</h2>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm">
+                                <mat-form-field class="example-full-width" appearance="legacy">
+                                    <mat-label>Descripcion del tramite</mat-label>
+                                    <input [(ngModel)]='tramite.detalle' matInput #message maxlength="256" name="detalle">
+                                    <mat-hint align="start"><strong>Descripcion del tramite</strong> </mat-hint>
+                                    <mat-hint align="end">{{message.value.length}} / 256</mat-hint>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-sm-4">
+                                <mat-form-field class="example-full-width" appearance="legacy">
+                                    <mat-label>Cantidad hojas</mat-label>
+                                    <input [(ngModel)]='tramite.cantidad' type="number" matInput name="cantidad">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </form>
+        </mat-tab>
+
+        <mat-tab>
+            <ng-template mat-tab-label>
+                Solicitante
+            </ng-template>
+            <h2 style="font-size: 18px; margin-bottom: 0%; margin-top: 20px;">Datos solicitante</h2>
+            <form>
+                <div class='container'>
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Nombres</mat-label>
+                                <input [(ngModel)]="solicitante.nombres" name="nombres" matInput>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Apellido paterno</mat-label>
+                                <input [(ngModel)]="solicitante.paterno" name="paterno" matInput>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Apellido materno</mat-label>
+                                <input [(ngModel)]="solicitante.materno" name="materno" matInput>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy" #TipoDoc>
+                                <mat-label>Tipo documento</mat-label>
+                                <mat-select [(ngModel)]="solicitante.id_documento" name="tipo_documento">
+                                    <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
+                                        {{documento.titulo}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <ng-container>
+                            <div class="col-sm">
+                                <mat-form-field class="example-full-width" appearance="legacy">
+                                    <mat-label>DNI</mat-label>
+                                    <input [(ngModel)]="solicitante.dni" name="dni" matInput>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-sm">
+                                <mat-form-field appearance="legacy">
+                                    <mat-label>Expedido</mat-label>
+                                    <mat-select [(ngModel)]="solicitante.expedido" name="expedido">
+                                        <mat-option *ngFor="let lugar of  Lugares" [value]="lugar.sigla">
+                                            {{lugar.nombre}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                            </div>
+                            <div class="col-sm">
+                                <mat-form-field class="example-full-width" appearance="legacy">
+                                    <mat-label>Telefono de referencia</mat-label>
+                                    <input [(ngModel)]="solicitante.telefono" name="telefono" matInput>
+                                </mat-form-field>
+
+                            </div>
+
+                        </ng-container>
+                        <div class="row">
+                            <mat-form-field *ngIf="tiene_representante==false" appearance="legacy">
+                                <mat-label>Representante legal</mat-label>
+                                <mat-select>
+                                    <mat-option (click)="regis_Representante=false" value="Sin representante legal">
+                                        Sin representante legal
+                                    </mat-option>
+                                    <mat-option (click)="regis_Representante=true" value="Con representante legal">
+                                        Con representante legal
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </mat-tab>
+        <mat-tab *ngIf="regis_Representante">
+            <ng-template mat-tab-label>
+                Representante
+            </ng-template>
+
+            <form>
+                <div class='container'>
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Nombres</mat-label>
+                                <input [(ngModel)]="representante.nombres" matInput name="nombres">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Apellido paterno</mat-label>
+                                <input [(ngModel)]="representante.paterno" matInput name="paterno">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Apellido materno</mat-label>
+                                <input [(ngModel)]="representante.materno" matInput name="materno">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Tipo documento</mat-label>
+                                <mat-select [(ngModel)]="representante.id_documento" name="tipo_documento">
+                                    <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
+                                        {{documento.titulo}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <ng-container>
+                            <div class="col-sm">
+                                <mat-form-field class="example-full-width" appearance="legacy">
+                                    <mat-label>DNI</mat-label>
+                                    <input [(ngModel)]="representante.dni" matInput name="dni">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-sm">
+                                <mat-form-field appearance="legacy">
+                                    <mat-label>Expedido</mat-label>
+                                    <mat-select [(ngModel)]="representante.expedido" name="expedido">
+                                        <mat-option *ngFor="let lugar of  Lugares" [value]="lugar.sigla">
+                                            {{lugar.nombre}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                            </div>
+                            <div class="col-sm">
+                                <mat-form-field class="example-full-width" appearance="legacy">
+                                    <mat-label>Telefono de referencia</mat-label>
+                                    <input [(ngModel)]="representante.telefono" matInput name="telefono">
+                                </mat-form-field>
+                            </div>
+
+                        </ng-container>
+                    </div>
+                </div>
+            </form>
+        </mat-tab>
+    </mat-tab-group>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button color="warn" (click)="onNoClick()">Cancelar</button>
+    <button mat-button color="primary" [mat-dialog-close]="data" (click)="Registrar_Datos()" cdkFocusInitial>Aceptar</button>
+</mat-dialog-actions>

@@ -9,8 +9,9 @@ import { Requerimientos } from 'src/app/modelos/tramites-requisitos/Requerimient
 })
 export class DialogRequisitosComponent implements OnInit {
   TiposDoc = [
-    { id_documento: 1, titulo: "Carnet de indetidad" },
-    { id_documento: 2, titulo: "Pasaporte" }
+    { id_documento: 1, titulo: "Plano" },
+    { id_documento: 2, titulo: "Cartificado" },
+    { id_documento: 3, titulo: "Copia" }
   ]
 
   constructor(

@@ -1,0 +1,83 @@
+<mat-toolbar>
+    <span>Consulta estado del tramite</span>
+</mat-toolbar>
+<div class="container">
+    <div style="margin: 0 auto;">
+        <p>Ingrese el campo "Numero de tramite"</p>
+        <mat-form-field class="example-form-field" appearance="fill">
+            <mat-label>Codido del tramite</mat-label>
+            <input matInput type="text" [(ngModel)]="Codigo_Tramite">
+            <button *ngIf="Codigo_Tramite" matSuffix mat-icon-button aria-label="Clear" (click)="Codigo_Tramite=''">
+              <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="Obtener_Informacion_Tramite()">Buscar</button>
+    </div>
+
+
+    <mat-card *ngIf="Tramite">
+        <mat-card-title>Informacion tramite</mat-card-title>
+        <p>Solicitante: {{Tramite.nombres|uppercase}} {{Tramite.paterno|uppercase}} {{Tramite.materno|uppercase}}</p>
+        <p>Dni: {{Tramite.expedido}} {{Tramite.dni}}</p>
+        <p>Estado: {{Tramite.estado}}</p>
+
+        <h2>Observaciones tramite</h2>
+        <p *ngIf="Observaciones_Tramite.length==0">EL tramite no tiene observaciones</p>
+        <div class="example-action-buttons">
+            <button mat-button *ngIf="Observaciones_Tramite.length>0" (click)="accordion.openAll()">Mostrar todo</button>
+            <button mat-button *ngIf="Observaciones_Tramite.length>0" (click)="accordion.closeAll()">Ocultar</button>
+        </div>
+        <mat-accordion class="example-headers-align" multi *ngIf="Observaciones_Tramite.length>0">
+            <mat-expansion-panel *ngFor="let obs of Observaciones_Tramite; let i=index">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{obs[0].NombreCar}}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        {{obs[0].Nombre}} {{obs[0].Apellido_P}} {{obs[0].Apellido_M}}
+                        <mat-icon>account_circle</mat-icon>
+
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <table mat-table [dataSource]="obs" class="mat-elevation-z8 demo-table">
+
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="descripcion">
+                        <th mat-header-cell *matHeaderCellDef> Descripcion </th>
+                        <td mat-cell *matCellDef="let element"> {{element.detalle}} </td>
+                    </ng-container>
+
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="estado">
+                        <th mat-header-cell *matHeaderCellDef>Situacion</th>
+                        <td mat-cell *matCellDef="let element">
+                            <p *ngIf="element.situacion==1||element.situacion==true" style="color: green;">
+                                Corregido
+                                <mat-icon>check_circle</mat-icon>
+                            </p>
+                            <p *ngIf="element.situacion==0||element.situacion==null||element.situacion==false" style="color: red;">
+                                No corregido
+                                <mat-icon>cancel</mat-icon>
+                            </p>
+                        </td>
+                    </ng-container>
+
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="fecha_registro">
+                        <th mat-header-cell *matHeaderCellDef> Fecha de registro</th>
+                        <td mat-cell *matCellDef="let element"> {{element.fecha_registro |date}} </td>
+                    </ng-container>
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </mat-expansion-panel>
+        </mat-accordion>
+
+
+
+    </mat-card>
+
+
+</div>

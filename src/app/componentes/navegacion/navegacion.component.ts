@@ -8,36 +8,70 @@ import decode from 'jwt-decode'
   styleUrls: ['./navegacion.component.css']
 })
 export class NavegacionComponent implements OnInit {
-  DatoSesion: any = {}
-  Modulos:string[]=['Usuarios', 'Configuraciones','Tramites', 'Administracion', 'Reportes']
-  constructor(private router: Router) { 
+  DatoSesion: any
+  menuItems: any[]
+  // menuItems: any[] = [
+  //   {
+  //     label: 'Usuarios',
+  //     icon: 'people_alt'
+  //   },
+  //   {
+  //     label: 'Configuraciones',
+  //     icon: 'settings'
+  //   },
+  //   {
+  //     label: 'Tramites',
+  //     icon: 'article'
+  //   },
+  //   {
+  //     label: 'Reportes',
+  //     icon: 'content_paste'
+  //   }
+  // ];
+  constructor(private router: Router) {
   }
- 
-  OpcionesModulo:string[]=['']
+
+
   ngOnInit(): void {
-    this.decodificarToken()
+    this.DatoSesion = this.decodificarToken()
+    if (this.DatoSesion.Tipo == 'ADMIN_ROLE') {
+      this.menuItems = [
+        {
+          label: 'Usuarios',
+          icon: 'people_alt'
+        },
+        {
+          label: 'Configuraciones',
+          icon: 'settings'
+        }
+      ]
+    }
+    else if (this.DatoSesion.Tipo == 'USER1_ROLE' || this.DatoSesion.Tipo =='USER2_ROLE') {
+      this.menuItems = [
+        {
+          label: 'Tramites',
+          icon: 'article'
+        },
+        {
+          label: 'Reportes',
+          icon: 'content_paste'
+        }
+      ]
+    }
   }
-  irModulo(modulo:string){
-    // if(modulo=='Usuarios'){
-    //   this.OpcionesModulo=['cuentas', 'usuarios'] 
-    // }
-    // if(modulo=='Configuracion'){
-    //   this.OpcionesModulo=['instituciones', 'cargos', 'dependencias'] 
-    // }
-  }
+
+
   decodificarToken(): any {
-    if(!localStorage.getItem('token')){
-      this.router.navigate(['login'])
-    }
-    else{
-      let token=localStorage.getItem('token')!
-      this.DatoSesion=decode(token)
-      console.log(this.DatoSesion);
-    }
+    let token = localStorage.getItem('token')!
+    return decode(token)
   }
   cerrarSesion() {
     localStorage.removeItem('token');
     this.router.navigate(['login'])
+  }
+
+  administrar_cuenta() {
+    this.router.navigate(['Administrar-cuenta', this.DatoSesion.id_cuenta])
   }
 
 

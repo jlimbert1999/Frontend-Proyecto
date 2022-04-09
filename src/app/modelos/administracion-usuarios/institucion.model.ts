@@ -1,11 +1,11 @@
-export interface IntitucionModel {
-
+export interface InstitucionModel {
+    id_institucion?:number,
     Nombre: string;
     Sigla: string;
     Direccion: string;
-    Telefono: string;
-    Fecha_creacion: string;
-    Fecha_actualizacion: string;
+    Telefono: number;
+    Fecha_creacion: number;
+    Fecha_actualizacion: number;
     Activo: boolean;
 
 }

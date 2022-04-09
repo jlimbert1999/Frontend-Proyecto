@@ -4,16 +4,12 @@
     <button mat-icon-button class="example-icon" (click)="drawer.toggle()" aria-label="Example icon-button with menu icon">
         <mat-icon>menu</mat-icon>
     </button>
-    <span>CONFIGURACIONES: {{TipoTabla}}</span>
+    <span style="font-size: 16px;">CONFIGURACIONES: {{TipoTabla}}</span>
     <span class="example-spacer"></span>
 
-    <mat-form-field appearance="legacy" *ngIf="TipoTabla!='Tramites'">
-        <input matInput #input (keyup)="aplicarFiltro($event)" placeholder="Buscar {{TipoTabla}}">
-        <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
 
     <button *ngIf="TipoTabla!=''" [matMenuTriggerFor]="menu" mat-icon-button class="example-icon">
-        <mat-icon>menu</mat-icon>
+        <mat-icon>apps</mat-icon>
       </button>
     <mat-menu #menu="matMenu">
         <button *ngIf="TipoTabla=='Instituciones'" mat-menu-item (click)="agregar_Institucion()">
@@ -32,27 +28,56 @@
             <mat-icon>add_circle</mat-icon>
             Agregar Tipo de Tramite
         </button>
-        <button mat-menu-item *ngIf="TipoTabla!='Tramites'" (click)="verHabilitados=!verHabilitados;ver_Habilitados()">
-            <mat-icon>add_circle</mat-icon>
-            {{tituloOpcionVista}}
+        <button *ngIf="TipoTabla=='Tramites'" mat-menu-item (click)="alternarVista_TiposTramite()">
+            <mat-icon>remove_red_eye</mat-icon>
+            Ver {{(verHabilitados ? "No Habilitados":"Habilitados")}}
+        </button>
+        <button mat-menu-item *ngIf="TipoTabla!='Tramites'" (click)="ver_Habilitados()">
+            <mat-icon>remove_red_eye</mat-icon>
+            Ver {{(verHabilitados ? "No Habilitados":"Habilitados")}}
         </button>
 
     </mat-menu>
 
 </mat-toolbar>
-<mat-drawer-container class="example-container">
-    <mat-drawer #drawer mode="side">
-        <mat-list role="list">
-            <a mat-list-item (click)="Cargar_tablaInsti()">Administrar Instituciones</a>
-            <a mat-list-item (click)="Cargar_tablaDep()">Administrar Depedencias</a>
-            <a mat-list-item (click)="Cargar_tablaCargo()">Administrar Cargo</a>
-            <a mat-list-item (click)="AdministrarTramites()">Administrar Tipo</a>
-        </mat-list>
-    </mat-drawer>
-    <mat-drawer-content>
+<mat-sidenav-container class="example-container">
+    <mat-sidenav #drawer mode="over" class="panel">
+        <mat-nav-list class="nav-list">
+            <div class="nav-item">
+                <a class="nav-link" mat-list-item (click)="generar_tabla_Intituciones()">
+                    <mat-icon class="nav-icon">apartment</mat-icon>
+                    Instituciones
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" mat-list-item (click)="generar_tabla_Dependencias()">
+                    <mat-icon class="nav-icon">maps_home_work</mat-icon>
+                    Dependencias
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" mat-list-item (click)="generar_tabla_Cargos()">
+                    <mat-icon class="nav-icon">assignment_ind</mat-icon>
+                    Cargos
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" mat-list-item (click)="AdministrarTramites()">
+                    <mat-icon class="nav-icon">description</mat-icon>
+                    Tramites
+                </a>
+            </div>
+
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
         <div class="container">
-            <app-tabla *ngIf="mostrarTabla" [data]="dataSource" [displayedColumns]="displayedColumns" (llamarEditar)="editar_Datos($event)" [TiposOpciones]="OpcionesTabla"></app-tabla>
+            <mat-form-field appearance="legacy" *ngIf="TipoTabla && TipoTabla!='Tramites'">
+                <input matInput #input (keyup)=" aplicarFiltro($event) " placeholder="Buscar en {{TipoTabla}} ">
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            <app-tabla *ngIf="mostrarTabla " [data]="dataSource " [displayedColumns]="displayedColumns " (llamarEditar)="editar_Datos($event)" (llamarEliminar)="eliminar_Datos($event)" [TiposOpciones]="OpcionesTabla "></app-tabla>
+            <app-tramites-requisitos *ngIf="TipoTabla=='Tramites' " [eventoAgregar]="eventsSubject.asObservable()" [eventoVer]="eventsSubject2.asObservable()"></app-tramites-requisitos>
         </div>
-        <app-tramites-requisitos *ngIf="TipoTabla=='Tramites'" [eventoAgregar]="eventsSubject.asObservable()"></app-tramites-requisitos>
-    </mat-drawer-content>
-</mat-drawer-container>
+    </mat-sidenav-content>
+</mat-sidenav-container>

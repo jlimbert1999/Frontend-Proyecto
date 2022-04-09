@@ -35,7 +35,10 @@
                             "core-js/modules/es.string.trim.js",
                             "raf",
                             "core-js/modules/es.string.starts-with.js",
-                            "core-js/modules/web.dom-collections.iterator.js"
+                            "core-js/modules/web.dom-collections.iterator.js",
+                            "dagre",
+                            "webcola"
+
 
                         ],
                         "outputPath": "dist/frontend",

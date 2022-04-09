@@ -1,0 +1,141 @@
+<!-- <div class="container" *ngIf="detallesCuenta">
+    <mat-card class="example-card">
+        <mat-card-title>CONFIGURACION CUENTA</mat-card-title>
+        <mat-card-content>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm" style="display: block; margin: auto;">
+                        <img mat-card-xl-image src="../../../../assets/img/user-icon.png" style="height: 250px; width: 250px;">
+                    </div>
+                    <div class="col-sm">
+                        <p>Nombre: {{detallesCuenta.Nombre}} {{detallesCuenta.Apellido_P}} {{detallesCuenta.Apellido_M}} / {{detallesCuenta.NombreCargo}} </p>
+                        <p>Institucion: {{detallesCuenta.NombreInst}}</p>
+                        <p>Dependencia: {{detallesCuenta.NombreDep}}</p>
+                        <p>Direccion: {{detallesCuenta.Direccion}}</p>
+                        <p>Dni: {{detallesCuenta.Expedido}} {{detallesCuenta.Dni}}</p>
+                        <p>Telefono: {{detallesCuenta.Telefono}}</p>
+                        <p>Fecha actualizacion: {{detallesCuenta.Fecha_actualizacion}}</p>
+                        <p>
+                            Login
+                            <mat-form-field class="example-full-width" appearance="fill">
+                                <input matInput [(ngModel)]="datos_NuevosCuenta.login">
+
+                            </mat-form-field>
+                        </p>
+                        <p>
+                            Nueva contraseña
+                            <mat-form-field class="example-full-width" appearance="fill">
+                                <input matInput [(ngModel)]="datos_NuevosCuenta.password" type="password">
+                            </mat-form-field>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </mat-card-content>
+        <mat-divider inset></mat-divider>
+        <mat-card-actions>
+            <button mat-button (click)="cancelar()">CANCELAR</button>
+            <button mat-button (click)="actualizar_datosCuenta()">GUARDAR</button>
+
+        </mat-card-actions>
+    </mat-card>
+
+</div> -->
+<div class="container bootstrap snippets bootdey" style="margin-top: 10px;" *ngIf="detallesCuenta">
+    <h1 class="text-primary">Edicion cuenta</h1>
+    <hr>
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-3">
+            <div class="text-center">
+                <img src="../../../../assets/img/user-mail.png" class="avatar img-circle img-thumbnail" alt="avatar">
+            </div>
+        </div>
+
+        <!-- edit form column -->
+        <div class="col-md-9 personal-info">
+            <div class="alert alert-info alert-dismissable">
+                <a class="panel-close close" data-dismiss="alert">×</a>
+                <i class="fa fa-coffee"></i> This is an <strong>.alert</strong>. Use this to show important messages to the user.
+            </div>
+
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Nombre completo</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" type="text" [value]="detallesCuenta.Nombre +' '+ detallesCuenta.Apellido_P +' '+detallesCuenta.Apellido_M" disabled>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Direccion</label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" [value]="detallesCuenta.Direccion" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">DNI</label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" [value]="detallesCuenta.Dni" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Telefono</label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" [value]="detallesCuenta.Telefono" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Cargo</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" type="text" [value]="detallesCuenta.NombreCargo" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Institucion</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" type="text" [value]="detallesCuenta.NombreInst" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Dependencia</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" type="text" [value]="detallesCuenta.NombreDep" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-9 control-label">
+                        Login
+                    </label>
+                    <div class="col-lg-8">
+                        <mat-form-field style="width: 100%;">
+                            <input matInput placeholder="Ingrese un nuevo login" type="text" [(ngModel)]="datos_NuevosCuenta.login" name="login">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Contraseña</label>
+                    <div class="col-lg-8">
+                        <mat-form-field style="width: 100%;">
+                            <input matInput placeholder="Ingrese una nueva contraseña" [type]="hide ? 'password' : 'text'" [(ngModel)]="datos_NuevosCuenta.password" name="password">
+                            <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+            <button mat-raised-button color="primary" (click)="actualizar_datosCuenta()">Aceptar</button>
+            <button mat-raised-button color="accent" (click)="cancelar()">Cancelar</button>
+        </div>
+    </div>
+</div>
+<hr>

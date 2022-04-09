@@ -6,16 +6,49 @@ table {
     flex: 1 1 auto;
 }
 
-.example-container {
-    width: 100%;
-    height: 76.5%;
-    /* margin: 12px; */
-    border: 1px solid #555;
+.mat-drawer {
+    /*panel izquierdo*/
+    margin: 16px;
+    width: 250px;
+    border-right: none;
+    background: #212529;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
 }
 
 
-/* .mat-drawer-content {
+/* .content {
+    height: calc(100vh - 98px);
+    border-radius: 10px;
+    margin: 16px;
+    margin-left: 32px;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: lightgray;
+    background-color: red;
 } */
+
+.mat-drawer-container {
+    height: calc(100vh - 65px);
+}
+
+.nav-icon {
+    margin-right: 10%;
+}
+
+.active-list-item {
+    color: red;
+}
+
+.mat-form-field {
+    font-size: 14px;
+    width: 100%;
+}
+
+.nav-icon,
+.nav-link {
+    color: white;
+}

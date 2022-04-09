@@ -21,6 +21,11 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   @Output() llamarEliminar: EventEmitter<object>;
   @Output() llamarFinalizar: EventEmitter<object>;
   @Output() llamarVerDetalles: EventEmitter<object>;
+  @Output() llamarImprimir: EventEmitter<object>;
+  @Output() llamarRemision: EventEmitter<object>;
+  @Output() llamarRevision: EventEmitter<object>;
+  @Output() llamarVerFlujo: EventEmitter<object>;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @Input() TiposOpciones: string[] = [];
   TitulosTabla: string[] = []
@@ -35,6 +40,10 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
     this.llamarEliminar = new EventEmitter();
     this.llamarFinalizar = new EventEmitter();
     this.llamarVerDetalles = new EventEmitter();
+    this.llamarImprimir = new EventEmitter();
+    this.llamarRemision = new EventEmitter();
+    this.llamarRevision = new EventEmitter();
+    this.llamarVerFlujo = new EventEmitter();
     setTimeout(() => this.data.paginator = this.paginator);
 
   }
@@ -67,7 +76,19 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   verDetallesUsuario(datos: any) {
     this.llamarVerDetalles.emit(datos.id_funcionario)
   }
+  verFlujoTrabajo(datos:any){
+    this.llamarVerFlujo.emit(datos)
+  }
 
+  imprimirFicha(tramite:any) {
+    this.llamarImprimir.emit(tramite)
+  }
+  remitir(datos: any) {
+    this.llamarRemision.emit(datos)
+  }
+  revisar(datos: any) {
+    this.llamarRevision.emit(datos)
+  }
 
 
 }

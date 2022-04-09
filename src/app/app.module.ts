@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 //UTILIDADES
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 //material
 import { MaterialModule } from './material/material.module'
@@ -22,28 +22,38 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { AdministracionUsuariosComponent } from './modulos/administracion-usuarios/administracion-usuarios.component';
 import { DialogUsuariosComponent } from './componentes/dialogs/dialog-usuarios/dialog-usuarios.component';
 import { DialogListaTramitesComponent } from './componentes/dialogs/dialog-lista-tramites/dialog-lista-tramites.component';
-import { AdmInstitucionComponent } from './modulos/administracion-usuarios/adm-institucion/adm-institucion.component';
-import { DialogInstitucionComponent } from './componentes/dialogs/dialog-institucion/dialog-institucion.component';
-import { AdmDependenciaComponent } from './modulos/administracion-usuarios/adm-dependencia/adm-dependencia.component';
+import { DialogInstitucionComponent } from './componentes/dialogs/dialogs-m1/dialog-institucion/dialog-institucion.component';
 import { DialogDependenciaComponent } from './componentes/dialogs/dialog-dependencia/dialog-dependencia.component';
-import { FiltroComponent } from './componentes/filtro/filtro.component';
+
 import { TablaComponent } from './componentes/tabla/tabla.component';
-import { ToolbarComponent } from './componentes/toolbar/toolbar.component';
-import { AdmCargoComponent } from './modulos/administracion-usuarios/adm-cargo/adm-cargo.component';
-import { DialogCargoComponent } from './componentes/dialogs/dialog-cargo/dialog-cargo.component';
+import { DialogCargoComponent } from './componentes/dialogs/dialogs-m1/dialog-cargo/dialog-cargo.component';
 import { LayoutModule } from '@angular/cdk/layout';
 
-import { AdmCuentaComponent } from './modulos/administracion-usuarios/adm-cuenta/adm-cuenta.component';
 import { DialogCuentaComponent } from './componentes/dialogs/dialog-cuenta/dialog-cuenta.component';
 import { DialogDetallesComponent } from './componentes/dialogs/dialog-detalles/dialog-detalles.component';
 import { NavegacionComponent } from './componentes/navegacion/navegacion.component';
-import { AdmFuncionarioComponent } from './modulos/administracion-usuarios/adm-funcionario/adm-funcionario.component';
 import { AdmConfiguracionComponent } from './modulos/administracion-usuarios/adm-configuracion/adm-configuracion.component';
 import { AdmTramiteComponent } from './modulos/registro-tramites/adm-tramite/adm-tramite.component';
 import { BandejaEntradaComponent } from './modulos/registro-tramites/bandeja-entrada/bandeja-entrada.component';
 import { BandejaSalidaComponent } from './modulos/registro-tramites/bandeja-salida/bandeja-salida.component';
 import { DialogRequisitosComponent } from './componentes/dialogs/dialogs-m2/dialog-requisitos/dialog-requisitos.component';
+import { DialogRegistrarTramiteComponent } from './componentes/dialogs/dialogs-m3/dialog-registrar-tramite/dialog-registrar-tramite.component';
+import { DialogRemisionComponent } from './componentes/dialogs/dialogs-m3/dialog-remision/dialog-remision.component';
+import { FichaTramiteComponent } from './modulos/registro-tramites/ficha-tramite/ficha-tramite.component';
 
+import { NgxGraphModule } from '@swimlane/ngx-graph';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { DialogObservacionesComponent } from './componentes/dialogs/dialogs-m3/dialog-observaciones/dialog-observaciones.component';
+import { SeguimientoTramitesComponent } from './modulos/seguimiento-tramites/seguimiento-tramites.component';
+import { ReportesComponent } from './modulos/reportes/reportes.component'
+import { NgxChartsModule }from '@swimlane/ngx-charts';
+import { ConsultaComponent } from './paginas/consulta/consulta.component';
+import { AdmFuncionarioComponent } from './modulos/administracion-usuarios/adm-funcionario/adm-funcionario.component';
+import { LoginService } from './servicios/servicios-m1/login.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,25 +65,26 @@ import { DialogRequisitosComponent } from './componentes/dialogs/dialogs-m2/dial
     AdministracionUsuariosComponent,
     DialogUsuariosComponent,
     DialogListaTramitesComponent,
-    AdmInstitucionComponent,
     DialogInstitucionComponent,
-    AdmDependenciaComponent,
     DialogDependenciaComponent,
-    FiltroComponent,
     TablaComponent,
-    ToolbarComponent,
-    AdmCargoComponent,
     DialogCargoComponent,
-    AdmCuentaComponent,
     DialogCuentaComponent,
     DialogDetallesComponent,
     NavegacionComponent,
-    AdmFuncionarioComponent,
     AdmConfiguracionComponent,
     AdmTramiteComponent,
     BandejaEntradaComponent,
     BandejaSalidaComponent,
-    DialogRequisitosComponent
+    DialogRequisitosComponent,
+    DialogRegistrarTramiteComponent,
+    DialogRemisionComponent,
+    FichaTramiteComponent,
+    DialogObservacionesComponent,
+    SeguimientoTramitesComponent,
+    ReportesComponent,
+    ConsultaComponent,
+    AdmFuncionarioComponent
   ],
   imports: [
     BrowserModule,
@@ -83,11 +94,19 @@ import { DialogRequisitosComponent } from './componentes/dialogs/dialogs-m2/dial
     FormsModule,
     MaterialModule,
     LayoutModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxGraphModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatIconModule,
+    MatListModule,
+    NgxChartsModule
   ],
   providers: [
     { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
-    JwtHelperService
+    JwtHelperService,
+    {provide:HTTP_INTERCEPTORS, useClass:LoginService, multi:true}
   ],
   bootstrap: [AppComponent]
 })

@@ -11,11 +11,10 @@ import { CargoService } from '../../../servicios/servicios-m1/cargo.service'
 import { InstitucionService } from 'src/app/servicios/servicios-m1/institucion.service';
 import { DependenciaService } from 'src/app/servicios/servicios-m1/dependencia.service';
 import { UsuariosService } from 'src/app/servicios/servicios-m1/usuarios.service';
-import { MatStepper } from '@angular/material/stepper';
 import { MatTableDataSource } from '@angular/material/table';
 import { Mensajes } from '../../mensaje/mensaje';
 import Swal from 'sweetalert2';
-import { MatInput } from '@angular/material/input';
+
 @Component({
   selector: 'app-dialog-usuarios',
   templateUrl: './dialog-usuarios.component.html',
@@ -41,14 +40,19 @@ export class DialogUsuariosComponent implements OnInit {
   ]
 
   //Elementos para mostrar en tabla
-  // dataSource: any;
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = ['Cuenta', 'Cargo', 'Institucion', 'Dependencia', 'Opciones'];
   msg = new Mensajes()
   TipoRegistroCuenta: string = ''
   PoseeCuenta: boolean = false
-
   DetallesCuenta: any = {}
+
+  Tipo_Permisos=[
+    {value:'ADMIN_ROLE', viewValue:'administrador'},
+    {value:'USER1_ROLE',viewValue:'funcionario encargado de ventanilla' },
+    {value:'USER2_ROLE',viewValue:'funcionario' }
+  ]
+
 
 
   constructor(
@@ -83,38 +87,27 @@ export class DialogUsuariosComponent implements OnInit {
       this.tituloDialog = "Edicion datos de funcionario";
       this.TipoRegistroCuenta = "Editar cuenta"
       this.verificar_tieneCuenta(this.data.datosFuncionario.id_funcionario)
-
-
     }
   }
 
   obtenerInstitucionesActivas() {
     this.instService.getInstituciones_Habilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        this.InstiActivos=resp.Institucion
-       
+        this.InstiActivos = resp.Instituciones
       }
     })
   }
   obtenerDependenciasActivas() {
-    this.depService.getDependencia().subscribe((resp: any) => {
+    this.depService.getDependencia_Habilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        resp.dependencia.forEach((element: any) => {
-          if (element.Activo == '1') {
-            this.DepActivos.push(element)
-          }
-        });
+        this.DepActivos = resp.Dependencias
       }
     })
   }
   obtenerCargosActivos() {
-    this.cargoService.getCargo().subscribe((resp: any) => {
+    this.cargoService.getCargos_Habilitados().subscribe((resp: any) => {
       if (resp.ok) {
-        resp.cargo.forEach((element: any) => {
-          if (element.Activo == '1') {
-            this.CargosActivos.push(element)
-          }
-        });
+        this.CargosActivos = resp.Cargos
       }
     })
   }
@@ -138,16 +131,23 @@ export class DialogUsuariosComponent implements OnInit {
     this.dialogRef.close();
   }
 
+
   RegistroCuenta(Tipo: string) {
-    this.data.TipoCuenta = Tipo
+    this.data.Tipo_Registro = Tipo
     if (Tipo == 'Asignar') {
       this.obtener_CuentasSinAsignar()
+    }
+    if(Tipo == 'Crear'){
+      this.data.datosCuenta.login=(`${this.data.datosFuncionario.Nombre} ${this.data.datosFuncionario.Apellido_P.charAt(0)} ${this.data.datosFuncionario.Apellido_M.charAt(0)}`).replace(/\s/g, '').toUpperCase()
+      this.data.datosCuenta.password=this.data.datosFuncionario.Dni.toString()
     }
   }
   aplicarFiltro(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
+
   AsignarCuenta(datosCuenta: any) {
     let pregunta: string = `Asignar la cuenta con el cargo "${datosCuenta.NombreCar}" al funcionario: ${this.data.datosFuncionario.Nombre} ${this.data.datosFuncionario.Apellido_P}?`
     Swal.fire({
@@ -156,10 +156,12 @@ export class DialogUsuariosComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
     }).then((result) => {
+
       if (result.isConfirmed) {
         //creamos propiedad id_cuenta en datos cuenta, para usarla en el Adm-Usuarios
         this.data.datosCuenta['id_cuenta'] = datosCuenta.id_cuenta
         this.data.datosCuenta['id_cargo'] = datosCuenta.id_cargo
+        this.data.datosCuenta['login'] = ("" + `${this.data.datosFuncionario.Nombre} ${this.data.datosFuncionario.Apellido_P.charAt(0)} ${this.data.datosFuncionario.Apellido_M.charAt(0)}` + "").replace(/\s/g, '').toUpperCase()
       }
     })
   }
@@ -179,10 +181,12 @@ export class DialogUsuariosComponent implements OnInit {
         else {
           this.PoseeCuenta = false
         }
-
       }
     })
   }
+
+
+ 
 
 
 

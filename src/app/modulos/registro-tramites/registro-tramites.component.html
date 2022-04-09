@@ -1,39 +1,38 @@
 <app-navegacion></app-navegacion>
 
-
-
 <mat-toolbar>
     <button mat-icon-button class="example-icon" (click)="drawer.toggle()" aria-label="Example icon-button with menu icon">
         <mat-icon>menu</mat-icon>
     </button>
-    <span>TRAMITES</span>
+    <span>TRAMITES: {{TitleTolbar}}</span>
     <span class="example-spacer"></span>
-
-    <button [matMenuTriggerFor]="menu" mat-icon-button class="example-icon">
-        <mat-icon>menu</mat-icon>
-      </button>
-    <mat-menu #menu="matMenu">
-        <!-- <button mat-menu-item (click)="agregar_Funcionario()">
-              <mat-icon>add_circle</mat-icon>
-              Agregar institucion
-        </button>
-        <button mat-menu-item *ngIf="TipoTabla!=''" (click)="verHabilitados=!verHabilitados;ver_Habilitados()">
-            <mat-icon>add_circle</mat-icon>
-            {{tituloOpcionVista}}
-      </button> -->
-    </mat-menu>
-
-
 </mat-toolbar>
-<mat-drawer-container class="example-container">
-    <mat-drawer #drawer mode="side">
-        <mat-list role="list">
-            <a mat-list-item (click)="Administrar_Tramites()">Administrar Tramites</a>
-            <a mat-list-item (click)="Abrir_BandejaEntrada()">Bandeja de entrada</a>
-            <a mat-list-item (click)="Abrir_BandejaSalida()">Bandeja de salida</a>
-        </mat-list>
-    </mat-drawer>
-    <mat-drawer-content>
+
+<mat-sidenav-container class="example-container">
+    <mat-sidenav #drawer mode="over" class="panel">
+        <mat-nav-list class="nav-list">
+            <div class="nav-item">
+                <a class="nav-link" mat-list-item routerLink="administrar-tramite" routerLinkActive="active-list-item" [routerLinkActiveOptions]="{ exact: true }">
+                    <mat-icon class="nav-icon">folder_shared</mat-icon>
+                    Tramites
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" mat-list-item routerLink="bandeja-entrada" routerLinkActive="active-list-item">
+                    <mat-icon class="nav-icon">markunread</mat-icon>
+                    <span [matBadge]="nroRecibidos" [matBadgeHidden]="nroRecibidos == 0" matBadgeOverlap="false" (click)="nroRecibidos=0">Bandeja de entrada</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <div></div>
+                <a class="nav-link" mat-list-item routerLink="bandeja-salida" routerLinkActive="active-list-item">
+                    <mat-icon class="nav-icon">drafts</mat-icon>
+                    Bandeja de salida
+                </a>
+            </div>
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
         <router-outlet></router-outlet>
-    </mat-drawer-content>
-</mat-drawer-container>
+    </mat-sidenav-content>
+</mat-sidenav-container>

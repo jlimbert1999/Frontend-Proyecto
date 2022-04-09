@@ -1,1 +1,57 @@
-<p>bandeja-salida works!</p>
+<!-- <mat-grid-list [cols]="breakpoint" [rowHeight]="rowHeight" (window:resize)="onResize($event)">
+    <mat-grid-tile role="list">
+
+        <div>
+            <mat-list>
+                <mat-list-item *ngFor="let tramite of listadoTramites" (click)="ver_fichaTramite(tramite)">
+                    <mat-icon mat-list-icon>description</mat-icon>
+                    <div mat-line>{{tramite.titulo}}</div>
+                    <div mat-line>Pin:{{tramite.pin}} / {{tramite.detalle}} </div>
+                </mat-list-item>
+            </mat-list>
+        </div>
+        
+    </mat-grid-tile>
+
+    <mat-grid-tile [colspan]="colSpawn">
+        <mat-grid-tile-header>
+            Visualizar ficha
+        </mat-grid-tile-header>
+        <app-ficha-tramite *ngIf="datosFicha" [DatosEnvio]="datosFicha" style="height: 100%; width: 100%;" [tipoBandeja]="'salida'"></app-ficha-tramite>
+    </mat-grid-tile>
+</mat-grid-list> -->
+
+<div class="container">
+    <p *ngIf="Tramites_Emitidos.length<=0" class="fs-1" style="margin:  10%; text-align: center;">No se ha enviado ningun tramite.</p>
+    <cdk-accordion class="example-accordion">
+        <cdk-accordion-item *ngFor="let tramite of Tramites_Emitidos; let index = index;" #accordionItem="cdkAccordionItem" class="example-accordion-item" role="button" tabindex="0" [attr.id]="'accordion-header-' + index" [attr.aria-expanded]="accordionItem.expanded"
+            [attr.aria-controls]="'accordion-body-' + index">
+            <div class="example-accordion-item-header" (click)="accordionItem.toggle()">
+                <blockquote class="blockquote mb-0">
+                    <p style="font-size: medium; margin-bottom: 10px;">
+                        {{ tramite.titulo | uppercase}} / {{tramite.alterno}}
+
+                    </p>
+                    <footer class="blockquote-footer" style="margin-top: 5px;"><cite title="Source Title"><strong>Enviado a: </strong>  <mat-icon style="vertical-align: middle;">account_circle</mat-icon>{{tramite.Nombre}} {{tramite.Apellido_P}} {{tramite.Apellido_M}} <span>({{tramite.NombreCargo}})</span> </cite></footer>
+                </blockquote>
+                <span class="example-accordion-item-description" style="font-size: 20px;">
+                    <span class="badge bg-danger" *ngIf="tramite.enviado==false">Enviado</span>
+                <span class="badge bg-success" *ngIf="tramite.enviado==true">Recibido</span>
+                </span>
+            </div>
+            <div class="example-accordion-item-body" role="region" [style.display]="accordionItem.expanded ? '' : 'none'" [attr.id]="'accordion-body-' + index" [attr.aria-labelledby]="'accordion-header-' + index">
+                <div class="card border-dark mb-3" style="max-width: 100%;">
+                    <div class="card-header"><strong>Tramite: </strong> {{ tramite.titulo}} / {{tramite.alterno}}</div>
+                    <div class="card-body text-dark">
+                        <h5 class="card-title"><strong>Detalle:</strong> {{tramite.detalle}}</h5>
+                        <p class="card-text">Fecha de envio: {{tramite.fecha_envio | date:'medium'}} </p>
+                        <p class="card-text">Fecha de recepcion: {{tramite.fecha_recibido | date:'medium'}} </p>
+                        <p>Cantidad de hojas: {{tramite.cantidad}}</p>
+                    </div>
+                </div>
+            </div>
+
+        </cdk-accordion-item>
+    </cdk-accordion>
+
+</div>

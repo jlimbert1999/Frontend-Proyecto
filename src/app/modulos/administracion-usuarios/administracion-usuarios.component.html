@@ -1,44 +1,56 @@
 <app-navegacion></app-navegacion>
+
 <mat-toolbar>
     <button mat-icon-button class="example-icon" (click)="drawer.toggle()" aria-label="Example icon-button with menu icon">
         <mat-icon>menu</mat-icon>
     </button>
-    <span>USUARIOS</span>
+    <span style="font-size: 15px;">USUARIOS: </span>
     <span class="example-spacer"></span>
 
-    <mat-form-field appearance="legacy">
-        <input matInput #input (keyup)="aplicarFiltro($event)" placeholder="Buscar">
-        <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-
-    <button [matMenuTriggerFor]="menu" mat-icon-button class="example-icon">
-        <mat-icon>menu</mat-icon>
+    <button [matMenuTriggerFor]="menu" mat-icon-button class="example-icon" matTooltip="Mas opciones">
+        <mat-icon>apps</mat-icon>
       </button>
     <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="agregar_Funcionario()">
               <mat-icon>add_circle</mat-icon>
-              Agregar institucion
+              Agregar funcionario
         </button>
-        <button mat-menu-item *ngIf="TipoTabla!=''" (click)="verHabilitados=!verHabilitados;ver_Habilitados()">
-            <mat-icon>add_circle</mat-icon>
-            {{tituloOpcionVista}}
-      </button>
+        <button mat-menu-item *ngIf="TipoTabla!=''" (click)="ver_Habilitados()">
+            <mat-icon>no_accounts</mat-icon>
+            Ver {{(verHabilitados ? "No Habilitados":"Habilitados")}}
+        </button>
     </mat-menu>
 
 </mat-toolbar>
-<mat-drawer-container class="example-container">
-    <mat-drawer #drawer mode="side">
-        <mat-list role="list">
-            <a mat-list-item (click)="Cargar_tablaCuentas()">cargar cuentas</a>
-            <a mat-list-item (click)="Cargar_tablaFuncionarios()">cargar funcioanrios</a>
-        </mat-list>
-    </mat-drawer>
-    <mat-drawer-content>
+
+
+<mat-sidenav-container class="example-container">
+    <mat-sidenav #drawer mode="over" class="panel">
+        <mat-nav-list class="nav-list">
+            <div class="nav-item">
+                <a class="nav-link" mat-list-item (click)="Cargar_tablaFuncionarios()">
+                    <mat-icon class="nav-icon">people</mat-icon>
+                    Funcionarios
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" mat-list-item (click)="Cargar_tablaCuentas()">
+                    <mat-icon class="nav-icon">assignment_ind</mat-icon>
+                    Cuentas
+                </a>
+            </div>
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
         <div class="container">
-            <app-tabla *ngIf="mostrarTabla" (llamarEditar)="actualizarUsuario($event)" (llamarEliminar)="eliminarUsuario($event)" (llamarVerDetalles)="obtenerDetallesFuncionario($event)" [palabraFiltro]="input.value" [data]="dataSource" [displayedColumns]="displayedColumns"
-                [TiposOpciones]="OpcionesTabla" (llamarFinalizar)="FinalizarCargo($event)"></app-tabla>
+            <mat-form-field appearance="standard">
+                <mat-label>Buscar usuario</mat-label>
+                <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ingrese un caracter" #input>
+            </mat-form-field>
+            <app-tabla *ngIf="mostrarTabla" (llamarEditar)="editar_Funcionario($event)" (llamarEliminar)="eliminarUsuario($event)" (llamarVerDetalles)="obtenerDetallesFuncionario($event)" [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla"
+                (llamarFinalizar)="FinalizarCargo($event)"></app-tabla>
 
         </div>
 
-    </mat-drawer-content>
-</mat-drawer-container>
+    </mat-sidenav-content>
+</mat-sidenav-container>
