@@ -1,107 +1,58 @@
-<!-- <mat-grid-list [cols]="breakpoint" [rowHeight]="rowHeight" (window:resize)="onResize($event)">
-    <mat-grid-tile role="list" class="lista">
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-            </div>
-        </nav>
+<div class="row g-0">
+    <div class="col-md-6 g-0">
+        <div class="leftside">
+            <p>
+                <mat-toolbar color="primary">
+                    <ng-container *ngIf="modo_busqueda==false">
+                        <span>Total: {{Tramites_Recibidos.length}}</span>
+                        <span class="example-spacer"></span>
+                        <button (click)="recargar()" matTooltip="Recargar" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                            <mat-icon>refresh</mat-icon>
+                        </button>
+                        <button (click)="activar_busqueda()" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                            <mat-icon>search</mat-icon>
+                        </button>
+                    </ng-container>
 
-        <div>
-            <mat-list>
-                <mat-list-item *ngFor="let tramite of listadoTramites" (click)="ver_fichaTramite(tramite)">
-                    <mat-icon mat-list-icon>description</mat-icon>
-                    <h3 mat-line>Tramite: {{ tramite.alterno }} </h3>
-                    <p mat-line>
-                        <span>Detalle: {{ tramite.detalle }} </span>
+
+
+                    <mat-form-field *ngIf="modo_busqueda==true" floatLabel="never" style="width: 100%;">
+                        <mat-label>Buscar</mat-label>
+                        <input matInput type="text" #txt_busqueda (keyup)="applyFilter($event)">
+                        <button matSuffix mat-icon-button aria-label="Clear" (click)="txt_busqueda.value=''; desactivar_busqueda()">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </mat-toolbar>
+            </p>
+            <mat-selection-list #shoes [multiple]="false">
+                <mat-list-option *ngFor="let mail of Tramites_Recibidos; let i=index" [value]="mail" (click)="ver_fichaTramite(mail, i)">
+                    <img matListAvatar src="../../../../assets/img//user-mail.png">
+                    <h1 matLine>
+                        <span>{{mail.Nombre}}</span>
+                        <span *ngIf="mail.Recibido!=true" style="margin-left: 10px;" class="badge bg-danger">Nuevo</span>
+                        <!-- <span style="font-size: 10px;"> ({{mail.NombreCargo}}) </span> -->
+                        <span style="font-size: 12px; color: #999; position:absolute; right:20px;">{{mail.Fecha_Envio|date}}</span>
+                    </h1>
+                    <p matLine>
+                        <span class="fw-bold">Tramite: </span>
+                        <span style="color: cornflowerblue">{{mail.Titulo}} - {{mail.Alterno}} </span>
                     </p>
-                    <button mat-icon-button>
-                      <mat-icon style="color: green;" class="mat-24" *ngIf="tramite.recibido==1">check</mat-icon>
-                      <mat-icon style="color: red;" class="mat-24" *ngIf="tramite.recibido==0">help_outline</mat-icon>
-                    </button>
-                </mat-list-item>
-            </mat-list>
-        </div>
-    </mat-grid-tile>
+                    <p matLine>
+                        Mensaje:
+                        <span class="text-muted"> {{mail.Mensaje}} </span>
+                    </p>
+                    <mat-divider></mat-divider>
+                </mat-list-option>
+            </mat-selection-list>
 
-    <mat-grid-tile [colspan]="colSpawn">
-        <mat-grid-tile-header>
-            Visualizar ficha
-        </mat-grid-tile-header>
-        <app-ficha-tramite *ngIf="datosFicha" [datosFicha]="datosFicha" style="height: 100%; width: 100%;" [tipoBandeja]="'entrada'"></app-ficha-tramite>
-    </mat-grid-tile>
-</mat-grid-list> -->
-
-<!-- <div class="container"> -->
-<div class="row contenido">
-    <div class="col-sm">
-        <div class="row">
-            <!-- <nav class="navbar navbar-dark bg-dark">
-                <div class="container-fluid">
-                    <form class="d-flex">
-                        <input (keyup)="aplicarFiltro($event)" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
-                </div>
-            </nav> -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Navbar</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                  </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Link</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Dropdown
-                        </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="#">Action</a></li>
-                                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                </ul>
-                            </li>
-
-                        </ul>
-                        <form class="d-flex">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-outline-success" type="submit" #txt (click)="buscar(txt.value)">Search</button>
-                        </form>
-                    </div>
-                </div>
-            </nav>
-        </div>
-        <div class="row lista-recibidos">
-            <div class="inbox_chat">
-                <p *ngIf="Tramites_Recibidos.length<=0" style="text-align: center;" class="fs-4">Ningun tramite recibido.</p>
-                <div class="chat_list" *ngFor="let mail of Tramites_Recibidos; let pos" (click)="ver_fichaTramite(mail, pos)" [ngClass]="{'active_chat':  Mail_Seleccionado==pos}">
-                    <div class="chat_people">
-                        <div class="chat_img"> <img src="../../../../assets/img/user-mail.png" alt="sunil"> </div>
-                        <div class="chat_ib">
-                            <h5>{{mail.Nombre}} <small style="font-size: 12px; font-style: oblique;">({{mail.NombreCargo}})</small><span class="chat_date" [ngClass]="{'color_alert': mail.Recibido==false}">{{mail.Fecha_Envio|date}}</span></h5>
-                            <p>Tramite:<em style="color:royalblue ;"> {{mail.Titulo}} - {{mail.Alterno}} </em> <span *ngIf="mail.Recibido==false" class="badge rounded-pill bg-danger">Nuevo</span> </p>
-                            <p><strong>Detalle:</strong> {{mail.Mensaje}}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-    <div class="col-sm panel-ficha">
-        <p *ngIf="datosFicha==null" style="margin-top: 40%; text-align: center;" class="fs-2">Seleccione un tramite.</p>
-        <app-ficha-tramite *ngIf="datosFicha" [DatosEnvio]="datosFicha" style="height: 100%; width: 100%;" [tipoBandeja]="'entrada'"></app-ficha-tramite>
+    <div class="col-md-6 g-0">
+        <div class="rightside">
+            <p *ngIf="datosFicha==null" style="margin-top: 40%; text-align: center;" class="fs-2">Seleccione un tramite.</p>
+            <app-ficha-tramite *ngIf="datosFicha" [DatosEnvio]="datosFicha" style="height: 100%; width: 100%;" [tipoBandeja]="'entrada'" (Actualizar_listaRecibidos)="actualizar_lista_recibidos($event)"></app-ficha-tramite>
+
+        </div>
     </div>
 </div>
-<!-- </div> -->

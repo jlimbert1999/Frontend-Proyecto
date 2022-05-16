@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegistroTramiteService } from 'src/app/servicios/servicios-m3/registro-tramite.service';
 import decode from 'jwt-decode'
@@ -10,6 +10,9 @@ import { DialogRemisionComponent } from 'src/app/componentes/dialogs/dialogs-m3/
 import { TramiteModel } from 'src/app/modelos/registro-tramites/resistro-tramites.model';
 import { SolicitanteModel } from 'src/app/modelos/registro-tramites/solicitante.model';
 import { RepresentanteModel } from 'src/app/modelos/registro-tramites/solicitante.model';
+import { BandejaService } from 'src/app/servicios/servicios-m4/bandeja.service';
+import { Workflow } from 'src/app/modelos/seguimiento-tramites/workflow.model';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-ficha-tramite',
@@ -19,6 +22,7 @@ import { RepresentanteModel } from 'src/app/modelos/registro-tramites/solicitant
 export class FichaTramiteComponent implements OnInit, OnChanges {
   @Input() DatosEnvio: any  //contiene info del emisor y detalles de tramite
   @Input() tipoBandeja: any
+  @Output() Actualizar_listaRecibidos: EventEmitter<object>;
   Info_cuenta_Actual = this.decodificarToken()
   Tramite: TramiteModel
   Solicitante: SolicitanteModel
@@ -39,6 +43,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
   datos_Funcionario: any
   estadosTramite: string[] = ['En revision', 'Devuelto', 'Observado', 'Concluido', 'Anulado']
 
+  datosWorkflow: Workflow
   //ver si se abre desde bandeja o desde admin tramite
   //2 tipos de vista Ficha_envio, Ficha_detalle
   Tipo_Vista_Ficha: string
@@ -51,19 +56,23 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     private activateRoute: ActivatedRoute,
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private bandejaService: BandejaService,
+    private _location: Location
 
 
   ) {
+    this.Actualizar_listaRecibidos = new EventEmitter();
 
   }
 
   ngOnInit(): void {
     //ficha puede ser abierta desde badeja o desde registro de tramites
-    if (Object.keys(this.DatosEnvio).length == 0) {
+    if (!this.DatosEnvio) {
       this.activateRoute.params.subscribe(params => {
         this.DatosEnvio = {
-          id_tramite: params['id']
+          id_tramite: params['id'],
+          Recibido: false
         }
         this.Tipo_Vista_Ficha = 'Ficha_detalles'
         this.obtener_InfoFicha(this.DatosEnvio.id_tramite)
@@ -77,6 +86,14 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     this.obtener_InfoFicha(this.DatosEnvio.id_tramite)
   }
 
+  obtener_InfoFicha(id_tramite: number) {
+    this.obtener_Datos_Tramite(id_tramite)
+    this.obtener_Datos_Solicitante(id_tramite)
+    this.obtener_Datos_Representante(id_tramite)
+    this.obtener_Datos_Requerimientos(id_tramite)
+    this.obtener_Observaciones(id_tramite)
+  }
+
 
 
   // obtener datos completos del tramite
@@ -84,7 +101,6 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     this.tramiteService.getFicha_InfoTramite(id_tramite).subscribe((resp: any) => {
       if (resp.ok) {
         this.Tramite = resp.Tramite[0]
-        console.log(resp.Tramite[0]);
       }
     })
   }
@@ -108,20 +124,12 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     this.tramiteService.getFicha_InfoRequerimientos(id_tramite).subscribe((resp: any) => {
       if (resp.ok) {
         this.Requerimientos_presentados = resp.Requerimientos
-        console.log(this.Requerimientos_presentados);
 
       }
     })
   }
 
-  obtener_InfoFicha(id_tramite: number) {
-    this.obtener_Datos_Tramite(id_tramite)
-    this.obtener_Datos_Solicitante(id_tramite)
-    this.obtener_Datos_Representante(id_tramite)
-    this.obtener_Datos_Requerimientos(id_tramite)
-    this.obtener_Observaciones(id_tramite)
 
-  }
   aceptar_recepcion_tramite() {
     //NOTA: se debe enviar los ids emisor y receptor para que 
     // no marque todos los envios con el id_tramite a recibidos
@@ -152,6 +160,11 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
       if (resp.ok) {
         this.openSnackBar(resp.message, '')
         this.obtener_Observaciones(this.DatosEnvio.id_tramite)
+        if (this.Tramite.estado != "Observado") {
+          this.actualizar_estadoTramite('Observado')
+          this.Tramite.estado = "Observado"
+        }
+
       }
     })
   }
@@ -163,6 +176,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
       if (dataDialog) {
         this.datosObservacion.detalle = dataDialog
         this.registrar_Observacion()
+
       }
     });
   }
@@ -238,7 +252,10 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
 
   actualizar_estadoTramite(estado: string) {
     this.tramiteService.putTramite(this.DatosEnvio.id_tramite, { estado }).subscribe((resp: any) => {
-      console.log(resp);
+      if (resp.ok) {
+        this.Tramite.estado = estado
+        console.log('se uso la actualizacion de estado tramite');
+      }
     })
   }
 
@@ -259,7 +276,8 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     let tramite = {
       id_tramite: this.DatosEnvio.id_tramite,
       Titulo: this.DatosEnvio.Titulo,
-      Alterno: this.DatosEnvio.Alterno
+      Alterno: this.DatosEnvio.Alterno,
+      Estado: this.Tramite.estado
     }
     // //enviar id para que las bandeja obtengan datos desde la trabla workflow
 
@@ -269,12 +287,96 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
       panelClass: ['blue-snackbar'],
       data: tramite
     });
+    snackBarRef.onAction().subscribe(() => {
+      this.Actualizar_listaRecibidos.emit(this.DatosEnvio.id_tramite)
+    })
 
   }
 
-  abrir_Workflow(id_tramite: number) {
+  abrir_Workflow() {
+    let id_tramite = this.DatosEnvio.id_tramite
     this.router.navigate(['Workflow', id_tramite])
   }
+  rechazar_tramite() {
+
+    //enviar datos para eliminar el registro unico con id_tramite, id_cuentaEmisor, id_cuentaRecpetor
+    let datos_para_eliminar = {
+      id_tramite: this.DatosEnvio.id_tramite,
+      id_cuentaEmisor: this.DatosEnvio.id_cuenta,
+      id_cuentaReceptor: this.Info_cuenta_Actual.id_cuenta
+    }
+    this.bandejaService.rechazar_tramite(datos_para_eliminar).subscribe((resp: any) => {
+      if (resp.ok) {
+        this.Actualizar_listaRecibidos.emit(this.DatosEnvio.id_tramite)
+        this._snackBar.open(resp.message, "", {
+          duration: 3000
+        });
+      }
+    })
+  }
+  aceptar_tramite() {
+    let fecha = this.getFecha() //para igualar en bandeja entrada y salida
+
+    //se debe enviar id_tramite, id_cuentaEmisor, id_cuentaReceptor, data_update_bandejaEntrada, data_update_badejaSalida
+    let datos_para_aceptar = {
+      id_tramite: this.DatosEnvio.id_tramite,
+      id_cuentaEmisor: this.DatosEnvio.id_cuenta,
+      id_cuentaReceptor: this.Info_cuenta_Actual.id_cuenta,
+      data_update_bandejaEntrada: {
+        fecha_recibido: fecha,
+        aceptado: true
+      },
+      data_update_badejaSalida: {
+        fecha_recibido: fecha,
+        aceptado: true
+      }
+    }
+    this.bandejaService.aceptar_tramite(datos_para_aceptar).subscribe((resp: any) => {
+      if (resp.ok) {
+        this.DatosEnvio.Recibido = true
+        this.registrar_Workflow(fecha)
+        this._snackBar.open(resp.message, "", {
+          duration: 3000
+        });
+      }
+    },
+      error => console.log('oops', error)
+    )
+  }
+
+
+  registrar_Workflow(Fecha: number) {
+    this.datosWorkflow = {
+      id_cuentaEmisor: this.DatosEnvio.id_cuenta,
+      id_cuentaReceptor: this.Info_cuenta_Actual.id_cuenta,
+      id_tramite: this.DatosEnvio.id_tramite,
+      fecha_envio: this.DatosEnvio.Fecha_Envio,
+      fecha_recibido: Fecha,
+      detalle: this.DatosEnvio.Mensaje,
+      enviado: true,
+      recibido: true,
+    }
+    if (this.datosWorkflow.id_cuentaEmisor != null && this.datosWorkflow.id_cuentaEmisor != null) {
+      this.tramiteService.addtFlujoTrabajo(this.datosWorkflow).subscribe((resp: any) => {
+        if (resp.ok) {
+          this._snackBar.open('Tramite enviado!', '', {
+            duration: 3000,
+            horizontalPosition: 'center'
+          });
+        }
+      })
+    }
+    else {
+      alert('Id user no encontrado, recargue pagina')
+    }
+  }
+
+  regresar() {
+    //metodo para volver atras cuando de abre desde ver Inforacion ficha tramite
+    this._location.back();
+  }
+
+
 
 
 

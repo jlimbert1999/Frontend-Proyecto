@@ -20,12 +20,11 @@ export class RoleGuard implements CanActivate {
       const token = localStorage.getItem('token')
       const {Tipo}:any= decode(token!)
       if(Tipo!==expectedRole || !this.loginService.estaAuntentificado()){
-        console.log('Usted no es', Tipo);
+        console.log('Usted no es', expectedRole);
+        this.router.navigate(['Tramites'])
         return false  
       }
     }
-  
-
     return true
   }
 

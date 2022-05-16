@@ -3,3 +3,7 @@
     overflow-y: scroll;
     width: 100%;
 }
+
+mat-form-field {
+    width: 30%;
+}

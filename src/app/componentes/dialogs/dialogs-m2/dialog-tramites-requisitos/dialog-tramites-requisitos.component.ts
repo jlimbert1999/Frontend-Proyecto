@@ -53,13 +53,13 @@ export class DialogTramitesRequisitosComponent implements OnInit {
   generar_TituloDialog() {
     if (Object.keys(this.DatosTramite).length == 0) {
       this.tituloDialog = "Registro tipo de tramite"
-      this.displayedColumns = ['descripcion', 'tipoDoc', 'opciones'];
+      this.displayedColumns = ['descripcion',  'opciones'];
       this.DatosTramite.NuevosRequitos = true
       //si es nuevo el boton de eliminar no se mostrara
     }
     else {
       this.tituloDialog = "Edicion tipo de tramite"
-      this.displayedColumns = ['descripcion', 'tipoDoc', 'Fecha_creacion', 'opciones'];  //, 'habilitado'
+      this.displayedColumns = ['descripcion','Fecha_creacion', 'opciones'];  //, 'habilitado'
       this.Tipo_Tramite = this.DatosTramite
       this.obtener_Requerimientos_habilitados_Tramite(this.DatosTramite.id_TipoTramite)
     }

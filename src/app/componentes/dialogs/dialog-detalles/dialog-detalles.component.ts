@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UsuariosService } from 'src/app/servicios/servicios-m1/usuarios.service';
-import {MatTableDataSource} from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
 import { MatSort, Sort } from '@angular/material/sort';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
@@ -12,8 +12,8 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 })
 export class DialogDetallesComponent implements OnInit {
   displayedColumns: string[] = ['Fecha', 'Detalle', 'Cargo'];
-  dataSource=new MatTableDataSource();
-  Nombre_Funcionario:any
+  dataSource = new MatTableDataSource();
+  detalles_Funcionario: any
 
   constructor(
     public dialogRef: MatDialogRef<DialogDetallesComponent>,
@@ -22,19 +22,22 @@ export class DialogDetallesComponent implements OnInit {
     private _liveAnnouncer: LiveAnnouncer
   ) { }
   @ViewChild(MatSort) sort!: MatSort;
-  
+
   ngOnInit(): void {
     // data=contiene el id del funcionario recibido desde admin usuarios
     this.usuariosService.getDetallesUsuarios(this.data).subscribe((resp: any) => {
       if (resp.ok) {
         if (resp.Detalles.length > 0) {
-          this.Nombre_Funcionario=`${resp.Detalles[0].Nombre} ${resp.Detalles[0].Apellido_P} ${resp.Detalles[0].Apellido_M}`
-          this.dataSource.data=resp.Detalles
+          this.detalles_Funcionario = {
+            Nombre: `${resp.Detalles[0].Nombre} ${resp.Detalles[0].Apellido_P} ${resp.Detalles[0].Apellido_M}`,
+            Cargo: resp.Detalles[0].NombreCar
+          }
+          this.dataSource.data = resp.Detalles
         }
       }
     })
   }
-  
+
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;

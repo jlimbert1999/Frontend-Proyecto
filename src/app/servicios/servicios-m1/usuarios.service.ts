@@ -14,7 +14,7 @@ export class UsuariosService {
     private jwtHelper: JwtHelperService
   ) { }
 
-  
+
 
 
   //API USUARIOS
@@ -27,22 +27,26 @@ export class UsuariosService {
   addUsuarios(datosUser: any) {
     return this.http.post(`${this.URL}/usuarios`, datosUser)
   }
+  // deleteUsuarios(id: number) {
+  //   return this.http.delete(`${this.URL}/usuarios/${id}`)
+  // }
   deleteUsuarios(id: number) {
-    return this.http.delete(`${this.URL}/usuarios/${id}`)
+    return this.http.put(`${this.URL}/usuarios/${id}`, { Activo: false })
   }
+
   putUsuarios(id: number, datos: any) {
     return this.http.put(`${this.URL}/usuarios/${id}`, datos)
   }
-  getUsuario(id:number){
+  getUsuario(id: number) {
     return this.http.get(`${this.URL}/usuarios/${id}`)
   }
-  getUsuariosTrabajado(ids:any){
+  getUsuariosTrabajado(ids: any) {
     return this.http.post(`${this.URL}/usuarios-trabajando`, ids)
   }
-  addDetallesUsuarios(datos:any){
+  addDetallesUsuarios(datos: any) {
     return this.http.post(`${this.URL}/usuarios-detalles`, datos)
   }
-  getDetallesUsuarios(id:number){
+  getDetallesUsuarios(id: number) {
     return this.http.get(`${this.URL}/usuarios-detalles/${id}`)
   }
 
@@ -50,29 +54,29 @@ export class UsuariosService {
   addCuenta(datos: any) {
     return this.http.post(`${this.URL}/cuentas`, datos)
   }
-  putCuenta(id:number, datos:any){
+  putCuenta(id: number, datos: any) {
     return this.http.put(`${this.URL}/cuentas/${id}`, datos)
   }
 
-  getCuentasAsignadas(){
+  getCuentasAsignadas() {
     return this.http.get(`${this.URL}/cuentas-asignadas`)
   }
-  getCuentasNoAsignadas(){
+  getCuentasNoAsignadas() {
     return this.http.get(`${this.URL}/cuentas-no_asignadas`)
   }
 
-  asignarCuenta(datos:any, id:number){
+  asignarCuenta(datos: any, id: number) {
     return this.http.put(`${this.URL}/cuentas-asignar/${id}`, datos)
   }
-  verificarSiTieneCuenta(id:number){
+  verificarSiTieneCuenta(id: number) {
     return this.http.get(`${this.URL}/cuentas-verificar/${id}`)
   }
-  finalizarCuenta(id:number){
+  finalizarCuenta(id: number) {
     return this.http.put(`${this.URL}/cuentas-finalizar/${id}`, null)
   }
 
   //obtener detalles compeltos de la cuenta
-  getDetallesCuenta(id:number){
+  getDetallesCuenta(id: number) {
     return this.http.get(`${this.URL}/detalles-cuenta/${id}`)
   }
 
@@ -83,15 +87,15 @@ export class UsuariosService {
   getTrabajos() {
     return this.http.get(`${this.URL}/cuentas/trabajos`)
   }
-  getTrabajo(id:number){
+  getTrabajo(id: number) {
     return this.http.get(`${this.URL}/cuentas/trabajos/${id}`)
   }
 
   //Permisos
-  getPermisos(id_cuenta:number){
+  getPermisos(id_cuenta: number) {
     return this.http.get(`${this.URL}/permisos/${id_cuenta}`)
   }
-  postPermisos(data:any){
+  postPermisos(data: any) {
     return this.http.post(`${this.URL}/permiso`, data)
   }
 }

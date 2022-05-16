@@ -61,13 +61,7 @@ export class RegistroTramiteService {
     return this.http.post(`${this.URL}/workflow`, datos)
   }
 
-  //metodo para tener datos en la lista de bandeja de entrada
-  getListaRecibida(id_cuentaActual:number){
-    return this.http.get(`${this.URL}/bandeja-recibida/${id_cuentaActual}`)
-  }
-  getListaEmitida(id_cuentaActual:number){
-    return this.http.get(`${this.URL}/bandeja-emitida/${id_cuentaActual}`)
-  }
+ 
 
   //Obtener datos ficha
   getFicha_InfoTramite(id_tramite:number){

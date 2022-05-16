@@ -16,8 +16,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class RegistroTramitesComponent implements OnInit {
   TitleTolbar: string = "";
   nroRecibidos: number = 0
-
-
+  DatosSesion: any
+  permitir_registro_tramites: boolean = false
+  tipo_vista_tramites: boolean = false
+  eventsSubject: Subject<boolean> = new Subject<boolean>()
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -25,17 +27,35 @@ export class RegistroTramitesComponent implements OnInit {
     private snackBar: MatSnackBar
   ) { }
   ngOnInit(): void {
+
     this.escuchar_TramitesRecibidos()
-    
+    this.cargar_Opciones_Permitidas()
+
   }
-  escuchar_TramitesRecibidos(){
+
+  escuchar_TramitesRecibidos() {
     this.socketService.Escuchar('recibirTramite').subscribe((resp: any) => {
       this.nroRecibidos = this.nroRecibidos + 1
       this.snackBar.open('Nuevo tramite recibido', '', {
         duration: 3000
       });
     })
+
   }
+
+  cargar_Opciones_Permitidas() {
+    this.DatosSesion = this.decodificarToken()
+    if (this.DatosSesion.Tipo == 'USER1_ROLE') {
+      this.permitir_registro_tramites = true
+
+    }
+    else if (this.DatosSesion.Tipo == 'USER2_ROLE') {
+      this.permitir_registro_tramites = false
+    }
+
+  }
+
+
 
 
 
@@ -65,6 +85,10 @@ export class RegistroTramitesComponent implements OnInit {
     // doc.text(txtFecha, 100, 40);
     doc.save("ficha.pdf");
   }
+  decodificarToken(): any {
+    let token = localStorage.getItem('token')!
+    return decode(token)
+  }
 
 
   //TRAMITES SOLICITANTE
@@ -76,10 +100,18 @@ export class RegistroTramitesComponent implements OnInit {
   Abrir_BandejaEntrada() {
     this.TitleTolbar = "Bandenja de entrada"
     this.router.navigate(['bandeja-entrada'], { relativeTo: this.activatedRoute })
-    this.nroRecibidos=0
+    this.nroRecibidos = 0
   }
   Abrir_BandejaSalida() {
     this.TitleTolbar = "Bandenja de salida"
     this.router.navigate(['bandeja-salida'], { relativeTo: this.activatedRoute })
   }
+
+  evento_cambiar_vista() {
+    this.tipo_vista_tramites=!this.tipo_vista_tramites
+    //ver enviados=true
+    //ver no enviados=false
+    this.eventsSubject.next(this.tipo_vista_tramites);
+  }
+
 }

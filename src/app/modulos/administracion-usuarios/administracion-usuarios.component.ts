@@ -36,10 +36,10 @@ export class AdministracionUsuariosComponent implements OnInit {
   datos_funcionario: UsuarioModel
   datos_cuenta: CuentaModel
   dataFormRegistro = {
-    datosFuncionario:{}, //datos_funcionario
+    datosFuncionario: {}, //datos_funcionario
     datosCuenta: {},  //datos_cuenta
-    Tipo_Registro: '',   
-    Tipo:'' // tipo de permisos que tendra, admin, funcionario
+    Tipo_Registro: '',
+    Tipo: '' // tipo de permisos que tendra, admin, funcionario
   }
   datos_Trabajo: TrabajoModel;
 
@@ -55,7 +55,7 @@ export class AdministracionUsuariosComponent implements OnInit {
   msg = new Mensajes()
   CuentasNoAsignadas: any[] = []
   Permisos: any[] = []
-
+  panel_titulo: string = ""
 
 
   constructor(
@@ -75,6 +75,7 @@ export class AdministracionUsuariosComponent implements OnInit {
     this.usuariosService.getUsuarios_Habilitados().subscribe((res: any) => {
       if (res.ok) {
         if (res.usuarios.length > 0) {
+          this.OpcionesTabla=['Editar', 'VerDetalles', 'Eliminar']
           this.Funcionarios = res.usuarios
           this.dataSource.data = this.Funcionarios
         }
@@ -87,6 +88,7 @@ export class AdministracionUsuariosComponent implements OnInit {
       if (res.ok) {
         if (res.usuarios.length > 0) {
           this.dataSource.data = res.usuarios
+          this.OpcionesTabla=['Editar', 'VerDetalles']
         }
         else {
           this.msg.mostrarMensaje('info', 'No hay usuarios no habilitados')
@@ -108,9 +110,9 @@ export class AdministracionUsuariosComponent implements OnInit {
           this.dataSource.data = this.Cuentas;
 
         }
-        else{
+        else {
           this.msg.mostrarMensaje('info', 'No hay cuentas asignadas')
-          this.dataSource.data=[]
+          this.dataSource.data = []
         }
 
       }
@@ -136,7 +138,7 @@ export class AdministracionUsuariosComponent implements OnInit {
     this.dataFormRegistro.datosFuncionario = { Activo: true } //vaciar
     this.dataFormRegistro.datosCuenta = {}
     this.dataFormRegistro.Tipo_Registro = '';
-    this.dataFormRegistro.Tipo=''
+    this.dataFormRegistro.Tipo = ''
 
     const dialogRef = this.dialog.open(DialogUsuariosComponent, {
       data: this.dataFormRegistro
@@ -189,12 +191,12 @@ export class AdministracionUsuariosComponent implements OnInit {
                       this.obtener_Funcionarios_Habilitados()
                     }
                   })
-                  let permiso={
-                    id_cuenta:resp1.cuenta.insertId,
-                    tipo:datosFormulario.Tipo[0]
+                  let permiso = {
+                    id_cuenta: resp1.cuenta.insertId,
+                    tipo: datosFormulario.Tipo[0]
                   }
-                  this.usuariosService.postPermisos(permiso).subscribe((resp:any)=>{
-                    if(resp.ok==false){
+                  this.usuariosService.postPermisos(permiso).subscribe((resp: any) => {
+                    if (resp.ok == false) {
                       this.msg.mostrarMensaje('error', 'Error al crear los permisos')
                     }
                   })
@@ -236,18 +238,18 @@ export class AdministracionUsuariosComponent implements OnInit {
 
   eliminarUsuario(datos: any) {
 
-    this.swalWithBootstrapButtons.fire({
-      title: `Eliminar al funcionario?`,
-      text: `Se eliminara al funcionario:  ${datos.Nombre} ${datos.Apellido_P} ${datos.Apellido_M}`,
+    Swal.fire({
+      title: `Eliminar funcionario?`,
+      text: `Se desabilitara al funcionario ${datos.Nombre} ${datos.Apellido_P} ${datos.Apellido_M}`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Si, eliminar!',
-      cancelButtonText: 'No, cancelar!',
-      reverseButtons: true
+      cancelButtonText:'Cancelar',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Aceptar'
     }).then((result) => {
       if (result.isConfirmed) {
 
-        /////////Metdodo eliminar//////////
         let id = datos.id_funcionario
         this.usuariosService.deleteUsuarios(id).subscribe((resp: any) => {
           console.log(resp)
@@ -267,12 +269,20 @@ export class AdministracionUsuariosComponent implements OnInit {
             )
           }
         })
-        ////////////////////////////////////
+
       }
     })
+
+
   }
 
   editar_Funcionario(datos: any) {
+    if(datos.Activo=='1'){
+      datos.Activo=true
+    }
+    else if(datos.Activo=='0'){
+      datos.Activo=false
+    }
     let id_funcionario: number = datos.id_funcionario;
     const dialogRef = this.dialog.open(DialogUsuariosComponent, {
       data: { datosFuncionario: datos, datosCuenta: {} }
@@ -338,7 +348,7 @@ export class AdministracionUsuariosComponent implements OnInit {
             // crear obtjeto con datos de la actulizacion
             let cuentaAsignada: object = {
               id_funcionario: id_funcionario, //a que funcionario se dara la cuenta
-              login:datosFormulario.datosCuenta.login
+              login: datosFormulario.datosCuenta.login
             }
             this.usuariosService.asignarCuenta(cuentaAsignada, datosFormulario.datosCuenta.id_cuenta).subscribe((resp: any) => {
               let detallesTrabajoFuncionario = {
@@ -398,6 +408,7 @@ export class AdministracionUsuariosComponent implements OnInit {
   ver_Habilitados() {
     this.verHabilitados = !this.verHabilitados
     if (this.verHabilitados) {
+      this.OpcionesTabla=['Editar', 'VerDetalles', 'Eliminar']
       if (this.TipoTabla == "Funcionarios") {
         this.generar_titulosTabla_Funcionario()
         this.dataSource.data = this.Funcionarios
@@ -409,6 +420,7 @@ export class AdministracionUsuariosComponent implements OnInit {
 
     }
     else {
+     
       if (this.TipoTabla == "Funcionarios") {
         this.obtener_Funcionarios_NoHabilitados()
 

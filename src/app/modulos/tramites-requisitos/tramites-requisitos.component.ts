@@ -83,7 +83,7 @@ export class TramitesRequisitosComponent implements OnInit {
 
   agregar_TipoTramite() {
     const dialogRef = this.dialog.open(DialogTramitesRequisitosComponent, {
-      width: '50%',
+      // width: '50%',
       data: {} //no se endia datos
     })
     dialogRef.afterClosed().subscribe(dataDialog => {

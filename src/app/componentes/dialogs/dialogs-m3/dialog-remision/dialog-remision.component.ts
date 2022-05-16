@@ -10,9 +10,10 @@ import Swal from 'sweetalert2';
 import decode from 'jwt-decode'
 import { WorkflowServiceService } from 'src/app/servicios/servicios-m4/workflow-service.service';
 import { Mensajes } from 'src/app/componentes/mensaje/mensaje';
-import { Workflow } from 'src/app/modelos/seguimiento-tramites/workflow.model'
+import { Workflow, Bandeja_Entrada, Bandeja_Salida } from 'src/app/modelos/seguimiento-tramites/workflow.model'
 import { InstitucionModel } from 'src/app/modelos/administracion-usuarios/institucion.model';
-import { id } from '@swimlane/ngx-charts';
+import { BandejaService } from 'src/app/servicios/servicios-m4/bandeja.service';
+import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-dialog-remision',
   templateUrl: './dialog-remision.component.html',
@@ -36,22 +37,26 @@ export class DialogRemisionComponent implements OnInit {
   Fecha: number  //para tener solo una fecha exata de envio
   instituciones: InstitucionModel[] = []
   dependencias: any[] = []
+  Bandeja_entrada: Bandeja_Entrada
+  Bandeja_salida: Bandeja_Salida
 
   enviar_tiempo_real: boolean = false //verificar si se envia a user activo
   constructor(
     private snackBarRef: MatSnackBarRef<DialogRemisionComponent>,
     private _snackBar: MatSnackBar,
     private tramiteService: RegistroTramiteService,
-    @Inject(MAT_SNACK_BAR_DATA) public data: any,
+    @Inject(MAT_SNACK_BAR_DATA) public data: {id_tramite:number, Titulo:string, Alterno:string, Mensaje:string, Estado:string},
     private socketService: SocketService,
     private instService: InstitucionService,
     private depService: DependenciaService,
     private snackBar: MatSnackBar,
-    private workflow: WorkflowServiceService
+    private workflow: WorkflowServiceService,
+    private bandejasService: BandejaService
   ) {
   }
 
   ngOnInit(): void {
+    //data recibe id_tramite, titulo, alterno y un mensaje vacio
     this.obtener_users_conectados()
     this.obtener_Instituciones()
   }
@@ -69,12 +74,12 @@ export class DialogRemisionComponent implements OnInit {
       if (resp.ok) {
         this.dependencias = resp.Dependencias
       }
-
     })
   }
 
   obtener_users_conectados() {
     this.socketService.Emitir('getUsers_Activos', null).subscribe((resp: any) => {
+      console.log("usuarios activos", resp);
       this.usuarios_Conectados = resp.filter((user: any) => user.id_cuenta != this.Info_Cuenta_Actual.id_cuenta)
     })
   }
@@ -89,6 +94,30 @@ export class DialogRemisionComponent implements OnInit {
         this.usuarios_Desconectados = resp.Funcionarios
       }
     })
+  }
+
+  seleccionar_User(infoUser: any) {
+    this.Posicion_Ventana = 1
+    //buscar si id funcionario esta en lista de usuarios activos
+    const user_socket: any = this.usuarios_Conectados.filter(e => e.id_cuenta == infoUser.id_cuenta)
+    if (user_socket.length > 0) {
+      this.enviar_tiempo_real = true
+      this.Info_UserReceptor = {
+        Nombre: `${infoUser.Nombre} ${infoUser.Apellido_P} ${infoUser.Apellido_M}`,
+        NombreCargo: infoUser.NombreCar,
+        id_cuenta: infoUser.id_cuenta,
+        id: user_socket[0].id
+      }
+    }
+    else {
+      this.Info_UserReceptor = {
+        Nombre: `${infoUser.Nombre} ${infoUser.Apellido_P} ${infoUser.Apellido_M}`,
+        NombreCargo: infoUser.NombreCar,
+        id_cuenta: infoUser.id_cuenta,
+        id: 0
+      }
+    }
+
   }
   registrar_Workflow(Fecha: number) {
     this.datosWorkflow = {
@@ -106,16 +135,15 @@ export class DialogRemisionComponent implements OnInit {
         if (resp.ok) {
           this.snackBar.open('Tramite enviado!', '', {
             duration: 3000,
-            horizontalPosition:'center'
+            horizontalPosition: 'center'
           });
         }
       })
     }
-    else{
+    else {
       alert('Id user no encontrado, recargue pagina')
     }
   }
-
   armar_datos_Envio_UserActivo(Fecha: number) {
     const Data_Envio = {
       id_receptor: this.Info_UserReceptor.id, //id_socket
@@ -172,11 +200,50 @@ export class DialogRemisionComponent implements OnInit {
         if (this.enviar_tiempo_real) {
           this.socketService.Emitir('enviarTramite', this.armar_datos_Envio_UserActivo(this.Fecha)).subscribe()
         }
-        this.registrar_Workflow(this.Fecha)
-        this.dismiss()
+        //armar datos para registro
+        this.Bandeja_entrada = {
+          id_tramite: this.data.id_tramite,
+          id_cuentaEmisor: this.Info_Cuenta_Actual.id_cuenta,
+          id_cuentaReceptor: this.Info_UserReceptor.id_cuenta,
+          fecha_envio: this.Fecha,
+          fecha_recibido: 0,
+          detalle: this.data.Mensaje,
+          aceptado: false
+        }
+        this.Bandeja_salida = {
+          id_tramite: this.data.id_tramite,
+          id_cuentaEmisor: this.Info_Cuenta_Actual.id_cuenta,
+          id_cuentaReceptor: this.Info_UserReceptor.id_cuenta,
+          fecha_envio: this.Fecha,
+          fecha_recibido: 0,
+          detalle: this.data.Mensaje,
+          aceptado: false,
+          rechazado: false
+        }
+
+        // this.registrar_en_bandejaEntrada(this.Bandeja_entrada)
+        // this.registrar_en_bandejaSalida(this.Bandeja_salida)
+        // this.registrar_Workflow(this.Fecha)
+
+        forkJoin([this.bandejasService.add_bandejaEntrada(this.Bandeja_entrada), this.bandejasService.add_bandejaSalida(this.Bandeja_salida)]).subscribe((results: any) => {
+          if (results[0].ok && results[1].ok) {
+            this.snackBarRef.dismissWithAction();
+            if(this.data.Estado!='Observado' && this.data.Estado!="En revision" ){
+              this.actualizar_estadoTramite('En revision')
+            }
+            
+          }
+          else {
+            this.msg.mostrarMensaje('error', "No se puedo enviar el tramite")
+          }
+        })
+       
+
+
       }
     })
   }
+
 
   verifficar_Tramite_Enviado(id_tramite: number) {
     this.workflow.get_SiTramite_FueEnviado(id_tramite, this.Info_Cuenta_Actual.id_cuenta).subscribe((resp: any) => {
@@ -202,6 +269,7 @@ export class DialogRemisionComponent implements OnInit {
   }
   dismiss() {
     this.snackBarRef.dismiss();
+
   }
   decodificarToken(): any {
     let token: any = localStorage.getItem('token')
@@ -237,31 +305,36 @@ export class DialogRemisionComponent implements OnInit {
   //     id: 0
   //   }
   // }
-  seleccionar_User(infoUser: any) {
-    this.Posicion_Ventana = 1
-    const user_socket: any = this.usuarios_Conectados.filter(e => e.id_cuenta == infoUser.id_cuenta)
-    if (user_socket.length > 0) {
-      this.enviar_tiempo_real = true
-      this.Info_UserReceptor = {
-        Nombre: `${infoUser.Nombre} ${infoUser.Apellido_P} ${infoUser.Apellido_M}`,
-        NombreCargo: infoUser.NombreCar,
-        id_cuenta: infoUser.id_cuenta,
-        id: user_socket[0].id
-      }
-    }
-    else {
-      this.Info_UserReceptor = {
-        Nombre: `${infoUser.Nombre} ${infoUser.Apellido_P} ${infoUser.Apellido_M}`,
-        NombreCargo: infoUser.NombreCar,
-        id_cuenta: infoUser.id_cuenta,
-        id: 0
-      }
-    }
 
-  }
 
   Anterior_Paso() {  //regiresar a ventana de seleccion receptor
     this.Posicion_Ventana = 0
+  }
+
+  //metodos nuevos
+  registrar_en_bandejaSalida(datos: any) {
+    this.bandejasService.add_bandejaSalida(datos).subscribe((resp: any) => {
+      if (resp.ok) {
+        console.log('se agregago a la badenja salida correctamente');
+      }
+    })
+  }
+  registrar_en_bandejaEntrada(datos: any) {
+    this.bandejasService.add_bandejaEntrada(datos).subscribe((resp: any) => {
+      if (resp.ok) {
+        console.log('se agregago a la badenja entrada correctamente');
+      }
+    })
+  }
+
+  actualizar_estadoTramite(estado: string) {
+    this.tramiteService.putTramite(this.data.id_tramite, { estado }).subscribe((resp: any) => {
+      if (resp.ok) {
+        this.data.Estado = estado
+      }
+    })
+    
+    
   }
 
 

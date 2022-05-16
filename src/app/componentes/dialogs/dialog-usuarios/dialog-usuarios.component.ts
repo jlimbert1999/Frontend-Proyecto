@@ -49,9 +49,10 @@ export class DialogUsuariosComponent implements OnInit {
 
   Tipo_Permisos=[
     {value:'ADMIN_ROLE', viewValue:'administrador'},
-    {value:'USER1_ROLE',viewValue:'funcionario encargado de ventanilla' },
-    {value:'USER2_ROLE',viewValue:'funcionario' }
+    {value:'USER1_ROLE',viewValue:'Responsable de recepcion de tramite' },
+    {value:'USER2_ROLE',viewValue:'Responsable de evaluacion de tramites' }
   ]
+  mostrar_opcion_habilitar:boolean=false
 
 
 
@@ -73,9 +74,14 @@ export class DialogUsuariosComponent implements OnInit {
 
 
   ngOnInit(): void {
+    if(!this.data.datosFuncionario.Activo){
+      this.mostrar_opcion_habilitar=true
+    }
+    console.log();
   }
 
   generarTitulo() {
+
     // Si datos que vienen son vacios al abrir este dialog, es creacion de usarios
     if (Object.keys(this.data.datosFuncionario).length == 1) {
       this.tituloDialog = "Registro de funcionario";

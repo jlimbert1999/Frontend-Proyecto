@@ -237,7 +237,8 @@ export class AdmConfiguracionComponent implements OnInit {
           if (res.ok) {
             this.msg.mostrarMensaje('success', res.message)
           }
-          this.obtener_Instihabilitadas()
+          this.obtener_Dephabilitadas()
+          // this.obtener_Instihabilitadas()
         })
       }
     });

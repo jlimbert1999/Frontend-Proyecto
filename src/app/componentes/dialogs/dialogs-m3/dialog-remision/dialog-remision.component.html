@@ -10,9 +10,10 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field> -->
-            <div class="row row-cols-auto">
+
+            <div matLine class="row">
                 <div class="col">
-                    <mat-form-field appearance="legacy" style="width: 150px;">
+                    <mat-form-field appearance="legacy">
                         <mat-label>Institucion</mat-label>
                         <mat-select #txtInsti>
                             <mat-option *ngFor="let inst of instituciones" (click)="obtener_DependenciasInst(inst.id_institucion!)" [value]="inst.id_institucion">
@@ -21,8 +22,8 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="col row-cols-auto">
-                    <mat-form-field appearance="legacy" style="width: 150px;">
+                <div class="col">
+                    <mat-form-field appearance="legacy">
                         <mat-label>Dependencia</mat-label>
                         <mat-select #txtDep>
                             <mat-option *ngFor="let dep of dependencias" (click)="obtener_users_desconectados(txtInsti.value, txtDep.value)" [value]="dep.id_dependencia">
@@ -32,15 +33,18 @@
                     </mat-form-field>
                 </div>
             </div>
-            <ng-container>
+            <ng-container *ngIf="dependencias.length>0">
                 <mat-selection-list #shoes [multiple]="false" class="lista">
                     <mat-list-option *ngFor="let user of usuarios_Desconectados" (click)="seleccionar_User(user)">
                         <mat-icon mat-list-icon>account_circle</mat-icon>
                         <div mat-line>{{user.Nombre}} {{user.Apellido_P}} {{user.Apellido_M}} </div>
                         <div mat-line>{{user.NombreCar}}</div>
-
                     </mat-list-option>
                 </mat-selection-list>
+            </ng-container>
+
+            <ng-container>
+                <p>No se econtraron usuarios</p>
             </ng-container>
             <!-- <ng-container [ngSwitch]="Opcion_Envio">
                 <ng-container *ngSwitchCase="'Funcionarios activos'">
@@ -122,6 +126,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button (click)="dismiss()">Cancelar</button>
-    <button mat-button (click)="Enviar_Tramite()"> Enviar</button>
+    <button mat-raised-button color="danger" (click)="dismiss()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="Enviar_Tramite()"> Enviar</button>
 </mat-dialog-actions>

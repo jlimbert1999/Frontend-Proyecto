@@ -1,79 +1,104 @@
-<mat-card class="card border-dark">
-    <ng-container *ngIf="Tipo_Vista_Ficha=='Ficha_envio'">
-        <mat-card-header style="width: 100%;">
+<mat-card class="card border-dark" [ngClass]="{'container': Tipo_Vista_Ficha == 'Ficha_detalles'}">
+    <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_envio'">
+        <mat-card-header>
             <div mat-card-avatar class="example-header-image"></div>
-            <mat-card-title>{{DatosEnvio.Nombre}} <span class="campo_fecha">{{DatosEnvio.Fecha_Envio|date:'medium'}}</span></mat-card-title>
+            <mat-card-title>{{DatosEnvio.Nombre}} </mat-card-title>
             <mat-card-subtitle>{{DatosEnvio.NombreCargo}}</mat-card-subtitle>
+            <span class="example-spacer"></span>
+            <span>{{DatosEnvio.Fecha_Envio|date:'medium'}}</span>
         </mat-card-header>
     </ng-container>
     <mat-card-content>
-        <ng-container *ngIf="Tipo_Vista_Ficha=='Ficha_envio'">
-            <p>
-                Detalle: {{DatosEnvio.Mensaje}}
+        <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_envio'">
+            <p mat-line>
+                <span> Detalle:</span>
+                <span> {{DatosEnvio.Mensaje}}</span>
             </p>
-            <p *ngIf="DatosEnvio.Recibido==false" style="color: red;">
-                <span class="badge bg-danger" style="font-style: normal; font-size: 12px;">Usted aun no ha aceptado la recepcion de tramite</span>
-            </p>
+            <div *ngIf="DatosEnvio.Recibido==false" class="alert alert-danger d-flex align-items-center" role="alert">
+                <mat-icon class="align_txt-icon">report_gmailerrorred</mat-icon>
+                <div>
+                    Usted aun no ha aceptado la recepcion de tramite
+                </div>
+            </div>
         </ng-container>
 
         <div class="card border-dark" *ngIf="Tramite">
-
             <h4 class="card-header">
-                <strong>Tramite: </strong> {{DatosEnvio.Titulo}} / {{Tramite.alterno}}
+                <strong>Informacion del Tramite: </strong>
             </h4>
-            <div class="card-body" style="margin-top: 0%">
-                <p class="card-text"><strong>Descripcion:</strong> {{Tramite.detalle}} </p>
-                <p class="card-text"><strong>Cantidad:</strong> {{Tramite.cantidad}}</p>
+            <div class="card-body">
+                <p class="card-text"><strong>Titulo:</strong> {{DatosEnvio.Titulo}} / {{Tramite.alterno}}</p>
                 <p class="card-text">
-                    <strong>Estado:  </strong> <span class="badge bg-primary text-wrap">
+                    <strong>Descripcion:</strong> {{Tramite.detalle}}
+
+                </p>
+                <p class="card-text"><strong>Cantidad:</strong> {{Tramite.cantidad}}</p>
+
+                <p class="card-text">
+                    <strong>Estado:  </strong>
+                    <ng-container [ngSwitch]="Tramite.estado">
+                        <span class="badge bg-primary" *ngSwitchCase="'Inscrito'"> {{Tramite.estado | uppercase}}</span>
+                        <span class="badge bg-warning text-dark" *ngSwitchCase="'Observado'"> {{Tramite.estado | uppercase}}</span>
+                        <span class="badge bg-secondary" *ngSwitchCase="'En revision'"> {{Tramite.estado | uppercase}}</span>
+                        <span class="badge bg-info text-dark" *ngSwitchCase="'Devuelto'"> {{Tramite.estado | uppercase}}</span>
+                        <span class="badge bg-dark" *ngSwitchCase="'Devuelto'"> {{Tramite.estado | uppercase}}</span>
+                        <span class="badge bg-warning text-dark" *ngSwitchCase="'Anulado'"> {{Tramite.estado | uppercase}}</span>
+                    </ng-container>
+                    <!-- <span class="badge bg-primary text-wrap">
                         {{Tramite.estado | uppercase}}
-                    </span>
+                    </span> -->
                 </p>
             </div>
         </div>
+        <div class="row">
+            <div class="col" *ngIf="Solicitante">
+                <div class="card border-dark" style="margin-top: 10px;">
+                    <h4 class="card-header">
+                        <strong>Informacion del Solicitante </strong>
+                    </h4>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <p><strong>Nombre:</strong> {{Solicitante.nombres}} {{Solicitante.paterno}} {{Solicitante.materno}}</p>
+                                <p class="card-text"><strong>CI: </strong> {{Solicitante.expedido | uppercase}} {{Solicitante.dni}} </p>
+                                <p><strong>Telefono:</strong> {{Solicitante.telefono}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+            </div>
+            <div class="col" *ngIf="Representante">
+                <div class="card border-dark" style="margin-top: 10px;">
+                    <h4 class="card-header">
+                        <strong>Informacion Representante</strong>
+                    </h4>
+                    <div class="card-body">
+                        <div class="row">
+                            <p><strong>Nombre:</strong> {{Representante.nombres}} {{Representante.paterno}} {{Representante.materno}}</p>
+                            <p class="card-text"><strong>CI: </strong> {{Representante.expedido | uppercase}} {{Representante.dni}} </p>
+                            <p><strong>Telefono:</strong> {{Representante.telefono}}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
         <div class="card border-dark" style="margin-top: 10px;" *ngIf="Solicitante">
             <h4 class="card-header">
-                <strong>Solcitante: </strong> {{Solicitante.nombres}} {{Solicitante.paterno}} {{Solicitante.materno}}
+                <strong>Requisitos presentados </strong>
             </h4>
             <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        <p class="card-text"><strong>CI: </strong> {{Solicitante.expedido | uppercase}} {{Solicitante.dni}} </p>
-                        <p><strong>Telefono:</strong> {{Solicitante.telefono}}</p>
-                    </div>
-                    <div class="col">
-                        <strong>Requerimientostos presentados</strong>
-                        <!-- <p class="card-text">Requisitos presentados
-                        </p> -->
-                        <li *ngFor="let requisito of Requerimientos_presentados">{{requisito.detalle}}</li>
-
-                    </div>
-                </div>
-
+                <li *ngFor="let requisito of Requerimientos_presentados">{{requisito.detalle}}</li>
             </div>
         </div>
 
-        <div *ngIf="Representante" class="card border-dark" style="margin-top: 10px;">
-            <h4 class="card-header">
-                <strong>Representante</strong> {{Representante.nombres}} {{Representante.paterno}} {{Representante.materno}}
-            </h4>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        <p class="card-text"><strong>Cedula de intentidad:</strong> {{Representante.expedido | uppercase}} {{Representante.dni}} </p>
-                    </div>
-                    <div class="col">
-                        <p><strong>Telefono:</strong> {{Representante.telefono}}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <!-- OBSERVACIONES -->
         <mat-tab-group mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4" style="margin-top: 10px;">
             <mat-tab label="Mis observaciones">
-                <p style="text-align: center;">
-                    <button mat-raised-button [disabled]="DatosEnvio.Recibido!=true && Tipo_Vista_Ficha=='Ficha_envio'" (click)="agregar_observacion()"><mat-icon>add</mat-icon>Agregar observacion</button>
+                <p style="text-align: center;" *ngIf="Tipo_Vista_Ficha=='Ficha_envio'">
+                    <button mat-raised-button [disabled]="DatosEnvio.Recibido!=true" (click)="agregar_observacion()"><mat-icon>add</mat-icon>Agregar observacion</button>
                 </p>
                 <p *ngIf="mis_observaciones.length==0" style="color: orange; text-align: center; margin-top: 20px;">
                     <mat-icon class="align_txt-icon">report_gmailerrorred</mat-icon> No registro observaciones para este tramite
@@ -163,11 +188,22 @@
             </mat-tab>
         </mat-tab-group>
     </mat-card-content>
+    <mat-divider inset></mat-divider>
+    <mat-card-actions align="end">
+        <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_envio'">
+            <button *ngIf="DatosEnvio.Recibido!=true" mat-raised-button color="primary" (click)="aceptar_tramite()">Aceptar</button>
+            <button *ngIf="DatosEnvio.Recibido!=true" mat-raised-button color="warn" (click)="rechazar_tramite()">Rechazar</button>
+            <button *ngIf="DatosEnvio.Recibido==true" mat-button (click)="abrir_DialogRemision()">Remitir</button>
+            <button *ngIf="DatosEnvio.Recibido==true" mat-button (click)="abrir_Workflow()">Flujo</button>
+            <button *ngIf="DatosEnvio.Recibido==true" mat-button>Finalizar</button>
+        </ng-container>
+        <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_detalles'">
+            <button *ngIf="DatosEnvio.Recibido!=true" mat-raised-button color="primary" (click)="regresar()">Regresar</button>
+        </ng-container>
+        <ng-container *ngIf="Tramite.id_cuenta==Info_cuenta_Actual.id_cuenta">
+            <button mat-raised-button color="primary" (click)="regresar()">Dar de baja</button>
+        </ng-container>
 
-    <mat-card-actions>
-        <button *ngIf="DatosEnvio.Recibido!=true" mat-button (click)="aceptar_recepcion_tramite()">Aceptar</button>
-        <button mat-button *ngIf="DatosEnvio.Recibido==true" (click)="abrir_DialogRemision()">Remitir</button>
-        <button mat-button (click)="abrir_DialogRemision()">SHARE</button>
     </mat-card-actions>
 
 </mat-card>

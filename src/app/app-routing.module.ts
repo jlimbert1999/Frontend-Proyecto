@@ -21,10 +21,10 @@ import { RoleGuard } from './guards/role.guard';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
-    path: 'Usuarios', component: AdministracionUsuariosComponent, canActivate:[LoginGuardGuard, RoleGuard], data:{expectedRole:'ADMIN_ROLE'}
+    path: 'Usuarios', component: AdministracionUsuariosComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' }
   },
   {
-    path: 'Configuraciones', component: AdmConfiguracionComponent, canActivate:[LoginGuardGuard, RoleGuard],data:{expectedRole:'ADMIN_ROLE'}, 
+    path: 'Configuraciones', component: AdmConfiguracionComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' },
     children: [
       { path: 'Tipos-Tramites', component: TramitesRequisitosComponent }
     ]
@@ -32,11 +32,11 @@ const routes: Routes = [
   {
     path: 'Tramites', component: RegistroTramitesComponent,
     children: [
-      { path: 'administrar-tramite', component: AdmTramiteComponent },
+      { path: 'administrar-tramite', component: AdmTramiteComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'USER1_ROLE' } },
       { path: 'bandeja-entrada', component: BandejaEntradaComponent },
       { path: 'bandeja-salida', component: BandejaSalidaComponent },
-      { path: 'ficha/:id', component: FichaTramiteComponent}
-    
+      { path: 'ficha/:id', component: FichaTramiteComponent }
+
     ]
   },
   {
@@ -47,7 +47,7 @@ const routes: Routes = [
   },
   { path: 'Administrar-cuenta/:id', component: AdmFuncionarioComponent },
   {
-    path: 'inicio', component: InicioComponent,canActivate:[LoginGuardGuard],
+    path: 'inicio', component: InicioComponent, canActivate: [LoginGuardGuard],
   },
   {
     path: 'Consulta', component: ConsultaComponent

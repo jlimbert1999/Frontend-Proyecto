@@ -3,6 +3,7 @@ import { RegistroTramiteService } from 'src/app/servicios/servicios-m3/registro-
 import decode from 'jwt-decode'
 import { SocketService } from 'src/app/servicios/servicios-m3/socket.service';
 import { Workflow } from 'src/app/modelos/seguimiento-tramites/workflow.model'
+import { BandejaService } from 'src/app/servicios/servicios-m4/bandeja.service';
 
 @Component({
   selector: 'app-bandeja-entrada',
@@ -19,9 +20,10 @@ export class BandejaEntradaComponent implements OnInit {
   breakpoint: number = 3
   rowHeight: any = '100%'
   colSpawn: number = 2
-
+  aux_busqueda: any[] = [] //para realizar bsuquedas guardar los valores recuperados antes
+  modo_busqueda:boolean=false
   constructor(
-    private tramiteService: RegistroTramiteService,
+    private bandejaService: BandejaService,
     private socketService: SocketService
   ) {
   }
@@ -54,7 +56,8 @@ export class BandejaEntradaComponent implements OnInit {
     })
   }
   obtener_tramitesRecibidos() {
-    this.tramiteService.getListaRecibida(this.Info_Cuenta_Actual.id_cuenta).subscribe((resp: any) => {
+    this.Tramites_Recibidos=[]
+    this.bandejaService.getListaRecibida(this.Info_Cuenta_Actual.id_cuenta).subscribe((resp: any) => {
       if (resp.ok) {
         resp.Tramites_Recibidos.forEach((elemento: any) => {
           let Datos_Envio = {
@@ -66,16 +69,18 @@ export class BandejaEntradaComponent implements OnInit {
             Titulo: elemento.titulo,
             Alterno: elemento.alterno,
             Mensaje: elemento.detalle,
-            Enviado: (elemento.enviado == 1 ? true : false),
-            Recibido: (elemento.recibido == 1 ? true : false)
+            Recibido: (elemento.aceptado == 1 ? true : false), 
+            Estado:elemento.estado
           }
           this.Tramites_Recibidos.push(Datos_Envio)
         })
+        this.aux_busqueda = this.Tramites_Recibidos
+        
       }
     })
   }
-  ver_fichaTramite(tramite: any, posicion: number) {
-    this.Mail_Seleccionado = posicion
+  ver_fichaTramite(tramite: any, pos:number) {
+    // this.Mail_Seleccionado = posicion
     this.datosFicha = tramite
   }
 
@@ -100,10 +105,38 @@ export class BandejaEntradaComponent implements OnInit {
     let result = this.Tramites_Recibidos.filter(o => o.NombreCargo.includes(filterValue));
 
   }
-  buscar(texto: string) {
-    this.Tramites_Recibidos = this.Tramites_Recibidos.find(e => e.NombreCargo === texto);
+
+  actualizar_lista_recibidos(id_tramiteEnviado: any) {
+    //cuando se envia el tramite se recarga la lista de recibidos para que ya no tenga ese tramite
+    this.Tramites_Recibidos = this.Tramites_Recibidos.filter((tramite: any) => tramite.id_tramite != id_tramiteEnviado)
+    this.datosFicha=""
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.Tramites_Recibidos = this.Tramites_Recibidos.filter(obj => Object.values(obj).some((val: any) => val.toString().toLowerCase().includes(filterValue)));
+    if (filterValue == "" ||filterValue==null ) {
+      this.Tramites_Recibidos = this.aux_busqueda
+    }
 
   }
+  obtnener_no_recibidos() {
+    this.Tramites_Recibidos = this.Tramites_Recibidos.filter((tramite: any) => tramite.Recibido == false || tramite.Recibido == 0)
+  }
+  obtnener_recibidos() {
+    this.obtener_tramitesRecibidos()
+  }
+
+  recargar(){
+    this.obtener_tramitesRecibidos()
+  }
+  activar_busqueda(){
+    this.modo_busqueda=true
+  }
+  desactivar_busqueda(){
+    this.modo_busqueda=false
+  }
+
 
 
 

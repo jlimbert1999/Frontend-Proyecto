@@ -83,8 +83,8 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   imprimirFicha(tramite:any) {
     this.llamarImprimir.emit(tramite)
   }
-  remitir(datos: any) {
-    this.llamarRemision.emit(datos)
+  remitir(datos: any, pos:number) {
+    this.llamarRemision.emit({datos, pos})
   }
   revisar(datos: any) {
     this.llamarRevision.emit(datos)

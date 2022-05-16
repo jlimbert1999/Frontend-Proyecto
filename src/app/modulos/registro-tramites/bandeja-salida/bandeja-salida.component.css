@@ -1,11 +1,5 @@
-/* .mat-grid-tile {
-    flex-grow: 1;
-    border: 3px solid green;
-    overflow: auto;
-} */
-
 .container {
-    overflow: scroll;
+    overflow-y: scroll;
     height: 100%;
 }
 
@@ -56,4 +50,14 @@
 
 .card-body {
     line-height: 10px;
+}
+
+.example-button-row .mat-button-base {
+    margin: 8px 8px 8px 0;
+}
+
+example-accordion,
+p,
+footer {
+    font-size: 16px;
 }

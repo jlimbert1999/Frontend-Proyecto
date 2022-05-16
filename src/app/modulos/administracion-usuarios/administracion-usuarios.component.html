@@ -4,7 +4,7 @@
     <button mat-icon-button class="example-icon" (click)="drawer.toggle()" aria-label="Example icon-button with menu icon">
         <mat-icon>menu</mat-icon>
     </button>
-    <span style="font-size: 15px;">USUARIOS: </span>
+    <span style="font-size: 15px;">USUARIOS: {{TipoTabla}}</span>
     <span class="example-spacer"></span>
 
     <button [matMenuTriggerFor]="menu" mat-icon-button class="example-icon" matTooltip="Mas opciones">
@@ -45,7 +45,7 @@
         <div class="container">
             <mat-form-field appearance="standard">
                 <mat-label>Buscar usuario</mat-label>
-                <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ingrese un caracter" #input>
+                <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ingrese un caracter.." #input>
             </mat-form-field>
             <app-tabla *ngIf="mostrarTabla" (llamarEditar)="editar_Funcionario($event)" (llamarEliminar)="eliminarUsuario($event)" (llamarVerDetalles)="obtenerDetallesFuncionario($event)" [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla"
                 (llamarFinalizar)="FinalizarCargo($event)"></app-tabla>

@@ -1,26 +1,15 @@
-.mat-grid-tile {
-    flex-grow: 1;
-    border: 3px solid green;
-    overflow: auto;
-}
-
-.is-active {
-    background-color: red;
-}
-
 .lista-recibidos {
     /* background-color: aqua; */
     /* width: 100%; */
     /* height: 400px; */
     height: 80vh;
     overflow-y: scroll;
-    padding: 20px 0 20px 20px;
+    /* padding: 20px 0 20px 20px; */
 }
 
 .panel-ficha {
-    /* background-color: blue; */
-    margin: 10px;
-    width: 100%;
+    /* margin: 10px; */
+    /* width: 100%; */
     height: 85vh;
     overflow-y: scroll;
 }
@@ -31,53 +20,28 @@
     overflow: hidden;
 }
 
-img {
-    max-width: 100%;
+.example-spacer {
+    flex: 1 1 auto;
 }
 
-.chat_ib h5 {
-    font-size: 15px;
-    color: #464646;
-    margin: 0 0 8px 0;
+.leftside,
+.rightside {
+    height: 50vh;
+    width: 100%;
 }
 
-.chat_ib h5 span {
-    font-size: 12px;
-    float: right;
+@media screen and (min-width:768px) {
+    .leftside,
+    .rightside {
+        height: 75vh;
+    }
 }
 
-.chat_ib p {
-    font-size: 14px;
-    color: #989898;
-    margin: auto
+.leftside {
+    /* background: red; */
 }
 
-.chat_img {
-    float: left;
-    width: 11%;
-}
-
-.chat_ib {
-    float: left;
-    padding: 0 0 0 15px;
-    width: 88%;
-}
-
-.chat_people {
-    overflow: hidden;
-    clear: both;
-}
-
-.chat_list {
-    border-bottom: 1px solid #c4c4c4;
-    margin: 0;
-    padding: 18px 16px 10px;
-}
-
-.active_chat {
-    background: #94D2BD;
-}
-
-.color_alert {
-    color: red;
+.rightside {
+    /* background: blue; */
+    overflow-y: scroll;
 }

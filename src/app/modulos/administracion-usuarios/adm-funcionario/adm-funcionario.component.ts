@@ -33,8 +33,9 @@ export class AdmFuncionarioComponent implements OnInit {
   obtener_datosCuenta(id_cuenta: number) {
     this.userService.getDetallesCuenta(id_cuenta).subscribe((resp: any) => {
       if (resp.ok) {
+
         this.detallesCuenta = resp.Detalles[0]
-        this.datos_NuevosCuenta.login=this.detallesCuenta.login
+        // this.datos_NuevosCuenta.login=this.detallesCuenta.login
       }
     })
 

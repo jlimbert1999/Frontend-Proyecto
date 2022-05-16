@@ -71,6 +71,7 @@ export class NavegacionComponent implements OnInit {
   }
 
   administrar_cuenta() {
+
     this.router.navigate(['Administrar-cuenta', this.DatoSesion.id_cuenta])
   }
 

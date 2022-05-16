@@ -1,9 +1,11 @@
 <h1 mat-dialog-title>Detalles Funcionario</h1>
 
-<div mat-dialog-content>
-    <ng-container>
-        Nombre: {{Nombre_Funcionario}}
-    </ng-container>
+<div mat-dialog-content *ngIf="detalles_Funcionario">
+
+    <p style=" margin-bottom: 20px; text-align: center;">
+        {{detalles_Funcionario.Nombre}} <span>({{detalles_Funcionario.Cargo}})</span>
+
+    </p>
 
     <mat-table *ngIf="dataSource" [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" class="mat-elevation-z8">
         <ng-container matColumnDef="Fecha">
@@ -12,7 +14,7 @@
         </ng-container>
 
         <ng-container matColumnDef="Detalle">
-            <mat-header-cell mat-sort-header *matHeaderCellDef> Movilidad funcional </mat-header-cell>
+            <mat-header-cell mat-sort-header *matHeaderCellDef> Suceso </mat-header-cell>
             <mat-cell mat-cell *matCellDef="let element">{{element.detalle|uppercase}} EL CARGO</mat-cell>
         </ng-container>
         <ng-container matColumnDef="Cargo">
@@ -24,6 +26,7 @@
     </mat-table>
 
 </div>
+<p *ngIf="!detalles_Funcionario" style="text-align: center;">Sin registros</p>
 
 <div mat-dialog-actions>
     <button mat-button mat-dialog-close>Cerrar</button>

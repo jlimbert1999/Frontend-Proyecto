@@ -76,6 +76,9 @@
             <td class="mat-cell" colspan="4">No existen requerimientos</td>
         </tr>
     </table>
+    <ng-container *ngIf="Requerimientos.length<=0">
+        <p>Si requisitos desabilitados</p>
+    </ng-container>
 
 
 

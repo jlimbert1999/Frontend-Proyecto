@@ -6,12 +6,30 @@
     </button>
     <span>TRAMITES: {{TitleTolbar}}</span>
     <span class="example-spacer"></span>
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <mat-icon>widgets</mat-icon>
+      </button>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)=" evento_cambiar_vista()">
+          <mat-icon>dialpad</mat-icon>
+          <span>{{tipo_vista_tramites?"No enviados":"Enviados"}}</span>
+        </button>
+        <button mat-menu-item disabled>
+          <mat-icon>voicemail</mat-icon>
+          <span>Check voice mail</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>notifications_off</mat-icon>
+          <span>Disable alerts</span>
+        </button>
+    </mat-menu>
+
 </mat-toolbar>
 
 <mat-sidenav-container class="example-container">
     <mat-sidenav #drawer mode="over" class="panel">
         <mat-nav-list class="nav-list">
-            <div class="nav-item">
+            <div class="nav-item" *ngIf="permitir_registro_tramites">
                 <a class="nav-link" mat-list-item routerLink="administrar-tramite" routerLinkActive="active-list-item" [routerLinkActiveOptions]="{ exact: true }">
                     <mat-icon class="nav-icon">folder_shared</mat-icon>
                     Tramites
@@ -24,7 +42,6 @@
                 </a>
             </div>
             <div class="nav-item">
-                <div></div>
                 <a class="nav-link" mat-list-item routerLink="bandeja-salida" routerLinkActive="active-list-item">
                     <mat-icon class="nav-icon">drafts</mat-icon>
                     Bandeja de salida

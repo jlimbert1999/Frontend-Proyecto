@@ -37,8 +37,10 @@
                             "core-js/modules/es.string.starts-with.js",
                             "core-js/modules/web.dom-collections.iterator.js",
                             "dagre",
-                            "webcola"
-
+                            "webcola",
+                            "clone-deep",
+                            "pdfmake/build/pdfmake",
+                            "jspdf-autotable"
 
                         ],
                         "outputPath": "dist/frontend",

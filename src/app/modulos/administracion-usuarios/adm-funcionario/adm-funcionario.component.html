@@ -57,7 +57,7 @@
         <div class="col-md-9 personal-info">
             <div class="alert alert-info alert-dismissable">
                 <a class="panel-close close" data-dismiss="alert">×</a>
-                <i class="fa fa-coffee"></i> This is an <strong>.alert</strong>. Use this to show important messages to the user.
+                <i class="fa fa-coffee"></i> Puede actualizar los campos <strong>(Login y Contraseña)</strong> Revise si su informacion es correcta
             </div>
 
             <form class="form-horizontal" role="form">
@@ -139,3 +139,10 @@
     </div>
 </div>
 <hr>
+<div class="alert alert-info alert-dismissable" *ngIf="!detallesCuenta">
+    <a class="panel-close close" data-dismiss="alert">×</a>
+    <i class="fa fa-coffee"></i> Su cuenta es de tipo administrador, debe actualizar sus datos desde: <strong>"Usuarios", "Editar registro"</strong>
+</div>
+<div class="container bootstrap snippets bootdey" style="margin-top: 10px;">
+
+</div>

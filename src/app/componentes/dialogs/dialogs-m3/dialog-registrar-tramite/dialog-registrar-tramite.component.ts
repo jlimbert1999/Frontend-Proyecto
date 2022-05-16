@@ -12,6 +12,7 @@ import { forkJoin } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatListOption, MatSelectionList } from '@angular/material/list'
+import { FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -72,10 +73,14 @@ export class DialogRegistrarTramiteComponent implements OnInit {
   regis_Representante: boolean = false
   msg = new Mensajes()
   tituloDialog = "";
+  Info_cuenta_actua = this.decodificarToken()
 
   @ViewChild('listaRequerimientos') private allSelected: MatSelectionList;
 
   tiene_representante: boolean = false //varible para ver si tiene rep al momento de editar
+  isLinear = false;
+
+
 
   constructor(
     private tiposTramiteService: TipoTramitesService,
@@ -120,70 +125,54 @@ export class DialogRegistrarTramiteComponent implements OnInit {
   }
   seleccionar_TipoTramite(tipoTramite: TipoTramite) {
     // this.tramite.id_TipoTramite = tipoTramite.id_TipoTramite
-    this.CodigoUnicoTramite = tipoTramite.sigla
+    this.CodigoUnicoTramite = tipoTramite.segmento
     this.obtener_Requerimientos(tipoTramite.id_TipoTramite)
   }
 
 
   registrar_Tramite() {
-    let pin: number = this.generar_numRandom()
-    this.tramite.alterno = `${this.CodigoUnicoTramite}-${pin}`
-    this.tramite.estado = "Inscrito"
-    this.tramite.Fecha_creacion = this.getFecha()
-    this.tramite.pin = pin
-    this.tramite.id_cuenta = this.decodificarToken().id_cuenta
-    //reigstrar tramite
     let id_tramite_registrado: number = 0
     let id_solicitante_registrado: number = 0
-    let id_representante: number
-    this.regitroTramiteService.addTramite(this.tramite).subscribe((resp_trami: any) => {
-      if (resp_trami.ok) {
-        id_tramite_registrado = resp_trami.Tramite.insertId
-        this.regitroTramiteService.addSolicitante(this.solicitante).subscribe((resp_soli: any) => {
-          if (resp_soli.ok) {
-            id_solicitante_registrado = resp_soli.Solicitante.insertId
-            if (this.regis_Representante) { //tiene representante
-              this.regitroTramiteService.addRepresentante(this.representante).subscribe((resp_repre: any) => {
-                if (resp_repre.ok) {
-                  id_representante = resp_repre.Representante.insertId
-                  this.registrar_solicitud_ConRepresentante(id_solicitante_registrado, id_representante, id_tramite_registrado, this.Ids_requisitos_presentados)
-                }
-                else {
-                  this.msg.mostrarMensaje('error', resp_repre.message)
-                }
-              })
-            }
-            else {
-              this.registrar_solicitud_SinRepresentante(id_solicitante_registrado, id_tramite_registrado, this.Ids_requisitos_presentados)
-            }
+    let id_representante_registrado: number=0
+    let year = new Date()
+    let pin: number = this.generar_numRandom()
+    this.tramite = {
+      alterno: `${this.CodigoUnicoTramite.toLocaleUpperCase()}-${this.Info_cuenta_actua.Sigla}-${year.getFullYear()}-${pin}`,
+      estado: "Inscrito",
+      Fecha_creacion: this.getFecha(),
+      pin: pin,
+      detalle: this.tramite.detalle,
+      cantidad: this.tramite.cantidad,
+      id_cuenta: this.decodificarToken().id_cuenta,
+      id_TipoTramite:this.tramite.id_TipoTramite
+    }
 
-          }
-          else {
-            this.msg.mostrarMensaje('error', resp_soli.message)
-          }
-        })
-      }
-      else {
-        this.msg.mostrarMensaje('error', resp_trami.message)
-      }
-    })
+    if (this.regis_Representante) {
+      forkJoin([this.regitroTramiteService.addTramite(this.tramite), this.regitroTramiteService.addSolicitante(this.solicitante), this.regitroTramiteService.addRepresentante(this.representante)]).subscribe((results:any)=>{
+        if(results[0].ok && results[1].ok && results[2].ok){
+          id_tramite_registrado=results[0].Tramite.insertId
+          id_solicitante_registrado=results[1].Solicitante.insertId
+          id_representante_registrado=results[2].Representante.insertId
+          this.registrar_solicitud_ConRepresentante(id_solicitante_registrado, id_representante_registrado, id_tramite_registrado, this.Ids_requisitos_presentados)
+        }
+        else{
+          this.msg.mostrarMensaje('error', "Error al registrar tramite, solicitante y representante")
+        }
+      })
+    }
+    else{
+      forkJoin([this.regitroTramiteService.addTramite(this.tramite), this.regitroTramiteService.addSolicitante(this.solicitante)]).subscribe((results:any)=>{
+        if(results[0].ok && results[1].ok){
+          id_tramite_registrado=results[0].Tramite.insertId
+          id_solicitante_registrado=results[1].Solicitante.insertId
+          this.registrar_solicitud_SinRepresentante(id_solicitante_registrado, id_tramite_registrado, this.Ids_requisitos_presentados)
+        }
+        else{
+          this.msg.mostrarMensaje('error', "Error al registrar tramite y solicitante")
+        }
+      })
+    }
 
-    // this.obtener_infoTramite().subscribe((resp) => {
-    //   let id_solicitante: number = resp[0].Solicitante.insertId  //resp[0] solicitante
-    //   let id_tramite: number = resp[1].Tramite.insertId
-    //   let id_representante: number
-    //   if (this.regis_Representante) { //tiene representante
-    //     this.regitroTramiteService.addRepresentante(this.representante).subscribe((resp: any) => {
-    //       if (resp.ok) {
-    //         id_representante = resp.Representante.insertId
-    //         this.registrar_solicitud_ConRepresentante(id_solicitante, id_representante, id_tramite, this.Ids_requisitos_presentados)
-    //       }
-    //     })
-    //   }
-    //   else {
-    //     this.registrar_solicitud_SinRepresentante(id_solicitante, id_tramite, this.Ids_requisitos_presentados)
-    //   }
-    // })
   }
   //metodo para ejecutar el registor de solicitante y trmaite al mismo tiempo
   obtener_infoTramite(): Observable<any[]> {//metodo observable
@@ -248,10 +237,8 @@ export class DialogRegistrarTramiteComponent implements OnInit {
       cantidad: this.tramite.cantidad,
     }
 
-
     //guardar id_solicitud por si quiere agregar representante
     let id_solicitud: number = this.data.id_solicitud
-
     this.regitroTramiteService.putTramite(this.data.id_tramite, datos_update_tramite).subscribe((resp: any) => {
       if (resp.ok) {
         this.regitroTramiteService.putSolicitante(this.solicitante.id_solicitante!, this.solicitante).subscribe((resp: any) => {
@@ -288,9 +275,6 @@ export class DialogRegistrarTramiteComponent implements OnInit {
       }
     })
   }
-  // obtener_requisitos_presentados
-
-
 
   obtener_SolicitanteTramite(id_tramite: number) {
     this.regitroTramiteService.getSolicitate_PorTramite(id_tramite).subscribe((resp: any) => {
@@ -305,7 +289,6 @@ export class DialogRegistrarTramiteComponent implements OnInit {
         if (resp.Requisitos.length > 0) { //ids de los requisitos
           this.Ids_requisitos_presentados = resp.Requisitos[0].presento.split(',').map(Number);
           this.obtener_Requerimientos(this.data.id_TipoTramite)
-
         }
       }
     })
@@ -313,14 +296,7 @@ export class DialogRegistrarTramiteComponent implements OnInit {
   obtener_RepresentanteTramite(id_tramite: number) {
     this.regitroTramiteService.getRepresentante_PorTramite(id_tramite).subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Representante.length != 0) {
-          this.representante = resp.Representante[0]
-          this.tiene_representante = true
-          this.regis_Representante = true //para mostrar la ventana del represetante
-        }
-        else {
-          this.tiene_representante = false
-        }
+        this.representante = resp.Representante[0]
       }
     })
   }
@@ -329,18 +305,15 @@ export class DialogRegistrarTramiteComponent implements OnInit {
     //data viene con varios datos que se muestan en la tabla de tramites registrados
     this.tramite = this.data
     this.obtener_requisito_presentados(this.data.id_tramite)
-    this.solicitante = {
-      id_solicitante: this.data.id_solicitante,
-      nombres: this.data.nombres,
-      paterno: this.data.paterno,
-      materno: this.data.materno,
-      id_documento: this.data.id_documento,
-      dni: this.data.dni,
-      expedido: this.data.expedido,
-      telefono: this.data.telefono
+    this.obtener_SolicitanteTramite(this.data.id_tramite)
+    if (this.data.id_representante) {
+      this.tiene_representante = true
+      this.regis_Representante = true //para mostrar la ventana del represetante
+      this.obtener_RepresentanteTramite(this.data.id_tramite)
     }
-    // this.obtener_SolicitanteTramite(this.data.id_tramite)
-    this.obtener_RepresentanteTramite(this.data.id_tramite)
+    else {
+      this.tiene_representante = false
+    }
   }
 
   getFecha(): any {
@@ -351,7 +324,7 @@ export class DialogRegistrarTramiteComponent implements OnInit {
     return decode(token)
   }
   generar_numRandom(): number {
-    return Math.floor(1000 + Math.random() * 9000);
+    return Math.floor(1000 + Math.random() * 90000);
   }
   onNoClick() {
     this.dialogRef.close();

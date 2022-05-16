@@ -50,10 +50,11 @@ import { MatListModule } from '@angular/material/list';
 import { DialogObservacionesComponent } from './componentes/dialogs/dialogs-m3/dialog-observaciones/dialog-observaciones.component';
 import { SeguimientoTramitesComponent } from './modulos/seguimiento-tramites/seguimiento-tramites.component';
 import { ReportesComponent } from './modulos/reportes/reportes.component'
-import { NgxChartsModule }from '@swimlane/ngx-charts';
 import { ConsultaComponent } from './paginas/consulta/consulta.component';
 import { AdmFuncionarioComponent } from './modulos/administracion-usuarios/adm-funcionario/adm-funcionario.component';
 import { LoginService } from './servicios/servicios-m1/login.service';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -101,7 +102,9 @@ import { LoginService } from './servicios/servicios-m1/login.service';
     MatSidenavModule,
     MatIconModule,
     MatListModule,
+    BrowserAnimationsModule,
     NgxChartsModule
+    
   ],
   providers: [
     { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },

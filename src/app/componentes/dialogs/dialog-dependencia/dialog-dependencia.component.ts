@@ -41,7 +41,6 @@ export class DialogDependenciaComponent implements OnInit {
     this.dialogRef.close();
   }
   obtenerInstituciones(){
-    console.log(this.data);
     this.configService.getInsti_Habilitadas().subscribe((resp:any)=>{
       if(resp.ok){
         this.Instituciones=resp.Instituciones

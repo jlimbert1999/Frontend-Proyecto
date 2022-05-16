@@ -60,9 +60,9 @@
                         </div>
                     </div>
                 </div>
-                <mat-checkbox [(ngModel)]="data.datosFuncionario.Activo" class="example-margin" name="Activo">Activado</mat-checkbox>
-                <p>Estado: {{data.datosFuncionario.Activo}}</p>
-                <!-- ============= -->
+                <ng-container *ngIf="mostrar_opcion_habilitar">
+                    <mat-checkbox [(ngModel)]="data.datosFuncionario.Activo" class="example-margin" name="Activo">HABILITAR</mat-checkbox>
+                </ng-container>
             </form>
         </mat-step>
 
@@ -83,7 +83,7 @@
                     <div *ngIf="PoseeCuenta==true">
                         <div class="container">
                             <div class="row">
-                                <div class="col-sm">
+                                <div class="col-sm-3">
                                     <img src="../../../../assets/img-Administracion Usuarios/user-logo.png" style="width: 100px; height: 100px;" class="center">
                                 </div>
                                 <div class="col-sm">

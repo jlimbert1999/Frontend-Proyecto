@@ -2,8 +2,10 @@
     <span>Consulta estado del tramite</span>
 </mat-toolbar>
 <div class="container">
-    <div style="margin: 0 auto;">
-        <p>Ingrese el campo "Numero de tramite"</p>
+    <p style="text-align: center; margin-top: 10px;" class="fs-4">Ingrese el campo "Numero de tramite"</p>
+
+    <div class="panel_consulta">
+
         <mat-form-field class="example-form-field" appearance="fill">
             <mat-label>Codido del tramite</mat-label>
             <input matInput type="text" [(ngModel)]="Codigo_Tramite">
@@ -26,6 +28,7 @@
         <div class="example-action-buttons">
             <button mat-button *ngIf="Observaciones_Tramite.length>0" (click)="accordion.openAll()">Mostrar todo</button>
             <button mat-button *ngIf="Observaciones_Tramite.length>0" (click)="accordion.closeAll()">Ocultar</button>
+            <button mat-button *ngIf="Observaciones_Tramite.length>0" (click)="imprimir_observaciones()">Imprimir</button>
         </div>
         <mat-accordion class="example-headers-align" multi *ngIf="Observaciones_Tramite.length>0">
             <mat-expansion-panel *ngFor="let obs of Observaciones_Tramite; let i=index">
