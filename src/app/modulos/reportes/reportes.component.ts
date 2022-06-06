@@ -77,8 +77,14 @@ export class ReportesComponent implements OnInit {
     Tramite: <any>{},
     Representante: <any>{},
     Requerimientos_presentados: <any>{},
-    titulo: ''
+    titulo: '',
+    Flujo: <any>{}
   }
+  ids_Cuentas: number[] = []
+  Lista_Cronologica: any[] = []
+  estados_tramite = ['Inscrito', 'Observado', 'Concluido', 'Anulado', 'En revision']
+  fecha_desde: any
+  fecha_hasta: any
   constructor(private tramiteService: RegistroTramiteService,
     private workflowService: WorkflowServiceService, private reporteService: ReportesService) {
 
@@ -87,6 +93,7 @@ export class ReportesComponent implements OnInit {
 
   ngOnInit(): void {
     // this.generar_Reporte('Tramite realizados')
+    this.obtener_reporte_tramitesRealizados()
   }
 
   generar_Reporte(tipo: string) {
@@ -109,14 +116,7 @@ export class ReportesComponent implements OnInit {
     return decode(token)
   }
 
-  obtener_Workflow(id: number) {
-    this.workflowService.getWorkflow(id).subscribe((resp: any) => {
-      if (resp.ok) {
-        this.listaWorkflow = resp.Workflow
-        this.dataSource = resp.Workflow
-      }
-    })
-  }
+
 
 
 
@@ -133,6 +133,7 @@ export class ReportesComponent implements OnInit {
   }
 
   obtener_reporte_tramitesRealizados() {
+    this.Titulo_reporte = 'Tramites realizados'
     this.tipo_reporte = "Tramites_realizados"
     this.Tramites_realizados = []
     this.reporteService.obtener_tramites_realizados().subscribe((resp: any) => {
@@ -147,11 +148,12 @@ export class ReportesComponent implements OnInit {
             nombres.push(element.titulo)
           }
         });
-        // this.single = this.Tramites_realizados
+        this.single = this.Tramites_realizados
       }
     })
   }
   obtener_reporte_Funcionarios() {
+    this.Titulo_reporte = 'Funcionarios'
     this.tipo_reporte = "Tramites_funcionarios"
     this.Tramites_realizados = []
     this.reporteService.obtener_tramites_funcionarios().subscribe((resp: any) => {
@@ -170,6 +172,7 @@ export class ReportesComponent implements OnInit {
     })
   }
   obtener_reporte_Solicitantes() {
+    this.Titulo_reporte = 'Solicitantes'
     this.tipo_reporte = "Tramites_solicitante"
     this.reporteService.obtener_tramites_solicitante().subscribe((resp: any) => {
       if (resp.ok) {
@@ -177,21 +180,40 @@ export class ReportesComponent implements OnInit {
       }
     })
   }
-  reporte_ficha_tramite() {
-    this.Titulo_reporte = "Ficha de tramite"
+  obtener_ficha_tramite() {
+    this.tipo_reporte = "reporte_ficha"
+    this.Titulo_reporte = 'Ficha'
   }
-  generar_reporte_ficha(alterno: string, dni: string) {
+  obtener_reporte_Estado() {
+    this.tipo_reporte = "reporte_estado"
+    this.Titulo_reporte = 'Estado'
+  }
+  generar_reporte_estado(tramite_estado: string) {
+    this.reporteService.obtener_tramites_estado({ estado: tramite_estado }).subscribe((resp: any) => {
+      if (resp.ok) {
+        let aux: any[] = []
+        resp.Tramites.forEach((element: any, index: number) => {
+          aux.push([++index, element.alterno, element.estado, moment(parseInt(element.Fecha_creacion)).format('DD-MM-YYYY HH:mm:ss'), element.titulo])
+        })
+        this.Crear_PDF_estados(aux)
+      }
+    })
+  }
+
+  generar_reporte_ficha(alterno: string) {
+
     this.data_ReporteFicha.Representante = {}
     this.data_ReporteFicha.Solicitante = {}
     this.data_ReporteFicha.Tramite = {}
     this.data_ReporteFicha.Requerimientos_presentados = {}
+    this.data_ReporteFicha.Flujo = {}
     let parametros_busqueda = {
-      alterno,
-      dni
+      alterno
     }
     this.reporteService.reporte_ficha(parametros_busqueda).subscribe((resp: any) => {
       if (resp.ok && resp.Reporte.length != 0) {
         this.data_ReporteFicha.titulo = resp.Reporte[0].titulo
+
         if (resp.Reporte[0].id_representante) {
           forkJoin([this.tramiteService.getFicha_InfoTramite(resp.Reporte[0].id_tramite), this.tramiteService.getFicha_InfoSolicitante(resp.Reporte[0].id_tramite), this.tramiteService.getFicha_InfoRepresentante(resp.Reporte[0].id_tramite), this.tramiteService.getFicha_InfoRequerimientos(resp.Reporte[0].id_tramite)]).subscribe((results: any) => {
             if (results[0].ok && results[1].ok && results[2].ok && results[3].ok) {
@@ -199,7 +221,7 @@ export class ReportesComponent implements OnInit {
               this.data_ReporteFicha.Solicitante = results[1].Solicitante[0]
               this.data_ReporteFicha.Representante = results[2].Representante[0]
               this.data_ReporteFicha.Requerimientos_presentados = results[3].Requerimientos
-              this.algo()
+              this.obtener_Workflow(resp.Reporte[0].id_tramite)
             }
           })
         }
@@ -209,55 +231,55 @@ export class ReportesComponent implements OnInit {
               this.data_ReporteFicha.Tramite = results[0].Tramite[0]
               this.data_ReporteFicha.Solicitante = results[1].Solicitante[0]
               this.data_ReporteFicha.Requerimientos_presentados = results[2].Requerimientos
-              this.algo()
+              this.obtener_Workflow(resp.Reporte[0].id_tramite)
             }
           })
         }
-        // console.log(this.data_ReporteFicha);
-
       }
     })
 
   }
-
-  ////////////metodos para obtnecion reporte ficha////////////
-  obtener_Datos_Tramite(id_tramite: number) {
-    this.tramiteService.getFicha_InfoTramite(id_tramite).subscribe((resp: any) => {
+  obtener_Workflow(id_tramite: number) {
+    this.workflowService.getWorkflow(id_tramite).subscribe((resp: any) => {
       if (resp.ok) {
-        this.data_ReporteFicha.Tramite = resp.Tramite[0]
-      }
-    })
-  }
-  obtener_Datos_Solicitante(id_tramite: number) {
-    this.tramiteService.getFicha_InfoSolicitante(id_tramite).subscribe((resp: any) => {
-      if (resp.ok) {
-        this.data_ReporteFicha.Solicitante = resp.Solicitante[0]
+        this.listaWorkflow = resp.Workflow
+        resp.Workflow.forEach((element: any) => {
+          if (!this.ids_Cuentas.includes(element.id_cuentaEmisor)) {
+            this.ids_Cuentas.push(element.id_cuentaEmisor)
+          }
+          if (!this.ids_Cuentas.includes(element.id_cuentaReceptor)) {
+            this.ids_Cuentas.push(element.id_cuentaReceptor)
+          }
+        });
+        this.ids_Cuentas.forEach((element: any, index: number) => {
+          this.tramiteService.getDatosFuncionario(element).subscribe((resp: any) => {
+
+            this.listaWorkflow.forEach((lista: any, i: number) => {
+              if (lista.id_cuentaEmisor == resp.Funcionario[0].id_cuenta) {
+                this.listaWorkflow[i]['NombreEmi'] = `${resp.Funcionario[0].Nombre} ${resp.Funcionario[0].Apellido_P} ${resp.Funcionario[0].Apellido_M}`
+                this.listaWorkflow[i]['CargoEmi'] = `${resp.Funcionario[0].NombreCar}`
+                this.listaWorkflow[i]['NombreDepEmi'] = `${resp.Funcionario[0].NombreDep}`
+                this.listaWorkflow[i]['NombreInstEmi'] = `${resp.Funcionario[0].Sigla}`
+              }
+              if (lista.id_cuentaReceptor == resp.Funcionario[0].id_cuenta) {
+                this.listaWorkflow[i]['NombreRecep'] = `${resp.Funcionario[0].Nombre} ${resp.Funcionario[0].Apellido_P} ${resp.Funcionario[0].Apellido_M}`
+                this.listaWorkflow[i]['CargoRecep'] = `${resp.Funcionario[0].NombreCar}`
+                this.listaWorkflow[i]['NombreDepRecep'] = `${resp.Funcionario[0].NombreDep}`
+                this.listaWorkflow[i]['NombreInstRecep'] = `${resp.Funcionario[0].Sigla}`
+              }
+            })
+
+          })
+
+        });
+        this.Crear_PDF_ficha()
       }
     })
   }
 
-  obtener_Datos_Representante(id_tramite: number) {
-    this.tramiteService.getFicha_InfoRepresentante(id_tramite).subscribe((resp: any) => {
-      if (resp.ok) {
-        this.data_ReporteFicha.Representante = resp.Representante[0]
-      }
-    })
-  }
-  obtener_Datos_Requerimientos(id_tramite: number) {
-    this.tramiteService.getFicha_InfoRequerimientos(id_tramite).subscribe((resp: any) => {
-      if (resp.ok) {
-        this.data_ReporteFicha.Requerimientos_presentados = resp.Requerimientos
 
-      }
-    })
-  }
   // *************************************
-  crear_Pdf() {
-
-
-   
-  }
-  algo() {
+  Crear_PDF_ficha() {
     let time = new Date()
     let fecha = moment(time).format('DD-MM-YYYY HH:mm:ss');
     let img = new Image()
@@ -314,6 +336,11 @@ export class ReportesComponent implements OnInit {
     this.data_ReporteFicha.Requerimientos_presentados.forEach((element: any, i: number) => {
       campos.push([++i, segmento[0], element.detalle])
     })
+    let lista_workflow: any[] = []
+    this.listaWorkflow.forEach((element: any) => {
+      lista_workflow.push([moment(parseInt(element.fecha_envio)).format('DD-MM-YYYY HH:mm:ss'), moment(parseInt(element.fecha_recibido)).format('DD-MM-YYYY HH:mm:ss'), element.NombreDepEmi, element.NombreDepRecep, element.detalle])
+
+    });
     autoTable(doc, {
       // startY : (doc as any).lastAutoTable.finalY,
       startY: alturaTable + 5,
@@ -327,11 +354,42 @@ export class ReportesComponent implements OnInit {
       }
     })
     let posY = (doc as any).lastAutoTable.finalY;
-    doc.text("Ruta del tramite", 105, posY+10, undefined, "center");
+    doc.text("Ruta del tramite", 105, posY + 10, undefined, "center");
     autoTable(doc, {
       startY: posY + 15,
-      head: [['Numero', 'Tipo', 'Requisito']],
-      body: campos,
+      head: [['Emision', 'Recepcion', 'Dependencia origen', 'Dependencia Destino', 'Motivo']],
+      body: lista_workflow,
+      theme: 'grid',
+      margin: { horizontal: 20 },
+      headStyles: {
+        'fillColor': [255, 255, 255],
+        'textColor': [0, 0, 0]
+      }
+    })
+
+    doc.output('dataurlnewwindow')
+  }
+  Crear_PDF_estados(listado: any[]) {
+    let time = new Date()
+    let fecha = moment(time).format('DD-MM-YYYY HH:mm:ss');
+    let img = new Image()
+    img.src = '../../assets/img/gams.png'
+    //horizonal, vertical
+    const doc = new jsPDF();
+
+    //CREACION
+    doc.addImage(img, 'png', 0, -5, 65, 40)
+    doc.setFont("helvetica", "bold");
+    doc.text("Reporte estado tramite", 105, 20, undefined, "center");
+    doc.setFont("times", "normal");
+    doc.setFontSize(12);
+    doc.text(`Impreso: ${fecha}`, 200, 20, undefined, "right");
+    doc.line(200, 30, 10, 30); // horizontal line (largo, altura lado izq, posicion horizontal, altura lado der)
+
+    autoTable(doc, {
+      startY: 40,
+      head: [['Numero', 'Codigo', 'Estado', 'Creacion', 'Titulo']],
+      body: listado,
       theme: 'grid',
       margin: { horizontal: 20 },
       headStyles: {

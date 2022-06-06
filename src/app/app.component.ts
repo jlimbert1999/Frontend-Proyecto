@@ -11,6 +11,7 @@ export class AppComponent {
   title = 'frontend';
   constructor(private socketService: SocketService) {
     this.unirse_Groupware()
+
   }
   unirse_Groupware() {
     //enviar datos para ser indetificado dentro del groupware
@@ -21,11 +22,10 @@ export class AppComponent {
         Nombre: User.Nombre,
         NombreCargo: User.NombreCargo
       }
-      this.socketService.Emitir('unirse', infoUser).subscribe((resp) => {
-        console.log(resp);
-      })
+      
+      this.socketService.Emitir('unirse', infoUser).subscribe()
     }
-    
+
   }
 
   decodificarToken(): any {

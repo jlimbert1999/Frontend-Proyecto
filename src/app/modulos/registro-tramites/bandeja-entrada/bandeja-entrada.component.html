@@ -2,16 +2,28 @@
     <div class="col-md-6 g-0">
         <div class="leftside">
             <p>
-                <mat-toolbar color="primary">
+                <mat-toolbar>
                     <ng-container *ngIf="modo_busqueda==false">
                         <span>Total: {{Tramites_Recibidos.length}}</span>
                         <span class="example-spacer"></span>
                         <button (click)="recargar()" matTooltip="Recargar" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
                             <mat-icon>refresh</mat-icon>
                         </button>
-                        <button (click)="activar_busqueda()" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
-                            <mat-icon>search</mat-icon>
-                        </button>
+
+                        <ng-container *ngIf="Tramites_Recibidos.length>0">
+                            <button [matMenuTriggerFor]="menu" matTooltip="Filtro" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                                <mat-icon>filter_alt</mat-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item (click)="filtrar_listado('nuevos')">Nuevos</button>
+                                <button mat-menu-item (click)="filtrar_listado('aceptados')">Aceptados</button>
+                                <button mat-menu-item (click)="filtrar_listado('todos')">Todos</button>
+                            </mat-menu>
+                            <button (click)="activar_busqueda()" matTooltip="Busqueda" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                                <mat-icon>search</mat-icon>
+                            </button>
+                        </ng-container>
+
                     </ng-container>
 
 
@@ -25,6 +37,7 @@
                     </mat-form-field>
                 </mat-toolbar>
             </p>
+            <p *ngIf="Tramites_Recibidos.length<=0" style="text-align: center;">No se ha recibido ningun tramite</p>
             <mat-selection-list #shoes [multiple]="false">
                 <mat-list-option *ngFor="let mail of Tramites_Recibidos; let i=index" [value]="mail" (click)="ver_fichaTramite(mail, i)">
                     <img matListAvatar src="../../../../assets/img//user-mail.png">
@@ -32,7 +45,7 @@
                         <span>{{mail.Nombre}}</span>
                         <span *ngIf="mail.Recibido!=true" style="margin-left: 10px;" class="badge bg-danger">Nuevo</span>
                         <!-- <span style="font-size: 10px;"> ({{mail.NombreCargo}}) </span> -->
-                        <span style="font-size: 12px; color: #999; position:absolute; right:20px;">{{mail.Fecha_Envio|date}}</span>
+                        <span style="font-size: 12px; position:absolute; right:20px;">{{mail.Fecha_Envio|date}}</span>
                     </h1>
                     <p matLine>
                         <span class="fw-bold">Tramite: </span>

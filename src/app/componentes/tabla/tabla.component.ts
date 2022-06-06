@@ -2,10 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter, AfterViewInit, ViewChil
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-
-//SERVICIOS
-import { InstitucionService } from '../../servicios/servicios-m1/institucion.service'
-import { DependenciaService } from '../../servicios/servicios-m1/dependencia.service'
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-tabla',
@@ -13,7 +11,7 @@ import { DependenciaService } from '../../servicios/servicios-m1/dependencia.ser
   styleUrls: ['./tabla.component.css']
 })
 export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
-  @Input() data: any;
+  @Input() data = new MatTableDataSource<any>();;
   @Input() displayedColumns: any = [];
   @Input() Titulos: any = []
   @Input() palabraFiltro: any = "";
@@ -25,16 +23,19 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   @Output() llamarRemision: EventEmitter<object>;
   @Output() llamarRevision: EventEmitter<object>;
   @Output() llamarVerFlujo: EventEmitter<object>;
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @Input() TiposOpciones: string[] = [];
   TitulosTabla: string[] = []
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  ngAfterViewInit(): void {
+    this.data.paginator = this.paginator;
+    this.data.sort = this.sort;
+  }
 
 
 
-  constructor(
-    instService: InstitucionService,
-    depService: DependenciaService,
+
+  constructor(private _liveAnnouncer: LiveAnnouncer
   ) {
     this.llamarEditar = new EventEmitter();
     this.llamarEliminar = new EventEmitter();
@@ -44,24 +45,22 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
     this.llamarRemision = new EventEmitter();
     this.llamarRevision = new EventEmitter();
     this.llamarVerFlujo = new EventEmitter();
-    setTimeout(() => this.data.paginator = this.paginator);
+    // setTimeout(() => this.data.paginator = this.pag  inator);
 
   }
-  ngAfterViewInit(): void {
-    this.data.paginator = this.paginator;
 
-  }
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.displayedColumns!) {
+    if (this.displayedColumns) {
       this.TitulosTabla = this.displayedColumns.map((titulo: any) => titulo.key);
       this.TitulosTabla.push("Opciones")
     }
+
   }
 
 
   ngOnInit(): void {
   }
-  editarDatos(datos: object) {
+  editarDatos(datos: object, pos: number) {
     this.llamarEditar.emit(datos);
   }
   eliminarDatos(id: object) {
@@ -76,15 +75,17 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   verDetallesUsuario(datos: any) {
     this.llamarVerDetalles.emit(datos.id_funcionario)
   }
-  verFlujoTrabajo(datos:any){
+  verFlujoTrabajo(datos: any) {
     this.llamarVerFlujo.emit(datos)
   }
 
-  imprimirFicha(tramite:any) {
+  imprimirFicha(tramite: any) {
     this.llamarImprimir.emit(tramite)
   }
-  remitir(datos: any, pos:number) {
-    this.llamarRemision.emit({datos, pos})
+  remitir(datos: any, pos: number) {
+    let data: any = datos
+    data['posicion'] = pos
+    this.llamarRemision.emit(data)
   }
   revisar(datos: any) {
     this.llamarRevision.emit(datos)

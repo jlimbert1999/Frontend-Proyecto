@@ -21,6 +21,10 @@ table {
     cursor: pointer;
 }
 
+.mat-icon {
+    color: black;
+}
+
 
 /* 
 .mat-column-Opciones {

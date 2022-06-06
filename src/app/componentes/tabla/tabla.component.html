@@ -1,8 +1,8 @@
 <div class="mat-elevation-z8 table-responsive">
-    <table mat-table [dataSource]="data">
+    <table mat-table [dataSource]="data" matSort>
         <ng-container [matColumnDef]=datosCelda.key *ngFor="let datosCelda of displayedColumns">
 
-            <th mat-header-cell *matHeaderCellDef> {{datosCelda.titulo}} </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{datosCelda.titulo}} </th>
             <td mat-cell *matCellDef="let element; let i=index" [ngSwitch]="datosCelda.key">
                 <ng-container *ngSwitchCase="'Nro'">{{i+1}}</ng-container>
 
@@ -23,7 +23,7 @@
                         <span class="badge bg-warning text-dark" *ngSwitchCase="'Observado'">{{element[datosCelda.key] }}</span>
                         <span class="badge bg-secondary" *ngSwitchCase="'En revision'">{{element[datosCelda.key] }}</span>
                         <span class="badge bg-info text-dark" *ngSwitchCase="'Devuelto'">{{element[datosCelda.key] }}</span>
-                        <span class="badge bg-dark" *ngSwitchCase="'Devuelto'">{{element[datosCelda.key] }}</span>
+                        <span class="badge bg-dark" *ngSwitchCase="'Concluido'">{{element[datosCelda.key] }}</span>
                         <span class="badge bg-warning text-dark" *ngSwitchCase="'Anulado'">{{element[datosCelda.key] }}</span>
                     </ng-container>
                 </ng-container>
@@ -35,26 +35,50 @@
                     {{element[datosCelda.key]?'Si':'No'}}
                 </ng-container>
                 <ng-container *ngSwitchCase="'alterno'">
-                    <a [routerLink]="['/Tramites/ficha', element['id_tramite']]">{{element[datosCelda.key]}}</a>
+                    <a style="font-size: 12px;" [routerLink]="['/inicio/ficha', element['id_tramite']]">{{element[datosCelda.key]}}</a>
                 </ng-container>
-                <ng-container *ngSwitchDefault>{{element[datosCelda.key]}}</ng-container>
+                <ng-container *ngSwitchDefault>{{element[datosCelda.key] | titlecase }}</ng-container>
             </td>
         </ng-container>
 
         <ng-container matColumnDef="Opciones">
             <th mat-header-cell *matHeaderCellDef>Opciones</th>
             <td mat-cell *matCellDef="let row; let element; let i=index">
-                <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Mostrar opciones"><mat-icon>more_vert</mat-icon></button>
-                <mat-menu #menu="matMenu">
-                    <button *ngIf="TiposOpciones.includes('Editar') && !element['enviado']" (click)="editarDatos(element)" mat-menu-item> <mat-icon>edit</mat-icon> Editar</button>
-                    <button *ngIf="TiposOpciones.includes('Eliminar')" (click)="eliminarDatos(element)" mat-menu-item color="warn"> <mat-icon>delete</mat-icon>Eliminar registro</button>
-                    <button *ngIf="TiposOpciones.includes('VerDetalles')" (click)="verDetallesUsuario(element)" mat-menu-item color="primary"> <mat-icon>info</mat-icon>Detalles cargo</button>
-                    <button *ngIf="TiposOpciones.includes('Finalizar')" (click)="finalizarCargo(element)" mat-menu-item> <mat-icon>no_accounts</mat-icon>Desvincular cuenta</button>
-                    <button *ngIf="TiposOpciones.includes('Imprimir')" (click)="imprimirFicha(element)" mat-menu-item matTooltip="Imprimir ficha"> <mat-icon>print</mat-icon> Imprimir</button>
-                    <button *ngIf="TiposOpciones.includes('Remitir') && !element['enviado']" (click)="remitir(element, i)" mat-menu-item> <mat-icon>send</mat-icon>Remitir</button>
+                <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Mostrar opciones">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" xPosition="before">
+                    <button *ngIf="TiposOpciones.includes('Editar') && !element['enviado']" (click)="editarDatos(element, i)" mat-menu-item> 
+                        <mat-icon>edit</mat-icon> 
+                        <span>Editar</span>
+                    </button>
+                    <button *ngIf="TiposOpciones.includes('Eliminar')" (click)="eliminarDatos(element)" mat-menu-item> <mat-icon>delete</mat-icon>Eliminar registro</button>
+                    <button *ngIf="TiposOpciones.includes('VerDetalles')" (click)="verDetallesUsuario(element)" mat-menu-item> 
+                        <mat-icon>info</mat-icon>
+                        <span>Detalles cargo</span>
+                    </button>
+                    <button *ngIf="TiposOpciones.includes('Finalizar')" (click)="finalizarCargo(element)" mat-menu-item> 
+                        <mat-icon>no_accounts</mat-icon>
+                        <span>Desvincular cuenta</span>
+                    </button>
+                    <button *ngIf="TiposOpciones.includes('Imprimir')" (click)="imprimirFicha(element)" mat-menu-item>
+                         <mat-icon>print</mat-icon> 
+                         <span>Imprimir</span>
+                    </button>
+                    <button *ngIf="TiposOpciones.includes('Remitir') && !element['enviado']" (click)="remitir(element, i)" mat-menu-item> 
+                        <mat-icon>send</mat-icon>
+                        <span>Remitir</span>
+                    </button>
                     <!-- <button *ngIf="TiposOpciones.includes('Revisar')" (click)="revisar(element)" mat-menu-item> <mat-icon>visibility</mat-icon>Ver informacion</button> -->
-                    <button *ngIf="TiposOpciones.includes('VerFlujo')" (click)="verFlujoTrabajo(element)" mat-menu-item> <mat-icon>group_work</mat-icon>Flujo de trabajo</button>
+                    <button *ngIf="TiposOpciones.includes('VerFlujo') && element['enviado']" (click)="verFlujoTrabajo(element)" mat-menu-item> 
+                        <mat-icon>group_work</mat-icon>
+                        <span>Flujo de trabajo</span>
+                    </button>
                 </mat-menu>
+
+
+
+
 
             </td>
         </ng-container>
@@ -66,7 +90,7 @@
             <td class="mat-cell" colspan="4">No se econtraron registros con: "{{palabraFiltro}}"</td>
         </tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+    <mat-paginator [pageSizeOptions]="[5, 10, 20, 30]" showFirstLastButtons aria-label="Select page of periodic elements">
     </mat-paginator>
 
 </div>

@@ -1,0 +1,24 @@
+<p>
+    <mat-toolbar>
+        <span>Reporte por estado</span>
+        <span class="example-spacer"></span>
+    </mat-toolbar>
+</p>
+
+<div class="container-fluid">
+    <div class="card text-center">
+        <div class="card-body" style="align-items: center;">
+            <select #txt_estado class="form-select" aria-label="Default select example">
+                <option selected>Seleccione el estado del tramite</option>
+                <option *ngFor="let item of estados_tramite" [value]="item">{{item}}</option>
+            </select>
+            <p class="card-text">Opciones reporte</p>
+
+            <button mat-raised-button (click)="generar_reporte_estado( txt_estado.value, 'ver')" color="primary">Ver</button>
+            <button mat-raised-button (click)="generar_reporte_estado( txt_estado.value, 'imprimir')" color="accent">Imprimir</button>
+            <button mat-raised-button (click)="generar_reporte_estado( txt_estado.value, 'guardar')" color="accent">Guardar</button>
+        </div>
+
+    </div>
+</div>
+<pdf-viewer [render-text]="true" [fxHide.print]="true" style="width: 100%; height: 70%;" [src]="pdfSrc"></pdf-viewer>

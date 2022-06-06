@@ -1,0 +1,57 @@
+.example-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.example-is-mobile .example-toolbar {
+    position: fixed;
+    z-index: 2;
+}
+
+h1.example-app-name {
+    margin-left: 8px;
+}
+
+.example-sidenav-container {
+    flex: 1;
+}
+
+.example-is-mobile .example-sidenav-container {
+    flex: 1 0 auto;
+}
+
+.mat-drawer {
+    width: 250px;
+    background: #212529;
+}
+
+.mat-list-item,
+.mat-subheader {
+    color: white;
+}
+
+.mat-list-item.active {
+    background-color: #0096C7;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+.campo_cuenta {
+    line-height: 1em;
+    height: 2em;
+    overflow: hidden;
+    font-size: medium;
+    margin-left: 10px;
+}
+
+.example-toolbar {
+    background-color: #212529;
+    color: white;
+}

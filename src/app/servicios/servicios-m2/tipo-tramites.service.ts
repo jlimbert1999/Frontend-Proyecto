@@ -33,11 +33,11 @@ export class TipoTramitesService {
   addRequerimientos(requerimientos: Requerimientos) {
     return this.http.post(`${this.URL}/requerimientos`, requerimientos)
   }
-  getRequerimientos_Habilitados(id: number) {
-    return this.http.get(`${this.URL}/requerimientos_Habilitados/${id}`)
+  getRequerimientos_Habilitados(id_TipoTramite: number) {
+    return this.http.get(`${this.URL}/requerimientos_Habilitados/${id_TipoTramite}`)
   }
-  getRequerimientos_noHabilitados(id: number) {
-    return this.http.get(`${this.URL}/requerimientos_noHabilitados/${id}`)
+  getRequerimientos_noHabilitados(id_TipoTramite: number) {
+    return this.http.get(`${this.URL}/requerimientos_noHabilitados/${id_TipoTramite}`)
   }
 
   //METODO PARA ELIMINAR LOGICAMENTE

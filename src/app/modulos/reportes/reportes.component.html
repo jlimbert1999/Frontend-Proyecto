@@ -8,30 +8,36 @@
 </mat-toolbar>
 
 <mat-sidenav-container class="example-container">
-    <mat-sidenav #drawer mode="over" class="panel">
+    <mat-sidenav #drawer mode="side" class="panel">
         <mat-nav-list class="nav-list">
             <div class="nav-item">
                 <a style="color: white;" class="nav-link" mat-list-item routerLinkActive="active-list-item" (click)="obtener_reporte_tramitesRealizados()">
-                    <mat-icon class="nav-icon">folder_shared</mat-icon>
+                    <mat-icon class="nav-icon">file_copy</mat-icon>
                     Tramites realizados
                 </a>
             </div>
             <div class="nav-item">
                 <a style="color: white;" class="nav-link" mat-list-item routerLinkActive="active-list-item" (click)="obtener_reporte_Funcionarios()">
-                    <mat-icon class="nav-icon">markunread</mat-icon>
+                    <mat-icon class="nav-icon">folder_shared</mat-icon>
                     Funcionarios
                 </a>
             </div>
             <div class="nav-item">
                 <a style="color: white;" class="nav-link" mat-list-item routerLinkActive="active-list-item" (click)="obtener_reporte_Solicitantes()">
-                    <mat-icon class="nav-icon">drafts</mat-icon>
+                    <mat-icon class="nav-icon">contact_page</mat-icon>
                     Solicitantes
                 </a>
             </div>
             <div class="nav-item">
-                <a style="color: white;" class="nav-link" mat-list-item routerLinkActive="active-list-item" (click)="reporte_ficha_tramite()">
-                    <mat-icon class="nav-icon">drafts</mat-icon>
+                <a style="color: white;" class="nav-link" mat-list-item routerLinkActive="active-list-item" (click)="obtener_ficha_tramite()">
+                    <mat-icon class="nav-icon">description</mat-icon>
                     Ficha de tramite
+                </a>
+            </div>
+            <div class="nav-item">
+                <a style="color: white;" class="nav-link" mat-list-item routerLinkActive="active-list-item" (click)="obtener_reporte_Estado()">
+                    <mat-icon class="nav-icon">format_list_bulleted</mat-icon>
+                    Reporte por estado
                 </a>
             </div>
         </mat-nav-list>
@@ -40,54 +46,58 @@
         <div class="container">
 
 
-            <!-- <div class="container">
-            <ng-container *ngIf="tipo_reporte=='Tramites_realizados'">
-                <ngx-charts-advanced-pie-chart class="pie-chart-container" [view]="view" [scheme]="colorScheme" [results]="single" [gradient]="gradient" (select)="onSelect($event)" (activate)="onActivate($event)" (deactivate)="onDeactivate($event)" [animations]="false">
-                </ngx-charts-advanced-pie-chart>
-                <p class="fw-bolder">Cantidad de tramites realizados</p>
-                <mat-list>
-                    <div mat-subheader>Tramites de funcionarios</div>
-                    <mat-list-item *ngFor="let folder of lista_datos">
-                        <mat-icon mat-list-icon>folder</mat-icon>
-                        <div mat-line>{{folder.titulo}} ({{folder.estado}}) - {{folder.alterno}}</div>
-                        <div mat-line> {{folder.Fecha_creacion| date}} </div>
-                    </mat-list-item>
-                    <mat-divider></mat-divider>
-                </mat-list>
+            <div class="container">
+                <ng-container *ngIf="tipo_reporte=='Tramites_realizados'">
+                    <ngx-charts-advanced-pie-chart class="pie-chart-container" [view]="view" [scheme]="colorScheme" [results]="single" [gradient]="gradient" (select)="onSelect($event)" (activate)="onActivate($event)" (deactivate)="onDeactivate($event)" [animations]="false">
+                    </ngx-charts-advanced-pie-chart>
+                    <p class="fw-bolder">Cantidad de tramites realizados</p>
+                    <mat-list>
+                        <div mat-subheader>Tramites de funcionarios</div>
+                        <mat-list-item *ngFor="let folder of lista_datos">
+                            <mat-icon mat-list-icon>folder</mat-icon>
+                            <div mat-line>{{folder.titulo}} ({{folder.estado}}) - {{folder.alterno}}</div>
+                            <div mat-line> {{folder.Fecha_creacion| date}} </div>
+                        </mat-list-item>
+                        <mat-divider></mat-divider>
+                    </mat-list>
 
-            </ng-container>
+                </ng-container>
 
-            <ng-container *ngIf="tipo_reporte=='Tramites_funcionarios'">
-                <ngx-charts-pie-chart [legendPosition]="legendPosition" [results]="single" [legend]="true" [legendTitle]="'Tipos de tramites'" [view]="[900,300]" [labels]="true" [animations]="false">
-                </ngx-charts-pie-chart>
-            </ng-container>
-            <ng-container *ngIf="tipo_reporte=='Tramites_solicitante'">
-                <mat-list class="lista_soli">
-                    <div mat-subheader>Tramites requeridos por solicitantes</div>
-                    <mat-list-item *ngFor="let folder of lsita_solicitantes">
-                        <mat-icon mat-list-icon>account_circle</mat-icon>
-                        <div mat-line>{{folder.paterno}} {{folder.materno}} {{folder.nombres}} - {{folder.expedido}} {{folder.dni}}</div>
-                        <div mat-line> Tipo de tramite: {{folder.titulo}} </div>
-                    </mat-list-item>
-                    <mat-divider></mat-divider>
-                </mat-list>
-            </ng-container>
+                <ng-container *ngIf="tipo_reporte=='Tramites_funcionarios'">
+                    <ngx-charts-pie-chart [legendPosition]="legendPosition" [results]="single" [legend]="true" [legendTitle]="'Tipos de tramites'" [view]="[900,300]" [labels]="true" [animations]="false">
+                    </ngx-charts-pie-chart>
+                </ng-container>
+                <ng-container *ngIf="tipo_reporte=='Tramites_solicitante'">
+                    <mat-list class="lista_soli">
+                        <div mat-subheader>Tramites requeridos por solicitantes</div>
+                        <mat-list-item *ngFor="let folder of lsita_solicitantes">
+                            <mat-icon mat-list-icon>account_circle</mat-icon>
+                            <div mat-line>{{folder.paterno}} {{folder.materno}} {{folder.nombres}} - {{folder.expedido}} {{folder.dni}}</div>
+                            <div mat-line> Tipo de tramite: {{folder.titulo}} </div>
+                        </mat-list-item>
+                        <mat-divider></mat-divider>
+                    </mat-list>
+                </ng-container>
 
-        </div> -->
+            </div>
 
-            <ng-container *ngIf="Titulo_reporte=='Ficha de tramite'">
+            <ng-container *ngIf="tipo_reporte=='reporte_ficha'">
                 <form>
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Ingrese el codigo del tramite</label>
                         <input #txtCodigo_tramite type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                         <div id="emailHelp" class="form-text">El codigo se encuntra en la ficha entregada</div>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="exampleInputPassword1" class="form-label">Ingrese el CI del solicitante</label>
                         <input #txtCI type="text" class="form-control" id="exampleInputPassword1">
-                    </div>
-                    <button class="btn btn-primary" (click)="generar_reporte_ficha(txtCodigo_tramite.value, txtCI.value)">Generar</button>
+                    </div> -->
+                    <button class="btn btn-primary" (click)="generar_reporte_ficha(txtCodigo_tramite.value)">Generar</button>
                 </form>
+            </ng-container>
+            <ng-container *ngIf="tipo_reporte=='reporte_estado'">
+
+
             </ng-container>
         </div>
 

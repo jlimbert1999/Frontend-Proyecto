@@ -9,5 +9,6 @@ export interface TramiteModel {
     activo?: boolean,  //innecesario???
     id_cuenta?: number,
     Fecha_creacion: number,
+    Fecha_finalizacion?:number,
     nombreC_solicitante?: string
 }

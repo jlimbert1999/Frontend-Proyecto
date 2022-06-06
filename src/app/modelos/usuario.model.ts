@@ -1,5 +1,4 @@
-export interface UsuarioModel {
-
+export interface FuncionarioModel {
     id_funcionario?: number;
     Nombre: string;
     Apellido_P: string;

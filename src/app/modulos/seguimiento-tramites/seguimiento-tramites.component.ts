@@ -7,7 +7,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Layout } from '@swimlane/ngx-graph';
 import * as moment from 'moment';
 import { Workflow } from 'src/app/modelos/seguimiento-tramites/workflow.model';
-
+import { TramiteModel } from 'src/app/modelos/registro-tramites/resistro-tramites.model';
+import { Location } from '@angular/common';
+import { SolicitanteModel } from 'src/app/modelos/registro-tramites/solicitante.model';
 @Component({
   selector: 'app-seguimiento-tramites',
   templateUrl: './seguimiento-tramites.component.html',
@@ -20,10 +22,10 @@ export class SeguimientoTramitesComponent implements OnInit {
   id_tramite: number = 0
   listaWorkflow: any[] = []
   dataSource = new MatTableDataSource()
-  displayedColumns: string[] = ['Emisor', 'Receptor', 'Detalle', 'Enviado', 'Recibido']
+  displayedColumns: string[] = ['Emisor', 'Enviado', 'Receptor', 'Recibido', 'Duracion']
   Participantes: any[] = []
+  view: [number, number]
 
-  view:any=[700,350]
   // Variables para grafica
   layout: any | Layout = 'dagre';
   center$: Subject<boolean> = new Subject();
@@ -49,15 +51,18 @@ export class SeguimientoTramitesComponent implements OnInit {
   ];
   info_User: any
   observacione_user: any
-  info_Tramite: any
+  Tramite: TramiteModel
+  Solicitante: SolicitanteModel
 
 
   constructor(
     private workflowService: WorkflowServiceService,
     private activateRoute: ActivatedRoute,
-    private tramiteService: RegistroTramiteService
-  ) { 
-    this.view = [innerWidth / 1.3, 350];
+    private tramiteService: RegistroTramiteService,
+    private _location: Location
+  ) {
+    this.view = [innerWidth, 300];
+
   }
 
   ngOnInit(): void {
@@ -65,6 +70,7 @@ export class SeguimientoTramitesComponent implements OnInit {
       this.id_tramite = params['id'];
       this.obtener_Workflow(this.id_tramite)
       this.obtener_InfoTramite()
+      this.obtener_Datos_Solicitante(this.id_tramite)
     });
 
   }
@@ -76,6 +82,7 @@ export class SeguimientoTramitesComponent implements OnInit {
         this.listaWorkflow = resp.Workflow
         this.dataSource.data = resp.Workflow
         resp.Workflow.forEach((element: any) => {
+          
           if (!this.ids_Cuentas.includes(element.id_cuentaEmisor)) {
             this.ids_Cuentas.push(element.id_cuentaEmisor)
           }
@@ -119,7 +126,6 @@ export class SeguimientoTramitesComponent implements OnInit {
     ids_Cuentas.forEach((element: any, index: number) => {
       this.tramiteService.getDatosFuncionario(element).subscribe((resp: any) => {
         this.Participantes.push(resp.Funcionario[0])
-        console.log(resp.Funcionario[0]);
         this.nodos[index].data = resp.Funcionario[0]
         this.listaWorkflow.forEach((lista: any, i: number) => {
           if (lista.id_cuentaEmisor == resp.Funcionario[0].id_cuenta) {
@@ -135,28 +141,40 @@ export class SeguimientoTramitesComponent implements OnInit {
             this.listaWorkflow[i]['NombreInstRecep'] = `${resp.Funcionario[0].Sigla}`
 
           }
+          //duracion
+          let fecha1: any = 0
+          let fecha2: any = 0
+          if (i == 0) {
+            fecha1 = moment(new Date(parseInt(this.Tramite.Fecha_creacion.toString())));
+            fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
+          }
+          else if (i > 0) {
+            fecha1 = moment(new Date(parseInt(this.listaWorkflow[i - 1]['fecha_recibido'])));
+            fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
+
+          }
+          // fecha1 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
+          // fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_recibido'])));
+
+          let duration = moment.duration(fecha2.diff(fecha1));
+          let years = duration.years(),
+            months = duration.months(),
+            days = duration.days(),
+            hrs = duration.hours(),
+            mins = duration.minutes(),
+            secs = duration.seconds();
+          this.listaWorkflow[i]['Duracion'] = days + ' Dia ' + hrs + ' hrs ' + mins + ' mins ' + secs + ' seg.'
         })
       })
     });
   }
 
-  hacerAlgo(data: any) {
+  obtener_info_funcionario(data: any) {
     this.info_User = data
-    this.listaWorkflow.find(object => {
-      if (data.id_cuenta == object.id_cuentaEmisor) {
-        let fecha1 = moment(new Date(parseInt(object.fecha_envio)));
-        let fecha2 = moment(new Date(parseInt(object.fecha_recibido)))
-        this.info_User['tiempo_empleado'] = { tiempo: moment(fecha2.diff(fecha1)).format('mm:ss'), formato: 'segunos' }
-        // if(fecha2.diff(fecha1, 'seconds')>60){
-
-        //   this.info_User['tiempo_empleado']={tiempo:fecha2.diff(fecha1, 'minutes'), formato:'minutos'}
-        // }
-        // else{
-        //   this.info_User['tiempo_empleado']={tiempo:moment.duration(fecha2.diff(fecha1, 'seconds')).asDays(), formato:'segunos'}
-        // }
-      }
-    });
-    this.obtener_Observaciones(data.id_cuenta)
+    const index = this.listaWorkflow.findIndex((item: any) => item.id_cuentaEmisor == this.info_User.id_cuenta);
+    this.info_User['tiempo_empleado'] = this.listaWorkflow[index].Duracion
+    
+    // this.obtener_Observaciones(data.id_cuenta)
   }
   obtener_Observaciones(id_cuenta: number) {
     this.tramiteService.getObservaciones_deUsuario(id_cuenta).subscribe((resp: any) => {
@@ -172,18 +190,28 @@ export class SeguimientoTramitesComponent implements OnInit {
   obtener_InfoTramite() {
     this.tramiteService.getFicha_InfoTramite(this.id_tramite).subscribe((resp: any) => {
       if (resp.ok) {
-        console.log(resp);
-        this.info_Tramite = resp.Tramite[0]
+        this.Tramite = resp.Tramite[0]
+      }
+    })
+  }
+  obtener_Datos_Solicitante(id_tramite: number) {
+    this.tramiteService.getFicha_InfoSolicitante(id_tramite).subscribe((resp: any) => {
+      if (resp.ok) {
+        this.Solicitante = resp.Solicitante[0]
       }
     })
   }
   centerGraph() {
     this.center$.next(true)
   }
-  onResize(event:any) {
-    this.view = [event.target.innerWidth / 1.3, 350];
-    console.log(this.view);
+  regresar() {
+    this._location.back();
   }
+
+  onResize(event: any) {
+    this.view = [event.target.innerWidth , event.target.innerHeight/1.35];
+  }
+
 
 
 

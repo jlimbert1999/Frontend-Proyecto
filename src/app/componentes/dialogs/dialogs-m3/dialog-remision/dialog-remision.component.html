@@ -1,131 +1,103 @@
-<!-- <h2 mat-dialog-title>Envio de tramite</h2> -->
+<div class="header" matLine>
+    <h2 mat-dialog-title>Remision tramite</h2>
+    <button mat-icon-button [mat-dialog-close]="false">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
 <mat-dialog-content>
-    <mat-tab-group [selectedIndex]="Posicion_Ventana" mat-align-tabs="center" mat-stretch-tabs>
-        <mat-tab label="Seleccion" disabled="true">
-            <!-- <mat-form-field appearance="legacy" style="width: 100%; margin-top: 10px;" #tipo>
-                <mat-label>Seleccione el tipo de envio</mat-label>
-                <mat-select>
-                    <mat-option *ngFor="let tipo of Tipos_Envio" [value]="tipo" (click)="Seleccionar_Tipo_Envio(tipo)">
-                        {{tipo}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field> -->
-
-            <div matLine class="row">
-                <div class="col">
-                    <mat-form-field appearance="legacy">
-                        <mat-label>Institucion</mat-label>
-                        <mat-select #txtInsti>
-                            <mat-option *ngFor="let inst of instituciones" (click)="obtener_DependenciasInst(inst.id_institucion!)" [value]="inst.id_institucion">
-                                {{inst.Nombre}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col">
-                    <mat-form-field appearance="legacy">
-                        <mat-label>Dependencia</mat-label>
-                        <mat-select #txtDep>
-                            <mat-option *ngFor="let dep of dependencias" (click)="obtener_users_desconectados(txtInsti.value, txtDep.value)" [value]="dep.id_dependencia">
-                                {{dep.Nombre}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Institucion</mat-label>
+                    <mat-select #txtInsti>
+                        <mat-option *ngFor="let inst of instituciones" (click)="obtener_DependenciasInst(inst.id_institucion!)" [value]="inst.id_institucion">
+                            {{inst.Nombre}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
-            <ng-container *ngIf="dependencias.length>0">
-                <mat-selection-list #shoes [multiple]="false" class="lista">
-                    <mat-list-option *ngFor="let user of usuarios_Desconectados" (click)="seleccionar_User(user)">
-                        <mat-icon mat-list-icon>account_circle</mat-icon>
-                        <div mat-line>{{user.Nombre}} {{user.Apellido_P}} {{user.Apellido_M}} </div>
-                        <div mat-line>{{user.NombreCar}}</div>
-                    </mat-list-option>
-                </mat-selection-list>
-            </ng-container>
+            <div class="col">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Dependencia</mat-label>
+                    <mat-select #txtDep>
+                        <mat-option *ngFor="let dep of dependencias" (click)="obtener_users_desconectados(txtInsti.value, txtDep.value)" [value]="dep.id_dependencia">
+                            {{dep.Nombre}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
 
-            <ng-container>
-                <p>No se econtraron usuarios</p>
-            </ng-container>
-            <!-- <ng-container [ngSwitch]="Opcion_Envio">
-                <ng-container *ngSwitchCase="'Funcionarios activos'">
-                    <ng-container *ngIf="usuarios_Conectados.length>0">
-                        <nav class="navbar navbar-light bg-light">
-                            <div class="container-fluid">
-                                <form class="d-flex">
-                                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                                    <button class="btn btn-outline-success" type="submit">Search</button>
-                                </form>
-                            </div>
-                        </nav>
-                        <mat-selection-list #shoes [multiple]="false" class="lista">
-                            <mat-list-option *ngFor="let usuarios of usuarios_Conectados" (click)="seleccionar_user_activo(usuarios)">
-                                <mat-icon mat-list-icon>account_circle</mat-icon>
-                                <div mat-line>{{usuarios.Nombre}}</div>
-                                <div mat-line>{{usuarios.NombreCargo}}</div>
-                            </mat-list-option>
-                        </mat-selection-list>
-                    </ng-container>
-                    <ng-container *ngIf="usuarios_Conectados.length==0">
-                        <p style="color:orange; text-align: center;">No se econtraron usuarios conectados</p>
-                    </ng-container>
-                </ng-container>
+        </div>
+    </div>
+    <mat-spinner *ngIf="spiner_carga" style="margin:0 auto;"></mat-spinner>
+
+    <!-- <mat-selection-list *ngIf="usuarios_Desconectados" #shoes [multiple]="false">
+        <mat-list-option *ngFor="let user of usuarios_Desconectados" (click)="seleccionar_User(user)">
+            <img matListAvatar src="../../../../../assets/img/user-mail.png" alt="...">
+            <h4 matLine> {{user.Nombre}}
+                <span *ngIf="user.id" style="font-size: 12px; position:absolute; right:20px; color: green;">En linea</span>
+                <span *ngIf="!user.id" style="font-size: 12px; position:absolute; right:20px; color: red;">Sin conexion</span>
+            </h4>
+            <p matLine style="font-size: 12px;">
+                <span> {{user.NombreCar}} </span>
+            </p>
+
+        </mat-list-option>
+    </mat-selection-list> -->
+
+    <mat-divider></mat-divider>
+    <form class="row g-3">
+
+        <div class="col-12">
+            <label for="inputAddress" class="form-label">Funcionario que recibira el tramite</label>
+            <mat-form-field class="example-full-width" appearance="outline" dis>
+                <mat-label>Nombre y cargo del funcionario</mat-label>
+                <input matInput aria-label="State" [matAutocomplete]="auto" [formControl]="stateCtrl">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let user of filteredStates | async" (click)="seleccionar_User(user)" [value]="user.Nombre+' '+user.Apellido_P+' '+user.Apellido_M+' ('+user.NombreCar+')'">
+                        <img matListAvatar src="../../../../../assets/img/user-mail.png" alt="..." height="25">
+                        <span style="margin-left: 10px; font-size: 12px;">{{user.Nombre}} {{user.Apellido_P}} {{user.Apellido_M}}</span> (<small style="font-size:11px ;">{{user.NombreCar}}</small>)
+                        <span *ngIf="user.id" style="font-size: 12px; position:absolute; right:20px; color: green;">En linea</span>
+                        <span *ngIf="!user.id" style="font-size: 12px; position:absolute; right:20px; color: red;">Sin conexion</span>
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
 
 
-            </ng-container> -->
-        </mat-tab>
+        <div class="col-md-6">
+            <label for="inputEmail4" class="form-label">Tramite a enviar</label>
+            <input type="email" disabled class="form-control" id="inputEmail4" [value]="data.Titulo">
+        </div>
+        <div class="col-md-6">
+            <label for="inputPassword4" class="form-label">Alterno</label>
+            <input type="text" disabled class="form-control" id="inputPassword4" [value]="data.Alterno">
+        </div>
 
+    </form>
 
-        <mat-tab label="Datos" [disabled]="true">
-            <mat-card>
-                <mat-card-title style="font-size: 18px;">Detalles de envio</mat-card-title>
-                <mat-card-content>
-                    <ul class="list-group list-group-horizontal" style="background-color: red;">
-
-                        <li class="list-group-item" style="width: 20%;">PARA: </li>
-                        <li class="list-group-item" style="width: 60%;">
-                            <div>
-                                {{Info_UserReceptor.Nombre}}
-                            </div>
-                            <div style="font-size: smaller;">
-                                {{Info_UserReceptor.NombreCargo}}
-                            </div>
-                        </li>
-                        <li class="list-group-item" style="width: 20%;">
-                            <button mat-icon-button (click)="Anterior_Paso()">
-                                <mat-icon>edit</mat-icon>
-                            </button>
-                        </li>
-                    </ul>
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item" style="width: 25%;">TRAMITE</li>
-                        <li class="list-group-item" style="width: 100%;">
-                            <div>
-                                {{data.Titulo}}
-                            </div>
-                            <div style="font-size: smaller;">
-                                {{data.Alterno}}
-                            </div>
-                        </li>
-                    </ul>
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item" style="width: 30%;">DESCRIPCION</li>
-                        <li class="list-group-item" style="width: 70%;">
-                            <mat-form-field style="width: 100%;" appearance="legacy">
-                                <mat-label>Descripcion</mat-label>
-                                <textarea matInput placeholder="Describa las acciones" [(ngModel)]="data.Mensaje"></textarea>
-                            </mat-form-field>
-                        </li>
-                    </ul>
-
-                </mat-card-content>
-            </mat-card>
-
-        </mat-tab>
-    </mat-tab-group>
 
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-raised-button color="danger" (click)="dismiss()">Cancelar</button>
-    <button mat-raised-button color="primary" (click)="Enviar_Tramite()"> Enviar</button>
+    <div class="input-group">
+        <input class="form-control" placeholder="Ingrese una descripcion" [(ngModel)]="data.Mensaje">
+        <!-- <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button> -->
+        <button align="end" [disabled]="!Info_UserReceptor" mat-raised-button color="primary" (click)="Enviar_Tramite()"> Enviar</button>
+    </div>
+    <!-- <div class="row">
+        <div class="col-8">
+            <mat-form-field class="example-full-width" appearance="legacy">
+                <mat-label>Favorite food</mat-label>
+                <input matInput placeholder="Ex. Pizza" value="Sushi">
+            </mat-form-field>
+        </div>
+        <div class="col-4">
+
+        </div>
+    </div> -->
+
+    <!-- <button mat-raised-button color="danger" (click)="dismiss()">Cancelar</button> -->
+
 </mat-dialog-actions>

@@ -1,0 +1,33 @@
+<p>
+    <mat-toolbar>
+        <span>Reporte ficha de tramite</span>
+        <span class="example-spacer"></span>
+    </mat-toolbar>
+</p>
+
+<div class="container-fluid">
+    <p style="text-align: center;">Ingrese alguno de los campos</p>
+
+    <div class="row">
+        <div class="col">
+            <label for="exampleInputEmail1" class="form-label">Codigo del tramite</label>
+            <input #txtCodigo_tramite type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+
+        </div>
+        <div class="col">
+            <label for="exampleInputPassword1" class="form-label">CI del solicitante</label>
+            <input #txtCI type="text" class="form-control" id="exampleInputPassword1">
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <div class='wrapper text-center'>
+            <div class="btn-group">
+                <button mat-raised-button color="primary" (click)="obtener_reporte_ficha(txtCodigo_tramite.value, txtCI.value, 'ver')">Ver</button>
+                <button mat-raised-button color="accent" (click)="obtener_reporte_ficha(txtCodigo_tramite.value, txtCI.value, 'imprimir')">Imprimir</button>
+                <button mat-raised-button color="warn" (click)="obtener_reporte_ficha(txtCodigo_tramite.value, txtCI.value, 'guardar')">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<pdf-viewer [render-text]="true" [fxHide.print]="true" style="width: 100%; height: 70%;" [src]="pdfSrc"></pdf-viewer>

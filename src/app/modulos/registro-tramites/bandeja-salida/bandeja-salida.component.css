@@ -35,7 +35,7 @@
 
 .example-accordion-item-header:hover {
     cursor: pointer;
-    background-color: #eee;
+    /* background-color: #eee; */
 }
 
 .example-accordion-item:first-child {
@@ -60,4 +60,12 @@ example-accordion,
 p,
 footer {
     font-size: 16px;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+.select {
+    background-color: #CAF0F8;
 }

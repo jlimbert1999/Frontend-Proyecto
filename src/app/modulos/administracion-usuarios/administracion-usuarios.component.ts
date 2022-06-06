@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit } from '@angular/core';
 import { UsuariosService } from '../../servicios/servicios-m1/usuarios.service';
 
 //Modelos
-import { UsuarioModel } from 'src/app/modelos/usuario.model';
+import { FuncionarioModel } from 'src/app/modelos/usuario.model';
 import { CuentaModel } from 'src/app/modelos/administracion-usuarios/cuenta.model'
 import { TrabajoModel } from 'src/app/modelos/administracion-usuarios/trabajo.model'
 
@@ -20,7 +20,7 @@ import { Mensajes } from 'src/app/componentes/mensaje/mensaje'
   styleUrls: ['./administracion-usuarios.component.css']
 })
 export class AdministracionUsuariosComponent implements OnInit {
-  Funcionarios: UsuarioModel[] = []
+  Funcionarios: FuncionarioModel[] = []
   Cuentas: any[] = []
 
   //opciones tabla
@@ -33,7 +33,7 @@ export class AdministracionUsuariosComponent implements OnInit {
 
 
   //manejo de datos para actualizar
-  datos_funcionario: UsuarioModel
+  datos_funcionario: FuncionarioModel
   datos_cuenta: CuentaModel
   dataFormRegistro = {
     datosFuncionario: {}, //datos_funcionario

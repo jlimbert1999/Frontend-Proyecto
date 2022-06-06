@@ -18,6 +18,16 @@ import { ReportesComponent } from './modulos/reportes/reportes.component';
 import { ConsultaComponent } from './paginas/consulta/consulta.component';
 import { AdmFuncionarioComponent } from './modulos/administracion-usuarios/adm-funcionario/adm-funcionario.component';
 import { RoleGuard } from './guards/role.guard';
+import { ReporteFichaComponent } from './modulos/reportes/reporte-ficha/reporte-ficha.component';
+import { FuncionariosComponent } from './modulos/administracion-usuarios/funcionarios/funcionarios.component';
+import { TiposTramitesComponent } from './modulos/administracion-usuarios/tipos-tramites/tipos-tramites.component';
+import { InstitucionesComponent } from './modulos/administracion-usuarios/instituciones/instituciones.component';
+import { DependenciasComponent } from './modulos/administracion-usuarios/dependencias/dependencias.component';
+import { CargosComponent } from './modulos/administracion-usuarios/cargos/cargos.component';
+import { CuentasComponent } from './modulos/administracion-usuarios/cuentas/cuentas.component';
+import { ReporteEstadoComponent } from './modulos/reportes/reporte-estado/reporte-estado.component';
+import { ReporteEstadisticoComponent } from './modulos/reportes/reporte-estadistico/reporte-estadistico.component';
+import { GroupwareComponent } from './modulos/administracion-usuarios/groupware/groupware.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
@@ -29,28 +39,55 @@ const routes: Routes = [
       { path: 'Tipos-Tramites', component: TramitesRequisitosComponent }
     ]
   },
-  {
-    path: 'Tramites', component: RegistroTramitesComponent,
-    children: [
-      { path: 'administrar-tramite', component: AdmTramiteComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'USER1_ROLE' } },
-      { path: 'bandeja-entrada', component: BandejaEntradaComponent },
-      { path: 'bandeja-salida', component: BandejaSalidaComponent },
-      { path: 'ficha/:id', component: FichaTramiteComponent }
+  // {
+  //   path: 'Tramites',
+  //   children: [
+  //     { path: 'administrar-tramite', component: AdmTramiteComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'USER1_ROLE' } },
+  //     { path: 'bandeja-entrada', component: BandejaEntradaComponent },
+  //     { path: 'bandeja-salida', component: BandejaSalidaComponent },
+  //     { path: 'ficha/:id', component: FichaTramiteComponent }
 
+  //   ]
+  // },
+  // {
+  //   path: 'Workflow/:id', component: SeguimientoTramitesComponent
+  // },
+  {
+    path: 'Reportes', component: ReportesComponent,
+    children: [
+      { path: 'reporte-ficha', component: ReporteFichaComponent }
     ]
-  },
-  {
-    path: 'Workflow/:id', component: SeguimientoTramitesComponent
-  },
-  {
-    path: 'Reportes', component: ReportesComponent
   },
   { path: 'Administrar-cuenta/:id', component: AdmFuncionarioComponent },
   {
     path: 'inicio', component: InicioComponent, canActivate: [LoginGuardGuard],
+    children: [
+      //USUARIOS
+      { path: 'administrar-usuarios', component: AdministracionUsuariosComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      { path: 'administrar-funcionarios', component: FuncionariosComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      { path: 'administrar-cuentas', component: CuentasComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      { path: 'administrar-instituciones', component: InstitucionesComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      { path: 'administrar-dependencias', component: DependenciasComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      { path: 'administrar-cargos', component: CargosComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      { path: 'administrar-tipos-tramites', component: TiposTramitesComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      { path: 'groupware', component:GroupwareComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      //REGISTRO DE TRAMIES
+      { path: 'administrar-tramite', component: AdmTramiteComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'USER1_ROLE' } },
+      { path: 'bandeja-entrada', component: BandejaEntradaComponent },
+      { path: 'bandeja-salida', component: BandejaSalidaComponent },
+      { path: 'ficha/:id', component: FichaTramiteComponent },
+      //SEGUIMIENTO TRAMITES
+      { path: 'Workflow/:id', component: SeguimientoTramitesComponent },
+
+      //REPORTES
+      { path: 'reporte-ficha', component: ReporteFichaComponent },
+      { path: 'reporte-estado', component: ReporteEstadoComponent },
+      { path: 'reporte-estadistico', component: ReporteEstadisticoComponent }
+    ]
   },
   {
     path: 'Consulta', component: ConsultaComponent
+
   },
   { path: '**', pathMatch: 'full', redirectTo: 'inicio' }
 ];

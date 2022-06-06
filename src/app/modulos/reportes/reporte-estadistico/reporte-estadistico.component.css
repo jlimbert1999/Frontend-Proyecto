@@ -1,0 +1,14 @@
+.advanced-pie-legend .legend-items-container .legend-items {
+    overflow: initial !important;
+    line-height: 100px !important;
+}
+
+.legend-label-text {
+    white-space: normal !important;
+    width: 100% !important;
+    font-size: 12px !important;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+}

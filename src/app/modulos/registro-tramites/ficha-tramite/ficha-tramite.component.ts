@@ -13,6 +13,8 @@ import { RepresentanteModel } from 'src/app/modelos/registro-tramites/solicitant
 import { BandejaService } from 'src/app/servicios/servicios-m4/bandeja.service';
 import { Workflow } from 'src/app/modelos/seguimiento-tramites/workflow.model';
 import { Location } from '@angular/common';
+import { forkJoin } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-ficha-tramite',
@@ -87,11 +89,25 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
   }
 
   obtener_InfoFicha(id_tramite: number) {
-    this.obtener_Datos_Tramite(id_tramite)
-    this.obtener_Datos_Solicitante(id_tramite)
-    this.obtener_Datos_Representante(id_tramite)
-    this.obtener_Datos_Requerimientos(id_tramite)
-    this.obtener_Observaciones(id_tramite)
+    forkJoin(
+      [
+        this.tramiteService.getFicha_InfoTramite(id_tramite),
+        this.tramiteService.getFicha_InfoSolicitante(id_tramite),
+        this.tramiteService.getFicha_InfoRepresentante(id_tramite),
+        this.tramiteService.getFicha_InfoRequerimientos(id_tramite)
+      ]
+    ).subscribe((results: any) => {
+      if (results[0].ok, results[1].ok, results[2].ok, results[3].ok) {
+        this.Tramite = results[0].Tramite[0]
+        this.Solicitante = results[1].Solicitante[0]
+        if (results[2].Representante) {
+          this.Representante = results[2].Representante[0]
+        }
+        this.Requerimientos_presentados = results[3].Requerimientos
+        this.obtener_Observaciones(id_tramite)
+      }
+    })
+
   }
 
 
@@ -106,7 +122,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
   }
 
   obtener_Datos_Solicitante(id_tramite: number) {
-    this.tramiteService.getFicha_InfoSolicitante(id_tramite).subscribe((resp: any) => {
+    this.tramiteService.getFicha_InfoTramite(id_tramite).subscribe((resp: any) => {
       if (resp.ok) {
         this.Solicitante = resp.Solicitante[0]
       }
@@ -152,22 +168,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     })
   }
 
-  registrar_Observacion() {
-    this.datosObservacion.id_tramite = this.DatosEnvio.id_tramite
-    this.datosObservacion.id_cuenta = this.Info_cuenta_Actual.id_cuenta
-    this.datosObservacion.fecha_registro = this.getFecha()
-    this.tramiteService.addObservacion(this.datosObservacion).subscribe((resp: any) => {
-      if (resp.ok) {
-        this.openSnackBar(resp.message, '')
-        this.obtener_Observaciones(this.DatosEnvio.id_tramite)
-        if (this.Tramite.estado != "Observado") {
-          this.actualizar_estadoTramite('Observado')
-          this.Tramite.estado = "Observado"
-        }
 
-      }
-    })
-  }
   agregar_observacion() {
     const dialogRef = this.dialog.open(DialogObservacionesComponent, {
       data: ''
@@ -175,7 +176,20 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe((dataDialog: any) => {
       if (dataDialog) {
         this.datosObservacion.detalle = dataDialog
-        this.registrar_Observacion()
+        this.datosObservacion.id_tramite = this.DatosEnvio.id_tramite
+        this.datosObservacion.id_cuenta = this.Info_cuenta_Actual.id_cuenta
+        this.datosObservacion.fecha_registro = this.getFecha()
+        this.tramiteService.addObservacion(this.datosObservacion).subscribe((resp: any) => {
+          if (resp.ok) {
+            this.openSnackBar(resp.message, '')
+            this.obtener_Observaciones(this.DatosEnvio.id_tramite)
+            if (this.Tramite.estado != "Observado") {
+              this.actualizar_estadoTramite('Observado')
+              this.Tramite.estado = "Observado"
+            }
+
+          }
+        })
 
       }
     });
@@ -188,9 +202,8 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
         let unicos: number[] = []
         let aux: any[] = []
         for (let i = 0; i < resp.Observaciones.length; i++) {
-          const elemento = resp.Observaciones[i].id_cuenta;
           if (!unicos.includes(resp.Observaciones[i].id_cuenta) && resp.Observaciones[i].id_cuenta != this.Info_cuenta_Actual.id_cuenta) {
-            unicos.push(elemento);
+            unicos.push(resp.Observaciones[i].id_cuenta);
           }
         }
         unicos.forEach((id: number) => {
@@ -210,14 +223,6 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
       })
     }
   }
-  // metodo antiguo
-  // corregir_Observacion(id_observacion: number, pos: number, lugar: number) {
-  //   this.tramiteService.putObservacion(id_observacion, { situacion: true }).subscribe((resp: any) => {
-  //     if (resp.ok) {
-  //       this.observaciones[pos][lugar].situacion = true
-  //     }
-  //   })
-  // }
 
 
 
@@ -254,7 +259,6 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     this.tramiteService.putTramite(this.DatosEnvio.id_tramite, { estado }).subscribe((resp: any) => {
       if (resp.ok) {
         this.Tramite.estado = estado
-        console.log('se uso la actualizacion de estado tramite');
       }
     })
   }
@@ -281,21 +285,22 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     }
     // //enviar id para que las bandeja obtengan datos desde la trabla workflow
 
-    let snackBarRef = this._snackBar.openFromComponent(DialogRemisionComponent, {
-      horizontalPosition: 'right',
-      verticalPosition: 'bottom',
-      panelClass: ['blue-snackbar'],
+    const dialogRef = this.dialog.open(DialogRemisionComponent, {
       data: tramite
     });
-    snackBarRef.onAction().subscribe(() => {
-      this.Actualizar_listaRecibidos.emit(this.DatosEnvio.id_tramite)
+    dialogRef.afterClosed().subscribe((dataDialog: any) => {
+
+      if(dataDialog){
+        this.Actualizar_listaRecibidos.emit(this.DatosEnvio.id_tramite)
+      }
+      
     })
 
   }
 
   abrir_Workflow() {
     let id_tramite = this.DatosEnvio.id_tramite
-    this.router.navigate(['Workflow', id_tramite])
+    this.router.navigate(['inicio/Workflow', id_tramite])
   }
   rechazar_tramite() {
 
@@ -335,7 +340,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
       if (resp.ok) {
         this.DatosEnvio.Recibido = true
         this.registrar_Workflow(fecha)
-        this._snackBar.open(resp.message, "", {
+        this._snackBar.open("Tramite aceptado", "", {
           duration: 3000
         });
       }
@@ -374,6 +379,36 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
   regresar() {
     //metodo para volver atras cuando de abre desde ver Inforacion ficha tramite
     this._location.back();
+  }
+
+  finalizar_tramite() {
+    Swal.fire({
+      title: `Concluir el tramite ${this.Tramite.alterno}?`,
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      icon: 'question'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let data = {
+          estado: 'Concluido',
+          activo: true,
+          Fecha_finalizacion:this.getFecha()
+        }
+        this.tramiteService.putTramite(this.DatosEnvio.id_tramite, data).subscribe((resp: any) => {
+          if (resp.ok) {
+            this.Tramite.estado = data.estado
+            this.Actualizar_listaRecibidos.emit(this.DatosEnvio.id_tramite)
+            this._snackBar.open("Tramite finalizado", "", {
+              duration: 3000
+            });
+          }
+        })
+      }
+    })
+
+
+
+
   }
 
 

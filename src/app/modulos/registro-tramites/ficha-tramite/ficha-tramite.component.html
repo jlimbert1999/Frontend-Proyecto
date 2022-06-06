@@ -1,3 +1,17 @@
+<p *ngIf="Tipo_Vista_Ficha == 'Ficha_detalles'">
+    <mat-toolbar>
+        <button *ngIf="DatosEnvio.Recibido!=true" mat-raised-button color="primary" (click)="regresar()">
+            <mat-icon>arrow_back</mat-icon>
+            Atras
+        </button>
+
+        <span style="margin-left: 10px;">Ficha de tramite</span>
+
+
+    </mat-toolbar>
+</p>
+
+<mat-spinner *ngIf="!Tramite && !Solicitante" diameter="150" style="margin:0 auto; margin-top: 20%;"></mat-spinner>
 <mat-card class="card border-dark" [ngClass]="{'container': Tipo_Vista_Ficha == 'Ficha_detalles'}">
     <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_envio'">
         <mat-card-header>
@@ -24,7 +38,7 @@
 
         <div class="card border-dark" *ngIf="Tramite">
             <h4 class="card-header">
-                <strong>Informacion del Tramite: </strong>
+                <strong>Informacion del Tramite </strong>
             </h4>
             <div class="card-body">
                 <p class="card-text"><strong>Titulo:</strong> {{DatosEnvio.Titulo}} / {{Tramite.alterno}}</p>
@@ -41,7 +55,7 @@
                         <span class="badge bg-warning text-dark" *ngSwitchCase="'Observado'"> {{Tramite.estado | uppercase}}</span>
                         <span class="badge bg-secondary" *ngSwitchCase="'En revision'"> {{Tramite.estado | uppercase}}</span>
                         <span class="badge bg-info text-dark" *ngSwitchCase="'Devuelto'"> {{Tramite.estado | uppercase}}</span>
-                        <span class="badge bg-dark" *ngSwitchCase="'Devuelto'"> {{Tramite.estado | uppercase}}</span>
+                        <span class="badge bg-dark" *ngSwitchCase="'Concluido'"> {{Tramite.estado | uppercase}}</span>
                         <span class="badge bg-warning text-dark" *ngSwitchCase="'Anulado'"> {{Tramite.estado | uppercase}}</span>
                     </ng-container>
                     <!-- <span class="badge bg-primary text-wrap">
@@ -193,16 +207,12 @@
         <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_envio'">
             <button *ngIf="DatosEnvio.Recibido!=true" mat-raised-button color="primary" (click)="aceptar_tramite()">Aceptar</button>
             <button *ngIf="DatosEnvio.Recibido!=true" mat-raised-button color="warn" (click)="rechazar_tramite()">Rechazar</button>
-            <button *ngIf="DatosEnvio.Recibido==true" mat-button (click)="abrir_DialogRemision()">Remitir</button>
-            <button *ngIf="DatosEnvio.Recibido==true" mat-button (click)="abrir_Workflow()">Flujo</button>
-            <button *ngIf="DatosEnvio.Recibido==true" mat-button>Finalizar</button>
+            <button *ngIf="DatosEnvio.Recibido==true" mat-button (click)="abrir_DialogRemision()">Remitir <mat-icon>send</mat-icon> </button>
+            <button *ngIf="DatosEnvio.Recibido==true" mat-button (click)="abrir_Workflow()">Flujo<mat-icon>account_tree</mat-icon></button>
+            <button *ngIf="DatosEnvio.Recibido==true" mat-button (click)="finalizar_tramite()">Finalizar<mat-icon>keyboard_double_arrow_down</mat-icon></button>
         </ng-container>
-        <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_detalles'">
-            <button *ngIf="DatosEnvio.Recibido!=true" mat-raised-button color="primary" (click)="regresar()">Regresar</button>
-        </ng-container>
-        <ng-container *ngIf="Tramite.id_cuenta==Info_cuenta_Actual.id_cuenta">
-            <button mat-raised-button color="primary" (click)="regresar()">Dar de baja</button>
-        </ng-container>
+
+
 
     </mat-card-actions>
 

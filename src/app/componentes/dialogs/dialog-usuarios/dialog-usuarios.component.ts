@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewChild, ElementRef, Input } from '@angula
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 //modelos
-import { UsuarioModel } from 'src/app/modelos/usuario.model';
+import { FuncionarioModel } from 'src/app/modelos/usuario.model';
 import { CargoModel } from 'src/app/modelos/administracion-usuarios/cargo.model';
 
 //servicios

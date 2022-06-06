@@ -1,0 +1,44 @@
+<p>
+    <mat-toolbar>
+        <ng-container *ngIf="!modo_busqueda">
+            <span>Administracion de funcionarios</span>
+            <span class="example-spacer"></span>
+            <button mat-icon-button matTooltip="Agregar funcionario" class="example-icon" aria-label="Example icon-button with share icon" (click)="agregar_Funcionario()">
+         <mat-icon>add</mat-icon>
+         </button>
+            <button (click)="modo_busqueda=true" mat-icon-button matTooltip="Buscar funcionario" class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+        <mat-icon>search</mat-icon>
+            </button>
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <mat-icon>more_vert</mat-icon>
+                </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="ver_Habilitados()">
+                    <mat-icon>no_accounts</mat-icon>
+                    Ver {{(verHabilitados ? "No Habilitados":"Habilitados")}}
+                </button>
+            </mat-menu>
+        </ng-container>
+        <mat-form-field *ngIf="modo_busqueda" floatLabel="never">
+
+            <mat-label>Ingrese un caracter</mat-label>
+            <input matInput type="search" #txt_busqueda (keyup)="aplicarFiltro($event)">
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="desactivar_busqueda()">
+              <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+
+
+
+
+
+
+
+
+    </mat-toolbar>
+</p>
+<div class="container-fluid">
+    <app-tabla [data]="dataSource" (llamarEditar)="editar_Funcionario($event)" (llamarEliminar)="eliminarUsuario($event)" (llamarVerDetalles)="obtenerDetallesFuncionario($event)" [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla"
+        (llamarFinalizar)="FinalizarCargo($event)"></app-tabla>
+
+</div>

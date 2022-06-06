@@ -2,22 +2,6 @@ table {
     width: 100%;
 }
 
-.texto_celda_Nombre {
-    font-size: 12px;
-}
-
-.texto_celda_DepInst {
-    font-size: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-
-/* .mat-table {
-    height: calc( 100vh - 250px);
-    overflow: auto;
-    width: 100%;
-} */
-
 .example-header-image {
     background-image: url('../../../assets/img/user-mail.png');
     background-size: cover;
@@ -29,4 +13,8 @@ table {
 
 .mat-card {
     border: 1px solid #000;
+}
+
+.nodo_grafica {
+    background-color: silver;
 }

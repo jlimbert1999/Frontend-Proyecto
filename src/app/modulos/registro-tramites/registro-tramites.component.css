@@ -3,14 +3,9 @@
 }
 
 .mat-drawer {
-    margin: 16px;
     width: 250px;
-    border-right: none;
+    /* border-right: none; */
     background: #212529;
-    color: white;
-    border-radius: 10px;
-    padding: 16px;
-    text-align: center;
 }
 
 .content {
@@ -25,20 +20,16 @@
     color: lightgray;
 }
 
-.nav-icon,
-.nav-link {
-    color: white;
-}
-
 .mat-drawer-container {
     /* height: calc(100vh- 65px); */
     height: calc(88vh - 65px);
 }
 
-.nav-icon {
-    margin-right: 10%;
+.mat-list-item.active {
+    background-color: #0096C7;
 }
 
-.active-list-item {
-    color: red;
+.mat-list-item,
+.mat-subheader {
+    color: white;
 }

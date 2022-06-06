@@ -13,8 +13,5 @@ export class WorkflowServiceService {
     return this.http.get(`${this.URL}/workflow/${id_tramite}`)
   }
 
-  get_SiTramite_FueEnviado(id_tramite:number, id_cuenta:any){
-    return this.http.post(`${this.URL}/workflow-envio/${id_tramite}`, id_cuenta)
-  }
 
 }

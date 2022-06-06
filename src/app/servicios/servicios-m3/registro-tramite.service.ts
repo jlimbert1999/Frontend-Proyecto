@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { entorno } from '../api-config'
 import { TramiteModel } from 'src/app/modelos/registro-tramites/resistro-tramites.model';
 import { SolicitanteModel, SolicitudModel } from 'src/app/modelos/registro-tramites/solicitante.model';
+import { map } from 'rxjs';
 
 
 @Injectable({
@@ -16,7 +17,7 @@ export class RegistroTramiteService {
     return this.http.post(`${this.URL}/tramite`, tramite)
   }
   getTramites(id_cuenta:number){  //tramites registrados por esta cuenta
-    return this.http.get(`${this.URL}/tramites/${id_cuenta}`)
+    return this.http.get(`${this.URL}/api/tramites/${id_cuenta}`)
   }
   putTramite(id:number, datos:any){
     return this.http.put(`${this.URL}/tramite/${id}`, datos)
@@ -117,7 +118,7 @@ export class RegistroTramiteService {
 
   getFuncionarioEspecifico(datos:any){
     //revisar post para get
-    return this.http.post(`${this.URL}/funcionarios_especificos`, datos)
+    return this.http.get(`${this.URL}/api/funcionarios_especificos?insti=${datos.id_institucion}&dep=${datos.id_dependencia}`)
   }
 
   getReporte(){

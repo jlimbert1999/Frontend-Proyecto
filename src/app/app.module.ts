@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 //UTILIDADES
@@ -54,7 +54,23 @@ import { ConsultaComponent } from './paginas/consulta/consulta.component';
 import { AdmFuncionarioComponent } from './modulos/administracion-usuarios/adm-funcionario/adm-funcionario.component';
 import { LoginService } from './servicios/servicios-m1/login.service';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { ReporteFichaComponent } from './modulos/reportes/reporte-ficha/reporte-ficha.component';
 
+import { registerLocaleData } from '@angular/common';
+import localeEsAr from '@angular/common/locales/es-AR';
+import { FuncionariosComponent } from './modulos/administracion-usuarios/funcionarios/funcionarios.component';
+import { CuentasComponent } from './modulos/administracion-usuarios/cuentas/cuentas.component';
+import { InstitucionesComponent } from './modulos/administracion-usuarios/instituciones/instituciones.component';
+import { DependenciasComponent } from './modulos/administracion-usuarios/dependencias/dependencias.component';
+import { CargosComponent } from './modulos/administracion-usuarios/cargos/cargos.component';
+import { TiposTramitesComponent } from './modulos/administracion-usuarios/tipos-tramites/tipos-tramites.component';
+import { ReporteEstadoComponent } from './modulos/reportes/reporte-estado/reporte-estado.component';
+import { PdfViewerModule } from "ng2-pdf-viewer";
+import { ReporteEstadisticoComponent } from './modulos/reportes/reporte-estadistico/reporte-estadistico.component';
+
+import { GroupwareComponent } from './modulos/administracion-usuarios/groupware/groupware.component'
+registerLocaleData(localeEsAr, 'es-Ar');
 @NgModule({
   declarations: [
     AppComponent,
@@ -85,7 +101,17 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     SeguimientoTramitesComponent,
     ReportesComponent,
     ConsultaComponent,
-    AdmFuncionarioComponent
+    AdmFuncionarioComponent,
+    ReporteFichaComponent,
+    FuncionariosComponent,
+    CuentasComponent,
+    InstitucionesComponent,
+    DependenciasComponent,
+    CargosComponent,
+    TiposTramitesComponent,
+    ReporteEstadoComponent,
+    ReporteEstadisticoComponent,
+    GroupwareComponent
   ],
   imports: [
     BrowserModule,
@@ -103,13 +129,19 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     MatIconModule,
     MatListModule,
     BrowserAnimationsModule,
-    NgxChartsModule
-    
+    NgxChartsModule,
+    PdfViewerModule
+
   ],
   providers: [
     { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
     JwtHelperService,
-    {provide:HTTP_INTERCEPTORS, useClass:LoginService, multi:true}
+    { provide: HTTP_INTERCEPTORS, useClass: LoginService, multi: true },
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { showError: true },
+    },
+    { provide: LOCALE_ID, useValue: 'es-Ar' }
   ],
   bootstrap: [AppComponent]
 })

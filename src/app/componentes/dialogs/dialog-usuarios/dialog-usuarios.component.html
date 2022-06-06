@@ -12,6 +12,8 @@
                                 <mat-label>Nombre</mat-label>
                                 <input matInput [(ngModel)]="data.datosFuncionario.Nombre" name="Nombre">
                             </mat-form-field>
+
+
                         </div>
                         <div class="col-sm">
                             <mat-form-field appearance="legacy">
@@ -218,7 +220,7 @@
     </mat-stepper>
 
 </div>
-<div mat-dialog-actions>
-    <button mat-button (click)="cancelar()">Cancelar</button>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Guardar</button>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" [mat-dialog-close]="data" cdkFocusInitial>Guardar</button>
 </div>

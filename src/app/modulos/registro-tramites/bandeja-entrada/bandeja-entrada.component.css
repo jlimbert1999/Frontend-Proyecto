@@ -33,15 +33,19 @@
 @media screen and (min-width:768px) {
     .leftside,
     .rightside {
-        height: 75vh;
+        height: 85vh;
     }
 }
 
 .leftside {
-    /* background: red; */
+    background: gainsboro;
 }
 
 .rightside {
     /* background: blue; */
     overflow-y: scroll;
+}
+
+mat-list-option[aria-selected="true"] {
+    background-color: #ADB5BD;
 }

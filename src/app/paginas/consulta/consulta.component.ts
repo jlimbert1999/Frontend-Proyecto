@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatAccordion } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RegistroTramiteService } from 'src/app/servicios/servicios-m3/registro-tramite.service';
@@ -6,6 +6,7 @@ import { ConsultaService } from 'src/app/servicios/servicios-m4/consulta.service
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
 import { UpperCasePipe } from '@angular/common';
+import { MediaMatcher } from '@angular/cdk/layout';
 const doc = new jsPDF()
 @Component({
   selector: 'app-consulta',
@@ -21,11 +22,28 @@ export class ConsultaComponent implements OnInit {
   observaciones_tablaPDF = []
   @ViewChild(MatAccordion) accordion!: MatAccordion;
 
+  mobileQuery: MediaQueryList;
+
+  fillerNav = Array.from({ length: 50 }, (_, i) => `Nav Item ${i + 1}`);
+
+
+  private _mobileQueryListener: () => void;
+  instrucciones: boolean = true
   constructor(
     private tramiteService: RegistroTramiteService,
     private consultaService: ConsultaService,
-    private _snackBar: MatSnackBar
-  ) { }
+    private _snackBar: MatSnackBar,
+    changeDetectorRef: ChangeDetectorRef, media: MediaMatcher
+  ) {
+    this.mobileQuery = media.matchMedia('(max-width: 600px)');
+    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+    this.mobileQuery.addListener(this._mobileQueryListener);
+  }
+  ngOnDestroy(): void {
+    this.mobileQuery.removeListener(this._mobileQueryListener);
+  }
+
+  shouldRun = /(^|.)(stackblitz|webcontainer).(io|com)$/.test(window.location.host);
 
   ngOnInit(): void {
   }
@@ -47,21 +65,29 @@ export class ConsultaComponent implements OnInit {
           aux = resp.Observaciones.filter((obs: any) => obs.id_cuenta == id)
           this.Observaciones_Tramite.push(aux)
         })
-        console.log(this.Observaciones_Tramite);
       }
     })
   }
-  Obtener_Informacion_Tramite() {
+  Obtener_Informacion_Tramite(pin: any, dni: any) {
+    if (pin == '' || dni == '') {
+      this.abrir_Mensaje('Ingrese los campos')
+    }
+    else {
+      this.Codigo_Tramite = this.Codigo_Tramite.trim()
+      this.consultaService.get_InformacionTramite({ pin, dni }).subscribe((resp: any) => {
+        if (resp.Tramite.length > 0) {
+          this.Tramite = resp.Tramite[0]
+          this.obtener_Observaciones(resp.Tramite[0].id_tramite)
+          console.log( resp.Tramite[0]);
+        }
+        else {
+          this.abrir_Mensaje('No se econtro el tramite. Debe apersonarse a la institucion')
+        }
+      })
+
+    }
     // this.obtener_Observaciones(39)
-    this.consultaService.get_InformacionTramite({ Alterno: this.Codigo_Tramite }).subscribe((resp: any) => {
-      if (resp.Tramite.length > 0) {
-        this.Tramite = resp.Tramite[0]
-        this.obtener_Observaciones(resp.Tramite[0].id_tramite)
-      }
-      else {
-        this.abrir_Mensaje('No se econtro el codigo ingresado')
-      }
-    })
+
   }
   abrir_Mensaje(Mensaje: string) {
     this._snackBar.open(Mensaje, '', {
@@ -73,25 +99,25 @@ export class ConsultaComponent implements OnInit {
     img.src = '../../assets/img/logoSacaba.png'
     doc.addImage(img, 'png', 170, 1, 30, 30)
     doc.setFontSize(16)
-    doc.text(`Observaciones tramite: ${this.Codigo_Tramite}`, 50, 10)
+    doc.text(`Observaciones tramite: ${this.Codigo_Tramite}`, 20, 10)
     doc.setFontSize(10);
-    doc.text(`Solicitante: ${this.Tramite.nombres} ${this.Tramite.paterno} ${this.Tramite.materno}`, 60, 20)
-    doc.text(`CI: ${this.Tramite.expedido.toLowerCase()} ${this.Tramite.dni}`, 60, 25)
+    doc.text(`Solicitante: ${this.Tramite.nombres} ${this.Tramite.paterno} ${this.Tramite.materno}`, 30, 20)
+    doc.text(`CI: ${this.Tramite.expedido.toLowerCase()} ${this.Tramite.dni}`, 30, 25)
 
     let campos: string[][] = []
     this.observaciones_tablaPDF.forEach((element: any) => {
-      campos.push([`${element.Nombre} ${element.Apellido_P} ${element.Apellido_M}`, element.NombreCar, element.detalle])
-    })
-    autoTable(doc,{
-      startY:35,
-      head: [['Funcionario', 'Cargo', 'Observacion']],
+      if(!element.situacion){
+        campos.push([element.NombreDep,`${element.Nombre} ${element.Apellido_P} ${element.Apellido_M}`, element.NombreCar, element.detalle])
 
-      body: campos,
-      //   ['Observacion', 'david@example.com', 'Sweden'],
-      //   ['Castille', 'castille@example.com', 'Spain'],
-      // ],
+      }
+      
     })
-    doc.save('table.pdf')
+    autoTable(doc, {
+      startY: 35,
+      head: [['Area', 'Funcionario', 'Cargo', 'Observacion']],
+      body: campos
+    })
+    doc.save('Observaciones.pdf')
   }
 
 

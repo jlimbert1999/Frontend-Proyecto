@@ -1,0 +1,35 @@
+<p>
+    <mat-toolbar>
+        <span>Estadisticas: {{Titulo_reporte}}</span>
+        <span class="example-spacer"></span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="seleccionar_tipo('Numero tramites Registrados')">
+              <mat-icon>dialpad</mat-icon>
+              <span>Numero tramites Registrados</span>
+            </button>
+            <button mat-menu-item (click)="seleccionar_tipo('Porcentaje tramites')">
+              <mat-icon>voicemail</mat-icon>
+              <span>Porcentaje tramites</span>
+            </button>
+
+        </mat-menu>
+
+    </mat-toolbar>
+
+</p>
+
+<div class="container">
+    <ng-container *ngIf="Titulo_reporte=='Numero tramites Registrados'">
+        <ngx-charts-pie-chart [legendPosition]="legendPosition" [results]="single" [legend]="true" [legendTitle]="'Funcionarios'" [view]="[900,300]" [labels]="true" [animations]="false">
+        </ngx-charts-pie-chart>
+
+    </ng-container>
+    <ng-container *ngIf="Titulo_reporte=='Porcentaje tramites'">
+        <ngx-charts-advanced-pie-chart class="pie-chart-container" [view]="view" [scheme]="colorScheme" [results]="single" [gradient]="gradient" (select)="onSelect($event)" (activate)="onActivate($event)" (deactivate)="onDeactivate($event)" [animations]="false">
+        </ngx-charts-advanced-pie-chart>
+    </ng-container>
+
+</div>

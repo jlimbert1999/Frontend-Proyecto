@@ -1,0 +1,26 @@
+<p>
+    <mat-toolbar>
+        <span>Grupo de trabajo</span>
+    </mat-toolbar>
+</p>
+<div class="continer">
+    <mat-list>
+        <div mat-subheader>Funcionarios en linea</div>
+        <mat-list-item *ngFor="let message of Funcionarios_Online">
+            <img matListAvatar src="../../../../assets/img//user-mail.png" alt="...">
+            <h3 matLine> {{message.Nombre|titlecase}} </h3>
+            <span style="font-size: 12px; position:absolute; right:20px; color: green;"> <mat-icon>radio_button_checked</mat-icon></span>
+            <p matLine>
+                <span> {{message.NombreCargo}} </span>
+                <span class="demo-2"> -- {{message.content}} </span>
+            </p>
+
+            <span class="material-symbols-outlined">
+                
+            </span>
+
+        </mat-list-item>
+    </mat-list>
+
+
+</div>
