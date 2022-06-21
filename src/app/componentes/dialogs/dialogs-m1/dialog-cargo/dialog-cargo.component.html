@@ -1,18 +1,15 @@
 <h1 mat-dialog-title>{{tituloDialog}}</h1>
 
 <div mat-dialog-content>
-    <p>Ingrese los nuevos datos</p>
-
-    <mat-form-field appearance="fill">
-        <mat-label>Nombre</mat-label>
-        <input matInput [(ngModel)]="data.Nombre">
-    </mat-form-field>
-
-    <mat-checkbox [(ngModel)]="data.Activo" class="example-margin">Activado</mat-checkbox>
-    <p>Estado: {{data.Activo}}</p>
+    <form [formGroup]="Form_Cargo">
+        <mat-form-field appearance="fill">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="Nombre">
+        </mat-form-field>
+    </form>
 
 </div>
-<div mat-dialog-actions>
-    <button mat-button (click)="cerrarDialog()">Cancelar</button>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Guardar</button>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="cerrarDialog()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="registrar_datos()" [disabled]="Form_Cargo.invalid!">Guardar</button>
 </div>

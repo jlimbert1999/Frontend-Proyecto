@@ -17,6 +17,7 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() palabraFiltro: any = "";
   @Output() llamarEditar: EventEmitter<object>;
   @Output() llamarEliminar: EventEmitter<object>;
+  @Output() llamarHabilitar: EventEmitter<object>;
   @Output() llamarFinalizar: EventEmitter<object>;
   @Output() llamarVerDetalles: EventEmitter<object>;
   @Output() llamarImprimir: EventEmitter<object>;
@@ -38,6 +39,7 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   constructor(private _liveAnnouncer: LiveAnnouncer
   ) {
     this.llamarEditar = new EventEmitter();
+    this.llamarHabilitar=new EventEmitter()
     this.llamarEliminar = new EventEmitter();
     this.llamarFinalizar = new EventEmitter();
     this.llamarVerDetalles = new EventEmitter();
@@ -66,6 +68,9 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   eliminarDatos(id: object) {
     this.llamarEliminar.emit(id)
   }
+  HabilitarDatos(id: object) {
+    this.llamarHabilitar.emit(id)
+  }
 
   //METODOS EXCLUSIVO PARA ADMNISTRACION CUENTA
   finalizarCargo(datos: object) {
@@ -73,7 +78,7 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   }
   //METODOS EXCLUSIVO PARA ADMNISTRACION USUARIOS/FUNCIONARIOS
   verDetallesUsuario(datos: any) {
-    this.llamarVerDetalles.emit(datos.id_funcionario)
+    this.llamarVerDetalles.emit(datos)
   }
   verFlujoTrabajo(datos: any) {
     this.llamarVerFlujo.emit(datos)

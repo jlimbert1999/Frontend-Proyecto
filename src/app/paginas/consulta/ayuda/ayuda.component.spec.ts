@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DialogCuentaComponent } from './dialog-cuenta.component';
+import { AyudaComponent } from './ayuda.component';
 
-describe('DialogCuentaComponent', () => {
-  let component: DialogCuentaComponent;
-  let fixture: ComponentFixture<DialogCuentaComponent>;
+describe('AyudaComponent', () => {
+  let component: AyudaComponent;
+  let fixture: ComponentFixture<AyudaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DialogCuentaComponent ]
+      declarations: [ AyudaComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DialogCuentaComponent);
+    fixture = TestBed.createComponent(AyudaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

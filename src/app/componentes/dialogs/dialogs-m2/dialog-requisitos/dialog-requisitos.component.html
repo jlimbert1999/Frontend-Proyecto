@@ -1,31 +1,29 @@
-<h1 mat-dialog-title>Registro de requisito tramite</h1>
+<h2 mat-dialog-title>Registro de requisito tramite</h2>
 <div mat-dialog-content>
-    <div class="container">
-        <div class="row">
-            <div class="col-sm">
-                <mat-form-field appearance="legacy">
-                    <mat-label>Nombre del requisito</mat-label>
-                    <input matInput [(ngModel)]="requisito.detalle">
-                </mat-form-field>
-            </div>
-            <div class="col-sm">
-                <mat-form-field appearance="legacy">
-                    <mat-label>Tipo documento</mat-label>
-                    <mat-select [(ngModel)]="requisito.id_documento">
-                        <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
-                            {{documento.titulo}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <mat-checkbox [(ngModel)]="requisito.Activo" class="example-margin" name="Activo">Habilitar</mat-checkbox>
+    <div class="row">
+        <mat-form-field appearance="legacy">
+            <mat-label>Nombre del requisito</mat-label>
+            <input matInput [(ngModel)]="requisito.detalle">
+        </mat-form-field>
 
-        </div>
+
+    </div>
+    <div class="row">
+        <mat-form-field appearance="legacy">
+            <mat-label>Tipo documento</mat-label>
+            <mat-select [(ngModel)]="requisito.id_documento">
+                <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
+                    {{documento.titulo}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
 
 
+
+
 </div>
-<div mat-dialog-actions>
-    <button mat-button mat-dialog-close color="warn">Cancelar</button>
-    <button mat-button [mat-dialog-close]="requisito" cdkFocusInitial color="primary">Guardar</button>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close color="warn">Cancelar</button>
+    <button mat-raised-button [mat-dialog-close]="requisito" cdkFocusInitial color="primary">Guardar</button>
 </div>

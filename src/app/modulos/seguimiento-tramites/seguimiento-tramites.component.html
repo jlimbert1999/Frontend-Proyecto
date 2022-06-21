@@ -112,8 +112,9 @@
                         <mat-card class="example-card">
                             <mat-card-header>
                                 <div mat-card-avatar class="example-header-image"></div>
-                                <mat-card-title style="font-size: 16px;">{{node.data.Nombre}} {{node.data.Apellido_P}} {{node.data.Apellido_M}}</mat-card-title>
-                                <mat-card-subtitle>{{node.data.NombreCar}}</mat-card-subtitle>
+                                <mat-card-title style="font-size: 16px;">{{node.data.Nombre|titlecase}} {{node.data.Apellido_P|titlecase}} {{node.data.Apellido_M|titlecase }}
+                                </mat-card-title>
+                                <mat-card-subtitle>{{node.data.NombreCar|titlecase}}</mat-card-subtitle>
                             </mat-card-header>
                             <mat-card-content style="line-height: 5px;">
                                 <p class="card-text"><small class="text-muted"><strong>Dependencia</strong> {{node.data.NombreDep}}</small></p>

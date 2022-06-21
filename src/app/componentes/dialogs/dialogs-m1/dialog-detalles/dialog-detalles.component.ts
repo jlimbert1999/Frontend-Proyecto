@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UsuariosService } from 'src/app/servicios/servicios-m1/usuarios.service';
 import { MatTableDataSource } from '@angular/material/table';
@@ -25,15 +25,9 @@ export class DialogDetallesComponent implements OnInit {
 
   ngOnInit(): void {
     // data=contiene el id del funcionario recibido desde admin usuarios
-    this.usuariosService.getDetallesUsuarios(this.data).subscribe((resp: any) => {
+    this.usuariosService.getDetallesUsuarios(this.data.id_funcionario).subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Detalles.length > 0) {
-          this.detalles_Funcionario = {
-            Nombre: `${resp.Detalles[0].Nombre} ${resp.Detalles[0].Apellido_P} ${resp.Detalles[0].Apellido_M}`,
-            Cargo: resp.Detalles[0].NombreCar
-          }
-          this.dataSource.data = resp.Detalles
-        }
+        this.dataSource.data = resp.Detalles
       }
     })
   }

@@ -1,7 +1,7 @@
 <p>
     <mat-toolbar>
         <ng-container *ngIf="!modo_busqueda">
-            <span>Administracion cargos</span>
+            <span>Cargos</span>
             <span class="example-spacer"></span>
             <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
    
@@ -18,7 +18,7 @@
             <mat-menu #menu="matMenu">
                 <button mat-menu-item (click)="  ver_Habilitados()">
               <mat-icon>visibility</mat-icon>
-              <span>Ver {{verHabilitados?'Habilidatos':'No habilitados'}}</span>
+              <span>Ver {{verHabilitados?'No habilidatos':'Habilitados'}}</span>
             </button>
 
             </mat-menu>
@@ -39,5 +39,5 @@
 </p>
 
 <div class="container-fluid">
-    <app-tabla [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla" (llamarEliminar)="eliminar_Cargo($event)" (llamarEditar)="editar_Cargo($event)"></app-tabla>
+    <app-tabla [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla" (llamarEliminar)="eliminar_Cargo($event)" (llamarEditar)="editar_Cargo($event)" (llamarHabilitar)="habilitar_cargo($event)"></app-tabla>
 </div>

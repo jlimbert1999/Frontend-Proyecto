@@ -16,16 +16,16 @@ export class InstitucionService {
     return this.http.post(`${this.URL}/institucion`, institucion)
   }
   getInstituciones_Habilitadas(){
-    return this.http.get(`${this.URL}/instituciones/1`)
+    return this.http.get(`${this.URL}/api/instituciones?tipo=1`)
   }
   getInstituciones_NoHabilitadas(){
-    return this.http.get(`${this.URL}/institucion-no_habilitados`)
+    return this.http.get(`${this.URL}/api/instituciones?tipo=0`)
   }
   
   putInstitucion(id:number, datos:any){
-    return this.http.put(`${this.URL}/institucion/${id}`, datos)
+    return this.http.put(`${this.URL}/api/institucion/${id}`, datos)
   }
-  deleteInstitucion(id:number){
-    return this.http.delete(`${this.URL}/institucion/${id}`)
-  }
+
+
+
 }

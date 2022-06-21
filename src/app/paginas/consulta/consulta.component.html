@@ -1,162 +1,197 @@
-<div class="example-container" [class.example-is-mobile]="mobileQuery.matches">
-    <mat-toolbar color="primary" class="example-toolbar">
-        <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
-        <h1 class="example-app-name">Consultas tramites</h1>
-    </mat-toolbar>
+<mat-toolbar>
+    <span>Consultas</span>
 
-    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
-        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
-            <mat-nav-list>
-                <a mat-list-item (click)="instrucciones=true">Consultar</a>
-                <a mat-list-item (click)="instrucciones=false">Instrucciones</a>
-            </mat-nav-list>
-        </mat-sidenav>
+    <span class="example-spacer"></span>
+    <button routerLink="/Ayuda" matTooltip="Mostrar ayuda" mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+      <mat-icon>question_mark</mat-icon>
+    </button>
+</mat-toolbar>
+<!-- page-header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="page-caption">
+                    <h1 class="page-title">Consulta tramites</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.page-header-->
+<!-- news -->
+<div class="card-section">
+    <div class="container">
+        <!-- <img class="pr" src="../../../assets//img/logoSacaba.png" alt=""> -->
+        <div class="card-block bg-white mb30">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <!-- section-title -->
+                    <div class="section-title mb-0">
+                        <ng-container *ngIf="!form_datos">
+                            <h2>Ingrese los campos necesarios</h2>
+                            <p>Debe ingresar el codigo del tramite recibido en la ficha y el numero de su documento de identidad </p>
+                            <ng-container *ngIf="form_verificar">
+                                <div class="alert alert-success d-flex align-items-center" role="alert">
+                                    <mat-icon class="bi flex-shrink-0 me-2">check_circle</mat-icon>
+                                    <div>
+                                        Se ha enviado el codigo de verificacion al numero registrado para el tramite
+                                    </div>
+                                </div>
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-auto">
+                                        <label for="inputPassword6" class="col-form-label">Codigo:</label>
+                                    </div>
+                                    <div class="col-auto">
+                                        <input #txt_verificacion type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                                    </div>
+                                    <div class="col-auto">
+                                        <span id="passwordHelpInline" class="form-text">
+                                       Ingrese el codigo de verificacion para realizar la consulta
+                                      </span>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary" (click)="verificar_consulta(txt_verificacion.value)">Verificar</button>
+                                    </div>
+                                </div>
 
-        <mat-sidenav-content>
-            <div class="container">
-                <ng-container *ngIf="!instrucciones">
-                    <mat-stepper orientation="vertical">
-                        <mat-step>
-                            <ng-template matStepLabel>Paso 1</ng-template>
-                            <ng-template matStepContent>
-                                <p>Para la consulta del tramite debe usar los digitos en el "Numero de tramite" de la ficha entregada al momento del registro</p>
-                                <img class="img-fluid" id="img1" src="../../../assets//img-instrucciones/instruccion1.png" alt="">
-                                <button mat-button matStepperNext>Siguiente</button>
-                            </ng-template>
-                        </mat-step>
-                        <mat-step>
-                            <ng-template matStepLabel>Paso 2</ng-template>
-                            <ng-template matStepContent>
-                                <p>Debe introducir los campos necesarios. Numero de tramite y Numero del documento de identidad proporciados al momento de la solicitud</p>
-                                <img class="img-fluid" id="img2" src="../../../assets//img-instrucciones/instruccion2.png" alt="">
-                                <button mat-button matStepperPrevious>Atras</button>
-                                <button mat-button matStepperNext>Siguiente</button>
-                            </ng-template>
-                        </mat-step>
-                        <mat-step>
-                            <ng-template matStepLabel>Paso 3</ng-template>
-                            <p>Seleccione el boton "Consultar" para ver los detalles</p>
-                            <button mat-button matStepperPrevious>Atras</button>
-                            <button mat-button (click)="instrucciones=true">Ir a consulta</button>
-                        </mat-step>
-                    </mat-stepper>
+                            </ng-container>
 
-                </ng-container>
-                <ng-container *ngIf="instrucciones">
+                            <form class="row g-3" *ngIf="form_consulta">
+                                <div class="col-md-6">
+                                    <label for="inputEmail4" class="form-label">Codigo tramite</label>
+                                    <input #txt_codigoTramite type="text" class="form-control" id="inputEmail4" placeholder="...........">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputPassword4" class="form-label">Numero de documento</label>
+                                    <input #txt_numeroDni type="text" class="form-control" id="inputPassword4" placeholder="...........">
+                                </div>
 
-                    <form style="margin-top: 20px;">
-                        <fieldset>
-                            <legend>Complete los campos</legend>
-                            <div class="mb-3">
-                                <label class="form-label">Numero de tramite</label>
-                                <input #txt_codigo [(ngModel)]="Codigo_Tramite" name="txt_numeroTramite" type="text" class="form-control">
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary" (click)="solicitar_consultar(txt_codigoTramite.value, txt_numeroDni.value)">Consultar</button>
+                                </div>
+                            </form>
+
+                        </ng-container>
+                        <ng-container *ngIf="form_datos">
+                            <h2>Detalles Solicitud</h2>
+                            <div class="card border-dark mb-3">
+                                <h5 class="card-header">Informacion Solicitante</h5>
+                                <div class="card-body">
+                                    <form class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="inputEmail4" class="form-label">Nombre</label>
+                                            <input type="text" disabled class="form-control" id="inputEmail4" [value]="Detalles_Tramite.nombres|uppercase">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="inputPassword4" class="form-label">Apellido paterno</label>
+                                            <input type="text" disabled class="form-control" id="inputPassword4" [value]="Detalles_Tramite.paterno |uppercase">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="inputPassword4" class="form-label">Apellido materno</label>
+                                            <input type="text" disabled class="form-control" id="inputPassword4" [value]="Detalles_Tramite.materno |uppercase">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="inputPassword4" class="form-label">Dni</label>
+                                            <input type="text" disabled class="form-control" id="inputPassword4" [value]="Detalles_Tramite.expedido+' '+Detalles_Tramite.dni| uppercase">
+                                        </div>
+                                    </form>
+                                </div>
+
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Numero de DNI</label>
-                                <input #txt_dni class="form-control">
+                            <div class="card border-dark mb-3">
+                                <h5 class="card-header">Informacion Tramite</h5>
+                                <div class="card-body">
+
+                                    <p class="card-text"><strong>Titulo: </strong>{{Detalles_Tramite.titulo|titlecase}}</p>
+
+                                    <p [ngSwitch]="Detalles_Tramite.estado">
+                                        <strong>Estado: </strong>
+                                        <span class="badge bg-primary" *ngSwitchCase="'Inscrito'">{{Detalles_Tramite.estado | uppercase}}</span>
+                                        <span class="badge bg-warning text-dark" *ngSwitchCase="'Observado'">{{Detalles_Tramite.estado| uppercase}}</span>
+                                        <span class="badge bg-secondary" *ngSwitchCase="'En revision'">{{Detalles_Tramite.estado| uppercase}}</span>
+                                        <span class="badge bg-info text-dark" *ngSwitchCase="'Devuelto'">{{Detalles_Tramite.estado| uppercase}}</span>
+                                        <span class="badge bg-dark" *ngSwitchCase="'Concluido'">{{Detalles_Tramite.estado | uppercase}}</span>
+                                        <span class="badge bg-warning text-dark" *ngSwitchCase="'Anulado'">{{Detalles_Tramite.estado | uppercase }}</span>
+                                    </p>
+                                    <div class="row">
+                                        <div class="col">
+                                            <p class="card-text"><strong>Fecha registro: </strong>{{Detalles_Tramite.Fecha_creacion | date}}</p>
+                                        </div>
+                                        <div class="col" *ngIf="Detalles_Tramite.Fecha_finalizacion">
+                                            <p class="card-text"><strong>Fecha finalizacion: </strong>{{Detalles_Tramite.Fecha_finalizacion|date}}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <h4>Observaciones</h4>
+                            <div *ngIf="Observaciones_Tramite.length == 0" class="alert alert-primary" role="alert">
+                                El tramite no tiene observaciones
+                            </div>
+                            <ng-container *ngIf="Observaciones_Tramite.length > 0">
 
-                            <button (click)="Obtener_Informacion_Tramite(txt_codigo.value, txt_dni.value)" type="submit" class="btn btn-primary">Consultar</button>
-                        </fieldset>
-                    </form>
+
+                                <div class="example-action-buttons" align="center">
+                                    <button mat-button (click)="accordion.openAll()">Mostrar
+                                        <mat-icon>visibility</mat-icon>
+                                    </button>
+                                    <button mat-button (click)="accordion.closeAll()">Ocultar
+                                        <mat-icon>visibility_off</mat-icon>
+                                    </button>
+                                    <button mat-button (click)="imprimir_observaciones()">Imprimir
+                                        <mat-icon>print</mat-icon>
+                                    </button>
+                                </div>
+                                <mat-accordion class="example-headers-align" multi *ngIf="Observaciones_Tramite.length>0">
+                                    <mat-expansion-panel *ngFor="let obs of Observaciones_Tramite; let i=index">
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title>
+                                                <p><strong>Area: </strong>{{obs[0].NombreDep}}</p>
+                                            </mat-panel-title>
+                                        </mat-expansion-panel-header>
+                                        <p><strong>Funcionario: </strong>{{obs[0].Nombre}} {{obs[0].Apellido_P}} {{obs[0].Apellido_M}} ({{obs[0].NombreCar}})</p>
+
+                                        <table mat-table [dataSource]="obs" class="mat-elevation-z8 demo-table">
+
+                                            <!-- Name Column -->
+                                            <ng-container matColumnDef="descripcion">
+                                                <th mat-header-cell *matHeaderCellDef> Descripcion </th>
+                                                <td mat-cell *matCellDef="let element"> {{element.detalle}} </td>
+                                            </ng-container>
 
 
-                    <mat-card *ngIf="Tramite" style="border:1px solid; margin-top: 20px;">
 
-                        <mat-card-title>Informacion tramite</mat-card-title>
-                        <p>Solicitante: {{Tramite.nombres|uppercase}} {{Tramite.paterno|uppercase}} {{Tramite.materno|uppercase}}</p>
-                        <p>Dni: {{Tramite.expedido}} {{Tramite.dni}}</p>
-                        <ng-container [ngSwitch]="Tramite.estado">
-                            <p *ngSwitchCase="'Inscrito'">Estado: <span class="badge bg-primary"> {{Tramite.estado | uppercase}}</span> (El tramite aun no se ha comenzado a evaluar)</p>
-                            <p *ngSwitchCase="'Observado'">Estado: <span class="badge bg-warning text-dark"> {{Tramite.estado | uppercase}}</span> (El tramite tiene observaciones, debe apersonarse a la institucion)</p>
-                            <p *ngSwitchCase="'En revision'">Estado: <span class="badge bg-secondary" *> {{Tramite.estado | uppercase}}</span> (El tramite esta siendo evaluado)</p>
-                            <p *ngSwitchCase="'Devuelto'">Estado: <span class="badge bg-info text-dark"> {{Tramite.estado | uppercase}}</span> (El tramite ha sido devuelto para su reevaluacion)</p>
-                            <p *ngSwitchCase="'Concluido'">Estado: <span class="badge bg-dark"> {{Tramite.estado | uppercase}}</span> (El tramite ha sido evaludado y finalizado)</p>
-                            <p *ngSwitchCase="'Anulado'">Estado: <span class="badge bg-warning text-dark"> {{Tramite.estado | uppercase}}</span> (La realizacion del tramite ha sido cancelada)</p>
+                                            <!-- Symbol Column -->
+                                            <ng-container matColumnDef="fecha_registro">
+                                                <th mat-header-cell *matHeaderCellDef> Fecha de registro</th>
+                                                <td mat-cell *matCellDef="let element"> {{element.fecha_registro |date:'medium'}} </td>
+                                            </ng-container>
+
+
+                                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                        </table>
+
+
+
+                                    </mat-expansion-panel>
+                                </mat-accordion>
+                            </ng-container>
+
+
+
                         </ng-container>
 
-                        <p matLine>
-
-
-                        </p>
-
-                        <h1>Observaciones tramite</h1>
-                        <p *ngIf="Observaciones_Tramite.length==0">EL tramite no tiene observaciones</p>
-                        <div class="example-action-buttons" align="center">
-                            <button mat-stroked-button color="primary" *ngIf="Observaciones_Tramite.length>0" (click)="accordion.openAll()">
-                                 
-                                Mostrar todo
-                                <mat-icon>visibility</mat-icon>
-                                </button>
-                            <button mat-stroked-button color="accent" *ngIf="Observaciones_Tramite.length>0" (click)="accordion.closeAll()">Ocultar
-                                <mat-icon>visibility_off</mat-icon>
-                            </button>
-                            <button mat-stroked-button color="warn" *ngIf="Observaciones_Tramite.length>0" (click)="imprimir_observaciones()">
-                                Imprimir
-                                <mat-icon>print</mat-icon>
-                            </button>
-                        </div>
-                        <mat-accordion class="example-headers-align" multi *ngIf="Observaciones_Tramite.length>0">
-                            <mat-expansion-panel *ngFor="let obs of Observaciones_Tramite; let i=index">
-                                <mat-expansion-panel-header>
-                                    <mat-panel-title>
-                                        <strong>Area: </strong> {{obs[0].NombreDep}}
-                                    </mat-panel-title>
-                                    <mat-panel-description>
-                                        <div matLine><strong>Funcionario: </strong> {{obs[0].Nombre}} {{obs[0].Apellido_P}} {{obs[0].Apellido_M}} ({{obs[0].NombreCar}})</div>
-
-                                        <mat-icon>account_circle</mat-icon>
-
-                                    </mat-panel-description>
-                                </mat-expansion-panel-header>
-                                <table mat-table [dataSource]="obs" class="mat-elevation-z8 demo-table">
-
-                                    <!-- Name Column -->
-                                    <ng-container matColumnDef="descripcion">
-                                        <th mat-header-cell *matHeaderCellDef> Descripcion </th>
-                                        <td mat-cell *matCellDef="let element"> {{element.detalle}} </td>
-                                    </ng-container>
-
-                                    <!-- Weight Column -->
-                                    <ng-container matColumnDef="estado">
-                                        <th mat-header-cell *matHeaderCellDef>Situacion</th>
-                                        <td mat-cell *matCellDef="let element">
-                                            <p *ngIf="element.situacion==1||element.situacion==true" style="color: green;">
-                                                Corregido
-                                                <mat-icon>check_circle</mat-icon>
-                                            </p>
-                                            <p *ngIf="element.situacion==0||element.situacion==null||element.situacion==false" style="color: red;">
-                                                No corregido
-                                                <mat-icon>cancel</mat-icon>
-                                            </p>
-                                        </td>
-                                    </ng-container>
-
-                                    <!-- Symbol Column -->
-                                    <ng-container matColumnDef="fecha_registro">
-                                        <th mat-header-cell *matHeaderCellDef> Fecha de registro</th>
-                                        <td mat-cell *matCellDef="let element"> {{element.fecha_registro |date}} </td>
-                                    </ng-container>
-
-
-                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                                </table>
-                            </mat-expansion-panel>
-                        </mat-accordion>
-
-
-
-                    </mat-card>
-
-
-                </ng-container>
-
-
-
+                    </div>
+                    <!-- /.section-title -->
+                </div>
             </div>
-        </mat-sidenav-content>
-    </mat-sidenav-container>
+        </div>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 text-center">
+                <!-- Created for <a href="https://easetemplate.com/downloads/digital-marketing-website-template-hike-bold-design/" target="_blank">easetemplate</a> -->
+            </div>
+        </div>
+    </div>
+    <!-- </div> -->
 </div>
-
-<div *ngIf="!shouldRun">Please open on Stackblitz to see result</div>

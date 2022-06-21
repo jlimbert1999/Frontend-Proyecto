@@ -14,28 +14,30 @@ export class UsuariosService {
     private jwtHelper: JwtHelperService
   ) { }
 
-
-
-
   //API USUARIOS
   getUsuarios_Habilitados() {
-    return this.http.get(`${this.URL}/usuarios/1`)
+    return this.http.get(`${this.URL}/api/usuarios?habilitados=1`)
   }
   getUsuarios_noHabilitados() {
-    return this.http.get(`${this.URL}/usuarios/0`)
+    return this.http.get(`${this.URL}/api/usuarios?habilitados=0`)
   }
-  addUsuarios(datosUser: any) {
-    return this.http.post(`${this.URL}/usuarios`, datosUser)
-  }
-  // deleteUsuarios(id: number) {
-  //   return this.http.delete(`${this.URL}/usuarios/${id}`)
-  // }
-  deleteUsuarios(id: number) {
-    return this.http.put(`${this.URL}/usuarios/${id}`, { Activo: false })
+  addUsuario(datosUser: any) {
+    return this.http.post(`${this.URL}/api/usuario`, datosUser)
   }
 
-  putUsuarios(id: number, datos: any) {
-    return this.http.put(`${this.URL}/usuarios/${id}`, datos)
+  //CUENTAS
+  getCuenta(id_cuenta:number){
+    return this.http.get(`${this.URL}/cuenta/${id_cuenta}`)
+  }
+  // deleteUsuarios(id: number) {
+  //   return this.http.delete(`${this.URL}/api/usuarios/${id}`)
+  // }
+  deleteUsuarios(id: number) {
+    return this.http.put(`${this.URL}/api/usuario/${id}`, { Activo: false })
+  }
+
+  putUsuario(id: number, datos: any) {
+    return this.http.put(`${this.URL}/api/usuario/${id}`, datos)
   }
   getUsuario(id: number) {
     return this.http.get(`${this.URL}/usuarios/${id}`)
@@ -44,25 +46,25 @@ export class UsuariosService {
     return this.http.post(`${this.URL}/usuarios-trabajando`, ids)
   }
   addDetallesUsuarios(datos: any) {
-    return this.http.post(`${this.URL}/usuarios-detalles`, datos)
+    return this.http.post(`${this.URL}/api/usuarios-detalles`, datos)
   }
   getDetallesUsuarios(id: number) {
-    return this.http.get(`${this.URL}/usuarios-detalles/${id}`)
+    return this.http.get(`${this.URL}/api/usuarios-detalles/${id}`)
   }
 
   //API CUENTAS
   addCuenta(datos: any) {
-    return this.http.post(`${this.URL}/cuentas`, datos)
+    return this.http.post(`${this.URL}/api/cuenta`, datos)
   }
   putCuenta(id: number, datos: any) {
-    return this.http.put(`${this.URL}/cuentas/${id}`, datos)
+    return this.http.put(`${this.URL}/api/cuenta/${id}`, datos)
   }
 
   getCuentasAsignadas() {
-    return this.http.get(`${this.URL}/cuentas-asignadas`)
+    return this.http.get(`${this.URL}/api/cuentas-asignadas`)
   }
   getCuentasNoAsignadas() {
-    return this.http.get(`${this.URL}/cuentas-no_asignadas`)
+    return this.http.get(`${this.URL}/api/cuentas-no_asignadas`)
   }
 
   asignarCuenta(datos: any, id: number) {

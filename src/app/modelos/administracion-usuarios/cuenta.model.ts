@@ -1,9 +1,11 @@
 export interface CuentaModel {
-    login:string;
-    password:string;
-    Activo:boolean,
+    id_cuenta?:number,
+    id_cargo:number,
+    id_funcionario?:number,
+    login:string,
+    password?:string;
     fecha_creacion:string,
     fecha_actualizacion:string,
-    id_cargo:number,
-    id_funcionario:number,
+    activo:boolean,
+    permisos:string
 }

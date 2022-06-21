@@ -2,6 +2,23 @@ table {
     width: 100%;
 }
 
-.mat-form-field+.mat-form-field {
-    margin-left: 8px;
+.example-table-container {
+    position: relative;
+    min-height: 100px;
+    max-height: 150px;
+    overflow: auto;
+}
+
+.mat-column-opciones {
+    width: 120px;
+}
+
+.mat-column-descripcion {
+    /* max-width: 50px; */
+    font-size: 12px;
+}
+
+.mat-column-Fecha_creacion {
+    /* max-width: 50px; */
+    width: 100px;
 }

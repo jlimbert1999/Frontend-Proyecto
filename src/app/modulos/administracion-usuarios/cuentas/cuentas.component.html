@@ -1,22 +1,14 @@
 <p>
     <mat-toolbar>
-        <ng-container>
-            <span>Administracion de funcionarios</span>
+        <ng-container *ngIf="!modo_busqueda">
+            <span>Cuentas</span>
             <span class="example-spacer"></span>
             <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
             </button>
             <button (click)="modo_busqueda=true" mat-icon-button matTooltip="Buscar funcionario" class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
                 <mat-icon>search</mat-icon>
             </button>
-            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                <mat-icon>more_vert</mat-icon>
-                </button>
-            <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="ver_Habilitados()">
-                    <mat-icon>no_accounts</mat-icon>
-                    Ver {{(verHabilitados ? "No Habilitados":"Habilitados")}}
-                </button>
-            </mat-menu>
+
         </ng-container>
         <mat-form-field *ngIf="modo_busqueda" floatLabel="never">
 

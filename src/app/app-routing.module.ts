@@ -6,8 +6,7 @@ import { InicioComponent } from './paginas/inicio/inicio.component';
 import { LoginComponent } from './paginas/login/login.component';
 import { LoginGuardGuard } from './guards/login-guard.guard';
 import { AdministracionUsuariosComponent } from './modulos/administracion-usuarios/administracion-usuarios.component';
-import { DialogListaTramitesComponent } from './componentes/dialogs/dialog-lista-tramites/dialog-lista-tramites.component';
-import { AdmConfiguracionComponent } from './modulos/administracion-usuarios/adm-configuracion/adm-configuracion.component';
+
 import { AdmTramiteComponent } from './modulos/registro-tramites/adm-tramite/adm-tramite.component';
 import { BandejaEntradaComponent } from './modulos/registro-tramites/bandeja-entrada/bandeja-entrada.component';
 import { BandejaSalidaComponent } from './modulos/registro-tramites/bandeja-salida/bandeja-salida.component';
@@ -20,7 +19,7 @@ import { AdmFuncionarioComponent } from './modulos/administracion-usuarios/adm-f
 import { RoleGuard } from './guards/role.guard';
 import { ReporteFichaComponent } from './modulos/reportes/reporte-ficha/reporte-ficha.component';
 import { FuncionariosComponent } from './modulos/administracion-usuarios/funcionarios/funcionarios.component';
-import { TiposTramitesComponent } from './modulos/administracion-usuarios/tipos-tramites/tipos-tramites.component';
+import { TiposTramitesComponent } from './modulos/tramites-requisitos/tipos-tramites/tipos-tramites.component';
 import { InstitucionesComponent } from './modulos/administracion-usuarios/instituciones/instituciones.component';
 import { DependenciasComponent } from './modulos/administracion-usuarios/dependencias/dependencias.component';
 import { CargosComponent } from './modulos/administracion-usuarios/cargos/cargos.component';
@@ -28,16 +27,11 @@ import { CuentasComponent } from './modulos/administracion-usuarios/cuentas/cuen
 import { ReporteEstadoComponent } from './modulos/reportes/reporte-estado/reporte-estado.component';
 import { ReporteEstadisticoComponent } from './modulos/reportes/reporte-estadistico/reporte-estadistico.component';
 import { GroupwareComponent } from './modulos/administracion-usuarios/groupware/groupware.component';
+import { AyudaComponent } from './paginas/consulta/ayuda/ayuda.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
     path: 'Usuarios', component: AdministracionUsuariosComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' }
-  },
-  {
-    path: 'Configuraciones', component: AdmConfiguracionComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' },
-    children: [
-      { path: 'Tipos-Tramites', component: TramitesRequisitosComponent }
-    ]
   },
   // {
   //   path: 'Tramites',
@@ -70,7 +64,7 @@ const routes: Routes = [
       { path: 'administrar-dependencias', component: DependenciasComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
       { path: 'administrar-cargos', component: CargosComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
       { path: 'administrar-tipos-tramites', component: TiposTramitesComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
-      { path: 'groupware', component:GroupwareComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
+      { path: 'groupware', component: GroupwareComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
       //REGISTRO DE TRAMIES
       { path: 'administrar-tramite', component: AdmTramiteComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'USER1_ROLE' } },
       { path: 'bandeja-entrada', component: BandejaEntradaComponent },
@@ -86,9 +80,11 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'Consulta', component: ConsultaComponent
+    path: 'Consulta', component: ConsultaComponent,
+    
 
   },
+  { path: 'Ayuda', component: AyudaComponent },
   { path: '**', pathMatch: 'full', redirectTo: 'inicio' }
 ];
 

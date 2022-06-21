@@ -14,13 +14,13 @@ export class CargoService {
     return this.http.post(`${this.URL}/cargo`, datos)
   }
   getCargos_Habilitados() {
-    return this.http.get(`${this.URL}/cargos/1`)
+    return this.http.get(`${this.URL}/api/cargos?tipo=1`)
   }
   getCargos_NoHabilitados() {
-    return this.http.get(`${this.URL}/cargos/0`)
+    return this.http.get(`${this.URL}/api/cargos?tipo=0`)
   }
 
   putCargo(id:number, datos:object) {
-    return this.http.put(`${this.URL}/cargo/${id}`, datos)
+    return this.http.put(`${this.URL}/api/cargo/${id}`, datos)
   }
 }

@@ -5,6 +5,7 @@ import { TipoTramite } from 'src/app/modelos/tramites-requisitos/Tipo_Tramite.mo
 import { Requerimientos } from 'src/app/modelos/tramites-requisitos/Requerimientos'
 import { Mensajes } from 'src/app/componentes/mensaje/mensaje'
 import { DialogRequisitosComponent } from '../dialog-requisitos/dialog-requisitos.component';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-dialog-tramites-requisitos',
@@ -12,6 +13,11 @@ import { DialogRequisitosComponent } from '../dialog-requisitos/dialog-requisito
   styleUrls: ['./dialog-tramites-requisitos.component.css']
 })
 export class DialogTramitesRequisitosComponent implements OnInit {
+  Form_TipoTramite: FormGroup
+  segmentos = [
+    { value: 'APR', viewValue: 'Aprobaciones' },
+    { value: 'VSC', viewValue: 'Visaciones' }
+  ]
   msg = new Mensajes()
   tituloDialog: string = '';
   Tipo_Tramite: TipoTramite = {
@@ -34,66 +40,76 @@ export class DialogTramitesRequisitosComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public DatosTramite: any,
     private tipoTramitesService: TipoTramitesService,
     public dialog: MatDialog,
+    private formBuilder: FormBuilder,
+    public dialogRef: MatDialogRef<DialogTramitesRequisitosComponent>,
   ) {
   }
 
   ngOnInit(): void {
+    this.iniciar_Form_TipoTramite()
     this.generar_TituloDialog()
   }
 
   getFecha() {
     return Date.now()
   }
-  recargarRequisitosTabla() {
-    if (this.tablaRequisitos) {   //esperar a que tabla sea visible
-      this.tablaRequisitos.renderRows(); //actulizar tabla
-    }
-  }
+
 
   generar_TituloDialog() {
     if (Object.keys(this.DatosTramite).length == 0) {
       this.tituloDialog = "Registro tipo de tramite"
-      this.displayedColumns = ['descripcion',  'opciones'];
+      this.displayedColumns = ['descripcion', 'opciones'];
       this.DatosTramite.NuevosRequitos = true
       //si es nuevo el boton de eliminar no se mostrara
     }
     else {
       this.tituloDialog = "Edicion tipo de tramite"
-      this.displayedColumns = ['descripcion','Fecha_creacion', 'opciones'];  //, 'habilitado'
+      this.displayedColumns = ['descripcion', 'Fecha_creacion', 'opciones'];  //, 'habilitado'
       this.Tipo_Tramite = this.DatosTramite
+      this.Form_TipoTramite.patchValue(this.DatosTramite)
       this.obtener_Requerimientos_habilitados_Tramite(this.DatosTramite.id_TipoTramite)
     }
   }
-  agregar_TipoTramite() {
-    this.Tipo_Tramite.Fecha_creacion = this.Tipo_Tramite.Fecha_actualizacion = this.getFecha()
-    this.tipoTramitesService.addTipoTramite(this.Tipo_Tramite).subscribe((resp: any) => {
-      if (resp.ok) {
-        if (this.Requerimientos.length > 1) {
-          this.Requerimientos.forEach((requisito: Requerimientos) => {
-            requisito.id_TipoTramite = resp.TipoTramite.insertId
-            this.tipoTramitesService.addRequerimientos(requisito).subscribe()
-          })
-          this.msg.mostrarMensaje('success', 'Tramite y requisitos registrados')
-        }
-        else {
-          this.msg.mostrarMensaje('success', 'Tramite registrado')
-        }
-      }
-    })
-  }
-  editar_tipoTramite() {
-    this.tipoTramitesService.putTipoTramite(this.DatosTramite.id_TipoTramite, this.Tipo_Tramite).subscribe((resp: any) => {
-      if (resp.ok) {
-        this.msg.mostrarMensaje('success', resp.message)
-      }
-    })
-  }
+
+
   registrar_datos() {
     if (this.tituloDialog == "Registro tipo de tramite") {
-      this.agregar_TipoTramite()
+      this.Tipo_Tramite = this.Form_TipoTramite.value
+      this.Tipo_Tramite.Fecha_creacion = this.Tipo_Tramite.Fecha_actualizacion = this.getFecha()
+      this.Tipo_Tramite.Activo = true
+      this.tipoTramitesService.addTipoTramite(this.Tipo_Tramite).subscribe((resp: any) => {
+        if (resp.ok) {
+          this.Tipo_Tramite.id_TipoTramite = resp.TipoTramite.insertId
+          if (this.Requerimientos.length > 0) {
+            this.Requerimientos.forEach((requisito: Requerimientos) => {
+              requisito.id_TipoTramite = resp.TipoTramite.insertId
+              this.tipoTramitesService.addRequerimientos(requisito).subscribe()
+            })
+            this.dialogRef.close(this.Tipo_Tramite)
+            this.msg.mostrarMensaje('success', 'Tramite y requisitos registrados')
+
+          }
+          else {
+            this.dialogRef.close(this.Tipo_Tramite)
+            this.msg.mostrarMensaje('success', 'Tramite registrado')
+
+          }
+        }
+      })
     }
     else if (this.tituloDialog == "Edicion tipo de tramite") {
-      this.editar_tipoTramite()
+      if (this.Form_TipoTramite.touched) {
+        this.Tipo_Tramite = this.Form_TipoTramite.value
+        this.Tipo_Tramite.id_TipoTramite = this.DatosTramite.id_TipoTramite
+        this.Tipo_Tramite.Fecha_actualizacion = this.getFecha()
+        this.tipoTramitesService.putTipoTramite(this.DatosTramite.id_TipoTramite, this.Tipo_Tramite).subscribe((resp: any) => {
+          if (resp.ok) {
+            this.msg.mostrarMensaje('success', resp.message)
+            this.dialogRef.close(this.Tipo_Tramite)
+          }
+        })
+      }
+
     }
   }
 
@@ -140,9 +156,25 @@ export class DialogTramitesRequisitosComponent implements OnInit {
   eliminar_Requisito(requerimiento: any) {
     this.tipoTramitesService.putRequisito(requerimiento.id_requerimiento, { Activo: false }).subscribe((resp: any) => {
       if (resp.ok) {
-        this.obtener_Requerimientos_habilitados_Tramite(this.DatosTramite.id_TipoTramite)
+        this.Requerimientos = this.Requerimientos.filter(elemento => elemento.id_requerimiento !== requerimiento.id_requerimiento);
+        // const index = this.Requerimientos.findIndex((item: Requerimientos) => item.id_requerimiento == id);
+        // this.Requerimientos[index] = datos
+
+        // this.obtener_Requerimientos_habilitados_Tramite(this.DatosTramite.id_TipoTramite)
       }
     })
+  }
+  habilitar_Requisito(requerimiento: any) {
+    this.tipoTramitesService.putRequisito(requerimiento.id_requerimiento, { Activo: true }).subscribe((resp: any) => {
+      if (resp.ok) {
+        this.Requerimientos = this.Requerimientos.filter(elemento => elemento.id_requerimiento !== requerimiento.id_requerimiento);
+        // const index = this.Requerimientos.findIndex((item: Requerimientos) => item.id_requerimiento == id);
+        // this.Requerimientos[index] = datos
+
+        // this.obtener_Requerimientos_habilitados_Tramite(this.DatosTramite.id_TipoTramite)
+      }
+    })
+
   }
   quitar_Requisito(posicion: number) {
     this.Requerimientos.splice(posicion, 1);
@@ -156,7 +188,6 @@ export class DialogTramitesRequisitosComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(dataDialog => {
       if (dataDialog) {
-        // delete dataDialog.id_requerimiento  //eliminar el id
         dataDialog.fecha_actualizacion = this.getFecha()
         this.actualizar_Requerimientos(datosRequerimiento.id_requerimiento, dataDialog)
       }
@@ -168,7 +199,9 @@ export class DialogTramitesRequisitosComponent implements OnInit {
     requisito.id_TipoTramite = this.DatosTramite.id_TipoTramite
     this.tipoTramitesService.addRequerimientos(requisito).subscribe((resp: any) => {
       if (resp.ok) {
-        this.obtener_Requerimientos_habilitados_Tramite(this.DatosTramite.id_TipoTramite)
+        requisito.id_requerimiento = resp.Requerimiento.insertId
+        this.Requerimientos.push(requisito)
+        this.recargarRequisitosTabla()
       }
     })
   }
@@ -178,7 +211,8 @@ export class DialogTramitesRequisitosComponent implements OnInit {
   actualizar_Requerimientos(id: any, datos: Requerimientos) {
     this.tipoTramitesService.putRequisito(id, datos).subscribe((resp: any) => {
       if (resp.ok) {
-        this.obtener_Requerimientos_habilitados_Tramite(this.DatosTramite.id_TipoTramite)
+        const index = this.Requerimientos.findIndex((item: Requerimientos) => item.id_requerimiento == id);
+        this.Requerimientos[index] = datos
       }
     })
   }
@@ -189,6 +223,23 @@ export class DialogTramitesRequisitosComponent implements OnInit {
     }
     else {
       this.obtener_Requerimientos_NoHabilitados_Tramite(this.DatosTramite.id_TipoTramite)
+    }
+  }
+
+  iniciar_Form_TipoTramite() {
+    this.Form_TipoTramite = this.formBuilder.group({
+      titulo: ['', [Validators.required, Validators.pattern('^[a-zA-Z \-\']+')]],
+      sigla: ['', Validators.required],
+      segmento: ['', Validators.required],
+      Fecha_creacion: '',
+      Fecha_actualizacion: 0,
+      Activo: true
+    });
+
+  }
+  recargarRequisitosTabla() {
+    if (this.tablaRequisitos) {   //esperar a que tabla sea visible
+      this.tablaRequisitos.renderRows(); //actulizar tabla
     }
   }
 

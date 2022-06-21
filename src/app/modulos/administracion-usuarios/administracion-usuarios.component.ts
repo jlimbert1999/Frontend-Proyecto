@@ -2,12 +2,12 @@ import { Component, EventEmitter, OnInit } from '@angular/core';
 import { UsuariosService } from '../../servicios/servicios-m1/usuarios.service';
 
 //Modelos
-import { FuncionarioModel } from 'src/app/modelos/usuario.model';
+import { FuncionarioModel } from 'src/app/modelos/administracion-usuarios/usuario.model';
 import { CuentaModel } from 'src/app/modelos/administracion-usuarios/cuenta.model'
 import { TrabajoModel } from 'src/app/modelos/administracion-usuarios/trabajo.model'
 
-import { DialogUsuariosComponent } from '../../componentes/dialogs/dialog-usuarios/dialog-usuarios.component'
-import { DialogDetallesComponent } from 'src/app/componentes/dialogs/dialog-detalles/dialog-detalles.component'
+import { DialogUsuariosComponent } from '../../componentes/dialogs/dialogs-m1/dialog-usuarios/dialog-usuarios.component'
+import { DialogDetallesComponent } from 'src/app/componentes/dialogs/dialogs-m1/dialog-detalles/dialog-detalles.component'
 //material
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
@@ -141,7 +141,7 @@ export class AdministracionUsuariosComponent implements OnInit {
     this.dataFormRegistro.Tipo = ''
 
     const dialogRef = this.dialog.open(DialogUsuariosComponent, {
-      data: this.dataFormRegistro
+      data: {}
     })
     dialogRef.afterClosed().subscribe((datosFormulario: any) => {
       if (datosFormulario) {
@@ -149,7 +149,7 @@ export class AdministracionUsuariosComponent implements OnInit {
         if (datosFormulario.Tipo_Registro == '') { //creo funcionario sin cuenta
           this.datos_funcionario = datosFormulario.datosFuncionario;
           this.datos_funcionario.Fecha_creacion = this.datos_funcionario.Fecha_actualizacion = this.getFecha()
-          this.usuariosService.addUsuarios(this.datos_funcionario).subscribe((resp: any) => {
+          this.usuariosService.addUsuario(this.datos_funcionario).subscribe((resp: any) => {
             if (resp.ok) {
               this.obtener_Funcionarios_Habilitados()
               this.msg.mostrarMensaje('success', resp.message)
@@ -160,12 +160,12 @@ export class AdministracionUsuariosComponent implements OnInit {
           //creacion funcionario
           this.datos_funcionario = datosFormulario.datosFuncionario;
           this.datos_funcionario.Fecha_creacion = this.datos_funcionario.Fecha_actualizacion = this.getFecha()
-          this.usuariosService.addUsuarios(this.datos_funcionario).subscribe((resp: any) => {
+          this.usuariosService.addUsuario(this.datos_funcionario).subscribe((resp: any) => {
             if (resp.ok) {
               //creacion cuenta
               this.datos_cuenta = datosFormulario.datosCuenta
               this.datos_cuenta.fecha_creacion = this.datos_cuenta.fecha_actualizacion = this.getFecha()
-              this.datos_cuenta.Activo = true;
+              this.datos_cuenta.activo = true;
               this.datos_cuenta.id_funcionario = resp.usuario.insertId
               this.usuariosService.addCuenta(this.datos_cuenta).subscribe((resp1: any) => {
                 if (resp1.ok) {
@@ -209,7 +209,7 @@ export class AdministracionUsuariosComponent implements OnInit {
           //agregar funcionario
           this.datos_funcionario = datosFormulario.datosFuncionario;
           this.datos_funcionario.Fecha_creacion = this.datos_funcionario.Fecha_actualizacion = this.getFecha()
-          this.usuariosService.addUsuarios(this.datos_funcionario).subscribe((resp: any) => {
+          this.usuariosService.addUsuario(this.datos_funcionario).subscribe((resp: any) => {
             if (resp.ok) {
 
               //crear obtjeto con datos de   la actualizacion
@@ -290,7 +290,7 @@ export class AdministracionUsuariosComponent implements OnInit {
     dialogRef.afterClosed().subscribe(datosFormulario => {
       if (datosFormulario) {
         datosFormulario.datosFuncionario.Fecha_actualizacion = this.getFecha()
-        this.usuariosService.putUsuarios(id_funcionario, datosFormulario.datosFuncionario).subscribe((resp: any) => {
+        this.usuariosService.putUsuario(id_funcionario, datosFormulario.datosFuncionario).subscribe((resp: any) => {
 
           if (!datosFormulario.Tipo_Registro) { //si no quiere crer ni asignar hay 2 opciones
             if (Object.keys(datosFormulario.datosCuenta).length == 0) { //no tiene cuenta, per quiere actualizar datos funcionario
@@ -314,7 +314,7 @@ export class AdministracionUsuariosComponent implements OnInit {
           if (datosFormulario.Tipo_Registro == "Crear") {
             this.datos_cuenta = datosFormulario.datosCuenta
             this.datos_cuenta.fecha_creacion = this.datos_cuenta.fecha_actualizacion = this.getFecha()
-            this.datos_cuenta.Activo = true;
+            this.datos_cuenta.activo = true;
             this.datos_cuenta.id_funcionario = id_funcionario
             this.usuariosService.addCuenta(this.datos_cuenta).subscribe((resp: any) => {
               if (resp.ok) {

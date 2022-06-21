@@ -61,7 +61,7 @@ export class SeguimientoTramitesComponent implements OnInit {
     private tramiteService: RegistroTramiteService,
     private _location: Location
   ) {
-    this.view = [innerWidth, 300];
+    this.view = [innerWidth, innerHeight];
 
   }
 

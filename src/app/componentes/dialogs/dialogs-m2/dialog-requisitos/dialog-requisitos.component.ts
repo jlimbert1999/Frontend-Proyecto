@@ -20,4 +20,6 @@ export class DialogRequisitosComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  
+
 }

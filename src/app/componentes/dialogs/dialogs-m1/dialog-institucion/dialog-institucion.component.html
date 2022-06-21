@@ -1,18 +1,20 @@
-<h1 mat-dialog-title>{{tituloDialog}}</h1>
+<h2 mat-dialog-title>{{tituloDialog}}</h2>
 <div mat-dialog-content>
-    <div class="container">
+    <form [formGroup]="Form_Institucion">
         <div class="row">
             <div class="col-sm">
                 <mat-form-field appearance="legacy">
                     <mat-label>Nombre</mat-label>
-                    <input matInput [(ngModel)]="Institucion.Nombre">
+                    <input matInput formControlName="Nombre">
+                    <mat-error *ngIf="Form_Institucion.controls['Nombre'].invalid">Ingrese el nombre de la institucion</mat-error>
                 </mat-form-field>
 
             </div>
             <div class="col-sm">
                 <mat-form-field appearance="legacy">
                     <mat-label>Sigla</mat-label>
-                    <input matInput [(ngModel)]="Institucion.Sigla">
+                    <input matInput formControlName="Sigla">
+                    <mat-error *ngIf="Form_Institucion.controls['Sigla'].invalid">Ingrese la sigla de la institucion</mat-error>
                 </mat-form-field>
             </div>
         </div>
@@ -20,22 +22,23 @@
             <div class="col-sm">
                 <mat-form-field appearance="legacy">
                     <mat-label>Direccion</mat-label>
-                    <input matInput [(ngModel)]="Institucion.Direccion">
+                    <input matInput formControlName="Direccion">
+                    <mat-error *ngIf="Form_Institucion.controls['Direccion'].invalid">Ingrese la direccion de la institucion</mat-error>
                 </mat-form-field>
             </div>
             <div class="col-sm">
                 <mat-form-field appearance="legacy">
                     <mat-label>Telefono</mat-label>
-                    <input matInput [(ngModel)]="Institucion.Telefono">
+                    <input matInput formControlName="Telefono">
+                    <mat-error *ngIf="Form_Institucion.controls['Telefono'].invalid">Ingrese el telefono de la institucion</mat-error>
                 </mat-form-field>
             </div>
         </div>
-        <mat-checkbox [(ngModel)]="Institucion.Activo" class="example-margin">{{(Institucion.Activo ? "Habilitar":"Desabilitar")}}</mat-checkbox>
-    </div>
 
-
+    </form>
 </div>
-<div mat-dialog-actions>
-    <button mat-button (click)="cerrarDialog()">Cancelar</button>
-    <button mat-button [mat-dialog-close]="data" (click)="guardar_registro()" cdkFocusInitial>Guardar</button>
+
+<div mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="cerrarDialog()">Cancelar</button>
+    <button mat-raised-button color="primary" [mat-dialog-close]="data" (click)="guardar_registro()" [disabled]="!Form_Institucion.valid">Guardar</button>
 </div>

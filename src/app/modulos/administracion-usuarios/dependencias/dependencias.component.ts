@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { DialogDependenciaComponent } from 'src/app/componentes/dialogs/dialog-dependencia/dialog-dependencia.component';
+import { DialogDependenciaComponent } from 'src/app/componentes/dialogs/dialogs-m1/dialog-dependencia/dialog-dependencia.component';
 import { Mensajes } from 'src/app/componentes/mensaje/mensaje';
+import { DependenciaModel } from 'src/app/modelos/administracion-usuarios/dependencia.model';
 import { ConfiguracionService } from 'src/app/servicios/servicios-m1/configuracion.service';
+import { DependenciaService } from 'src/app/servicios/servicios-m1/dependencia.service';
 
 @Component({
   selector: 'app-dependencias',
@@ -13,20 +15,19 @@ import { ConfiguracionService } from 'src/app/servicios/servicios-m1/configuraci
 export class DependenciasComponent implements OnInit {
   OpcionesTabla: string[]
   verHabilitados: boolean = true
-  Dependencia:any
+  Dependencias: DependenciaModel[]
   dataSource = new MatTableDataSource();
-  modo_busqueda:boolean=false
+  modo_busqueda: boolean = false
   msg = new Mensajes();
   displayedColumns = [
     { key: "SiglaInst", titulo: "INSTITUCION" },
     { key: "Nombre", titulo: "NOMBRE" },
     { key: "Sigla", titulo: "SIGLA" },
-    { key: "Fecha_creacion", titulo: "FECHA CREACION" },
-    // { key: "Activo", titulo: "HABILITADO" }
+    { key: "Fecha_creacion", titulo: "FECHA CREACION" }
   ]
-  
-  
-  constructor(private configService: ConfiguracionService, public dialog: MatDialog) { }
+
+
+  constructor(private depService: DependenciaService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.obtener_Dephabilitadas()
@@ -35,15 +36,10 @@ export class DependenciasComponent implements OnInit {
   obtener_Dephabilitadas() {
     this.OpcionesTabla = ['Editar', 'Eliminar']
     this.verHabilitados = true
-    this.configService.getDepen_Habilitadas().subscribe((resp: any) => {
+    this.depService.getDependencia_Habilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Dependencias.length > 0) {
-          this.Dependencia = resp.Dependencias
-          this.dataSource.data = this.Dependencia
-
-        } else {
-          this.msg.mostrarMensaje('info', "No hay dependencias habilitadas")
-        }
+        this.Dependencias = resp.Dependencias
+        this.dataSource.data = this.Dependencias
       }
       else {
         this.msg.mostrarMensaje('error', resp.message)
@@ -52,16 +48,11 @@ export class DependenciasComponent implements OnInit {
   }
 
   obtener_DepNohabilitadas() {
-    this.configService.getDepen_noHabilitadas().subscribe((resp: any) => {
+    this.OpcionesTabla = ['Editar', 'Habilitar']
+    this.depService.getDependencia_NoHabilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Dependencias.length > 0) {
-          this.dataSource.data = resp.Dependencias
-          this.OpcionesTabla = ['Editar']
-        }
-        else {
-          this.msg.mostrarMensaje('info', "No hay dependencias no habilitadas")
-          this.verHabilitados = true
-        }
+        this.Dependencias = resp.Dependencias
+        this.dataSource.data = this.Dependencias
       }
       else {
         this.msg.mostrarMensaje('error', resp.message)
@@ -70,23 +61,16 @@ export class DependenciasComponent implements OnInit {
   }
   agregar_Dependencia() {
     const dialogRef = this.dialog.open(DialogDependenciaComponent, {
-      data: { Activo: true } 
+      data: {}
     })
     dialogRef.afterClosed().subscribe(datosFormulario => {
       if (datosFormulario) {
-        this.Dependencia = datosFormulario
-        this.Dependencia.Fecha_creacion = this.Dependencia.Fecha_actualizacion = this.getFecha()
-        this.configService.addDependencia(this.Dependencia).subscribe((res: any) => {
-          if (res.ok) {
-            this.msg.mostrarMensaje('success', res.message)
-          }
-          this.obtener_Dephabilitadas()
-          // this.obtener_Instihabilitadas()
-        })
+        this.Dependencias.unshift(datosFormulario)
+        this.dataSource.data = this.Dependencias
       }
     });
   }
-  
+
   editar_Dependecia(datos: any) {
     if (datos.Activo == '0') {
       datos.Activo = false
@@ -94,28 +78,36 @@ export class DependenciasComponent implements OnInit {
     else if (datos.Activo == '1') {
       datos.Activo = true
     }
-    let id = datos.id_dependencia
+
     const dialogRef = this.dialog.open(DialogDependenciaComponent, {
       data: datos
     })
     dialogRef.afterClosed().subscribe((DataDialog: any) => {
       if (DataDialog) {
-        delete DataDialog['SiglaInst'] //eliminar siglaInst para poder registrar
-        DataDialog.Fecha_actualizacion = this.getFecha()
-        this.configService.putDependencia(id, DataDialog).subscribe((resp: any) => {
-          if (resp.ok) {
-            this.msg.mostrarMensaje('success', resp.message)
-          }
-          this.obtener_Dephabilitadas()
-        })
+
+        const index = this.Dependencias.findIndex((item: any) => item.id_dependencia == datos.id_dependencia);
+        this.Dependencias[index] = Object.assign(this.Dependencias[index], DataDialog)
+        this.dataSource.data = this.Dependencias
+
       }
     });
   }
   eliminar_Dependencia(datos: any) {
-    this.configService.putDependencia(datos.id_dependencia, { Activo: false }).subscribe((resp: any) => {
+    this.depService.putDependencia(datos.id_dependencia, { Activo: false }).subscribe((resp: any) => {
       if (resp.ok) {
+        this.Dependencias = this.Dependencias.filter(elemento => elemento.id_dependencia != datos.id_dependencia);
+        this.dataSource.data = this.Dependencias
         this.msg.mostrarMensaje('success', 'La dependencia fue desabilidata')
-        this.obtener_Dephabilitadas()
+      }
+    })
+
+  }
+  habilitar_Institucion(datos: any) {
+    this.depService.putDependencia(datos.id_dependencia, { Activo: true }).subscribe((resp: any) => {
+      if (resp.ok) {
+        this.Dependencias = this.Dependencias.filter(elemento => elemento.id_dependencia != datos.id_dependencia);
+        this.dataSource.data = this.Dependencias
+        this.msg.mostrarMensaje('success', 'La dependencia se habilito')
       }
     })
 
@@ -130,15 +122,11 @@ export class DependenciasComponent implements OnInit {
   ver_Habilitados() {
     this.verHabilitados = !this.verHabilitados
     if (this.verHabilitados) {
-      this.dataSource.data = this.Dependencia
-      this.OpcionesTabla = ['Editar', 'Eliminar']
-      
-     
-
+      this.obtener_Dephabilitadas()
     }
     else {
       this.obtener_DepNohabilitadas()
-     
+
     }
   }
   desactivar_busqueda() {

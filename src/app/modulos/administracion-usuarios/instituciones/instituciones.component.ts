@@ -5,6 +5,7 @@ import { DialogInstitucionComponent } from 'src/app/componentes/dialogs/dialogs-
 import { Mensajes } from 'src/app/componentes/mensaje/mensaje';
 import { InstitucionModel } from 'src/app/modelos/administracion-usuarios/institucion.model';
 import { ConfiguracionService } from 'src/app/servicios/servicios-m1/configuracion.service';
+import { InstitucionService } from 'src/app/servicios/servicios-m1/institucion.service';
 
 @Component({
   selector: 'app-instituciones',
@@ -13,73 +14,54 @@ import { ConfiguracionService } from 'src/app/servicios/servicios-m1/configuraci
 })
 export class InstitucionesComponent implements OnInit {
   OpcionesTabla: string[] = []
-  verHabilitados: boolean = false
-  Institucion: any
+  verHabilitados: boolean = true
+  Institucion: InstitucionModel[]
   dataSource = new MatTableDataSource();
   msg = new Mensajes();
   modo_busqueda: boolean = false
   displayedColumns = [
-    // { key: "Nro", titulo: "NUMERO" },
     { key: "Nombre", titulo: "Nombre" },
     { key: "Sigla", titulo: "Sigla" },
     { key: "Direccion", titulo: "Direccion" },
     { key: "Telefono", titulo: "Telefono" },
     { key: "Fecha_creacion", titulo: "Fecha creacion" }
-    // { key: "Activo", titulo: "HABILITADO" }
   ]
-  constructor(private configService: ConfiguracionService, public dialog: MatDialog) { }
+  constructor(private InstiService: InstitucionService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.obtener_Instihabilitadas()
   }
 
   obtener_Instihabilitadas() {
-    this.verHabilitados = true
     this.OpcionesTabla = ['Editar', 'Eliminar']
-    this.configService.getInsti_Habilitadas().subscribe((resp: any) => {
+    this.InstiService.getInstituciones_Habilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Instituciones.length > 0) {
-
-          this.Institucion = resp.Instituciones
-          this.dataSource.data = resp.Instituciones
-        }
-        else {
-          this.msg.mostrarMensaje('info', "No hay insituciones habilitadas")
-        }
-
+        this.Institucion = resp.Instituciones
+        this.dataSource.data = resp.Instituciones
       }
-      else {
-        this.msg.mostrarMensaje('error', resp.message)
-      }
+
     })
   }
   obtener_InstNohabilitadas() {
-
-    this.configService.getInsti_noHabilitadas().subscribe((resp: any) => {
+    this.OpcionesTabla = ['Editar', 'Habilitar']
+    this.InstiService.getInstituciones_NoHabilitadas().subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Instituciones.length > 0) {
-          this.dataSource.data = resp.Instituciones
-          this.OpcionesTabla = ['Editar']
+        this.Institucion = resp.Instituciones
+        this.dataSource.data = resp.Instituciones
+      }
 
-        }
-        else {
-          this.msg.mostrarMensaje('info', "No hay insituciones no habilitadas")
-          this.verHabilitados = true
-        }
-      }
-      else {
-        this.msg.mostrarMensaje('info', resp.message)
-      }
     })
   }
   agregar_Institucion() {
     const dialogRef = this.dialog.open(DialogInstitucionComponent, {
-      data: { Activo: true }//enviar una lalve para que sea registro
+      data: {}//enviar una lalve para que sea registro
     })
 
     dialogRef.afterClosed().subscribe((DataDialog: any) => {
       if (DataDialog) { //si se recibe la llave enviada, registrar
-        this.obtener_Instihabilitadas()
+        // this.obtener_Instihabilitadas()
+        this.Institucion.unshift(DataDialog)
+        this.dataSource.data = this.Institucion
       }
     });
   }
@@ -89,17 +71,31 @@ export class InstitucionesComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(DataDialog => {
       if (DataDialog) {
-        this.obtener_Instihabilitadas()
+        const index = this.Institucion.findIndex((item: InstitucionModel) => item.id_institucion == datos.id_institucion);
+        this.Institucion[index] = DataDialog
+        this.dataSource.data = this.Institucion
       }
     });
   }
   eliminar_Institucion(datos: any) {
-    this.configService.putInstitucion(datos.id_institucion, { Activo: false }).subscribe((resp: any) => {
+    this.InstiService.putInstitucion(datos.id_institucion, { Activo: false }).subscribe((resp: any) => {
       if (resp.ok) {
+        this.Institucion = this.Institucion.filter(elemento => elemento.id_institucion != datos.id_institucion);
+        this.dataSource.data=this.Institucion
         this.msg.mostrarMensaje('success', 'La institucion fue desabilidata')
-        this.obtener_Instihabilitadas()
       }
     })
+  }
+  habilitar_Institucion(datos: any) {
+    this.InstiService.putInstitucion(datos.id_institucion, { Activo: true }).subscribe((resp: any) => {
+      if (resp.ok) {
+        
+        this.Institucion = this.Institucion.filter(elemento => elemento.id_institucion !== datos.id_institucion);
+        this.dataSource.data=this.Institucion
+        this.msg.mostrarMensaje('success', 'La institucion se habilito')
+      }
+    })
+
   }
   aplicarFiltro(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -112,10 +108,7 @@ export class InstitucionesComponent implements OnInit {
   ver_Habilitados() {
     this.verHabilitados = !this.verHabilitados
     if (this.verHabilitados) {
-      this.dataSource.data = this.Institucion
-      this.OpcionesTabla = ['Editar', 'Eliminar']
-
-
+      this.obtener_Instihabilitadas()
     }
     else {
       this.obtener_InstNohabilitadas()

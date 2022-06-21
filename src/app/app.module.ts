@@ -20,19 +20,17 @@ import { RegistroTramitesComponent } from './modulos/registro-tramites/registro-
 //providers
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { AdministracionUsuariosComponent } from './modulos/administracion-usuarios/administracion-usuarios.component';
-import { DialogUsuariosComponent } from './componentes/dialogs/dialog-usuarios/dialog-usuarios.component';
-import { DialogListaTramitesComponent } from './componentes/dialogs/dialog-lista-tramites/dialog-lista-tramites.component';
+import { DialogUsuariosComponent } from './componentes/dialogs/dialogs-m1/dialog-usuarios/dialog-usuarios.component';
 import { DialogInstitucionComponent } from './componentes/dialogs/dialogs-m1/dialog-institucion/dialog-institucion.component';
-import { DialogDependenciaComponent } from './componentes/dialogs/dialog-dependencia/dialog-dependencia.component';
+import { DialogDependenciaComponent } from './componentes/dialogs/dialogs-m1/dialog-dependencia/dialog-dependencia.component';
 
 import { TablaComponent } from './componentes/tabla/tabla.component';
 import { DialogCargoComponent } from './componentes/dialogs/dialogs-m1/dialog-cargo/dialog-cargo.component';
 import { LayoutModule } from '@angular/cdk/layout';
 
-import { DialogCuentaComponent } from './componentes/dialogs/dialog-cuenta/dialog-cuenta.component';
-import { DialogDetallesComponent } from './componentes/dialogs/dialog-detalles/dialog-detalles.component';
+
+import { DialogDetallesComponent } from './componentes/dialogs/dialogs-m1/dialog-detalles/dialog-detalles.component';
 import { NavegacionComponent } from './componentes/navegacion/navegacion.component';
-import { AdmConfiguracionComponent } from './modulos/administracion-usuarios/adm-configuracion/adm-configuracion.component';
 import { AdmTramiteComponent } from './modulos/registro-tramites/adm-tramite/adm-tramite.component';
 import { BandejaEntradaComponent } from './modulos/registro-tramites/bandeja-entrada/bandeja-entrada.component';
 import { BandejaSalidaComponent } from './modulos/registro-tramites/bandeja-salida/bandeja-salida.component';
@@ -63,13 +61,14 @@ import { FuncionariosComponent } from './modulos/administracion-usuarios/funcion
 import { CuentasComponent } from './modulos/administracion-usuarios/cuentas/cuentas.component';
 import { InstitucionesComponent } from './modulos/administracion-usuarios/instituciones/instituciones.component';
 import { DependenciasComponent } from './modulos/administracion-usuarios/dependencias/dependencias.component';
-import { CargosComponent } from './modulos/administracion-usuarios/cargos/cargos.component';
-import { TiposTramitesComponent } from './modulos/administracion-usuarios/tipos-tramites/tipos-tramites.component';
+import { CargosComponent } from './modulos/administracion-usuarios/cargos/cargos.component'
+import { TiposTramitesComponent } from './modulos/tramites-requisitos/tipos-tramites/tipos-tramites.component';
 import { ReporteEstadoComponent } from './modulos/reportes/reporte-estado/reporte-estado.component';
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { ReporteEstadisticoComponent } from './modulos/reportes/reporte-estadistico/reporte-estadistico.component';
 
-import { GroupwareComponent } from './modulos/administracion-usuarios/groupware/groupware.component'
+import { GroupwareComponent } from './modulos/administracion-usuarios/groupware/groupware.component';
+import { AyudaComponent } from './paginas/consulta/ayuda/ayuda.component'
 registerLocaleData(localeEsAr, 'es-Ar');
 @NgModule({
   declarations: [
@@ -81,15 +80,12 @@ registerLocaleData(localeEsAr, 'es-Ar');
     RegistroTramitesComponent,
     AdministracionUsuariosComponent,
     DialogUsuariosComponent,
-    DialogListaTramitesComponent,
     DialogInstitucionComponent,
     DialogDependenciaComponent,
     TablaComponent,
     DialogCargoComponent,
-    DialogCuentaComponent,
     DialogDetallesComponent,
     NavegacionComponent,
-    AdmConfiguracionComponent,
     AdmTramiteComponent,
     BandejaEntradaComponent,
     BandejaSalidaComponent,
@@ -107,11 +103,12 @@ registerLocaleData(localeEsAr, 'es-Ar');
     CuentasComponent,
     InstitucionesComponent,
     DependenciasComponent,
-    CargosComponent,
     TiposTramitesComponent,
     ReporteEstadoComponent,
     ReporteEstadisticoComponent,
-    GroupwareComponent
+    GroupwareComponent,
+    AyudaComponent,
+    CargosComponent
   ],
   imports: [
     BrowserModule,

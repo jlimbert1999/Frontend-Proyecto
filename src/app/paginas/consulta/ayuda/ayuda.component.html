@@ -1,0 +1,59 @@
+<mat-toolbar>
+    <span>Ayuda</span>
+
+    <span class="example-spacer"></span>
+
+</mat-toolbar>
+<div class="container">
+    <h1>- Como realizar la consulta?</h1>
+    <mat-stepper orientation="vertical">
+        <mat-step>
+            <ng-template matStepLabel>Paso 1</ng-template>
+            <ng-template matStepContent>
+                <p>Para la consulta del tramite debe usar los digitos en el "Numero de tramite" de la ficha entregada al momento del registro</p>
+                <img class="img-fluid" id="img1" src="../../../assets//img-instrucciones/ayuda1.jpg" alt="">
+                <button mat-button matStepperNext>Siguiente
+                    <mat-icon>navigate_next</mat-icon>
+                </button>
+            </ng-template>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Paso 2</ng-template>
+            <ng-template matStepContent>
+                <p>Debe introducir los campos necesarios. Numero de tramite y Numero del documento de identidad proporciados al momento de la solicitud</p>
+                <img class="img-fluid" id="img2" src="../../../assets//img-instrucciones/ayuda2.jpg" alt="">
+                <button mat-button matStepperPrevious>
+                    <mat-icon>navigate_before</mat-icon>
+                    Anterior
+                </button>
+                <button mat-button matStepperNext>Siguiente
+                    <mat-icon>navigate_next</mat-icon>
+                </button>
+            </ng-template>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Paso 3</ng-template>
+            <ng-template matStepContent>
+                <p>Se enviara un numero de verificacion al numero proporcionado para el registro del tramite. Introduza el numero</p>
+                <img class="img-fluid" id="img2" src="../../../assets//img-instrucciones/ayuda3.jpg" alt="">
+                <button mat-button matStepperPrevious>
+                    <mat-icon>navigate_before</mat-icon>
+                    Anterior
+                </button>
+                <button mat-button matStepperNext>Siguiente
+                    <mat-icon>navigate_next</mat-icon>
+                </button>
+            </ng-template>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Paso 4</ng-template>
+            <p>Una vez ingresado el numero seleccione el boton "Verificar" para ver los detalles</p>
+            <button mat-button matStepperPrevious>
+                <mat-icon>navigate_before</mat-icon>
+                Anterior
+            </button>
+            <button mat-raised-button color="primary" routerLink="/Consulta">Ir a consulta</button>
+        </mat-step>
+    </mat-stepper>
+
+</div>

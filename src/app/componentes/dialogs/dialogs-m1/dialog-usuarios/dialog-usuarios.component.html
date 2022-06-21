@@ -1,0 +1,266 @@
+<h2 mat-dialog-title>{{tituloDialog}}</h2>
+<div mat-dialog-content>
+    <mat-stepper #stepper>
+        <mat-step [stepControl]="Form_Funcionario" label="Funcionario">
+            <form [formGroup]="Form_Funcionario">
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="legacy">
+                            <mat-label>Nombre</mat-label>
+                            <input matInput formControlName="Nombre">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="legacy">
+                            <mat-label>Apellido Paterno</mat-label>
+                            <input matInput formControlName="Apellido_P">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="legacy">
+                            <mat-label>Apellido Materno</mat-label>
+                            <input matInput formControlName="Apellido_M">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="legacy">
+                            <mat-label>DNI</mat-label>
+                            <input matInput formControlName="Dni">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="legacy">
+                            <mat-label>Lugar</mat-label>
+                            <mat-select formControlName="Expedido" name="Expedido">
+                                <mat-option *ngFor="let lugar of Expedido" [value]="lugar.Abreviacion">
+                                    {{lugar.NombreLugar}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="legacy">
+                            <mat-label>Telefono</mat-label>
+                            <input matInput formControlName="Telefono">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="legacy">
+                            <mat-label>Direccion</mat-label>
+                            <input matInput formControlName="Direccion">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+
+                    </div>
+                </div>
+
+
+            </form>
+            <ng-container *ngIf="!data.Activo && tituloDialog != 'Registro de funcionario'">
+                <div class="alert alert-danger" role="alert">
+                    Este funcionario esta deshabilitado
+                </div>
+            </ng-container>
+        </mat-step>
+
+        <mat-step [stepControl]="Form_Funcionario" label="Cuenta">
+            <ng-container *ngIf="!data.id_cuenta">
+                <div align="center" style="margin-bottom: 20px;">
+                    <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+                        <mat-button-toggle (click)="RegistroCuenta('Crear')">
+                            <mat-icon>add</mat-icon>
+                            Crear</mat-button-toggle>
+                        <mat-button-toggle (click)="RegistroCuenta('Asignar')">
+                            <mat-icon>edit_note</mat-icon>
+                            Asignar</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+                <ng-container *ngIf="Tipo_Registro_cuenta=='Crear'">
+                    <form [formGroup]="Form_Cuenta">
+                        <div class="container">
+                            <div class="row row-cols-sm-3">
+                                <div class="col">
+                                    <mat-form-field appearance="legacy">
+                                        <mat-label>Login</mat-label>
+                                        <input matInput formControlName="login">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col">
+                                    <mat-form-field appearance="legacy">
+                                        <mat-label>Contraseña</mat-label>
+                                        <input [type]="hide ? 'password' : 'text'" matInput formControlName="password" type="password" autocomplete="off">
+                                        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                    </button>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col">
+                                    <mat-form-field appearance="legacy">
+                                        <mat-label>Seleccione el cargo</mat-label>
+                                        <mat-select formControlName="id_cargo">
+                                            <mat-option *ngFor="let opcion of Cargos" [value]="opcion.id_cargo">
+                                                {{opcion.Nombre}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col">
+                                    <mat-form-field appearance="legacy">
+                                        <mat-label>Seleccione la institucion</mat-label>
+                                        <mat-select formControlName="id_institucion">
+
+                                            <mat-option *ngFor="let opcion of Instituciones" [value]="opcion.id_institucion" (click)="obtener_dep_deInstitucion(opcion.id_institucion!)">
+                                                {{opcion.Nombre}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col">
+                                    <mat-form-field appearance="legacy">
+                                        <mat-label>Seleccione la dependencia</mat-label>
+                                        <mat-select formControlName="id_dependencia">
+                                            <mat-option *ngIf="DepsdeInstitucion.length==0">---Sin instituciones---</mat-option>
+                                            <mat-option *ngFor="let opcion of DepsdeInstitucion" [value]="opcion.id_dependencia">
+                                                {{opcion.Nombre}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </ng-container>
+                <ng-container *ngIf="Tipo_Registro_cuenta=='Asignar' && dataSource.data.length>0">
+                    <mat-form-field class='filtro' appearance="standard">
+                        <mat-label>Filtro</mat-label>
+                        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Texto a buscar...." #input>
+                    </mat-form-field>
+                    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                        <ng-container matColumnDef="Cuenta">
+                            <th mat-header-cell *matHeaderCellDef> Login </th>
+                            <td mat-cell *matCellDef="let element"> {{element.login}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="Cargo">
+                            <th mat-header-cell *matHeaderCellDef> Cargo </th>
+                            <td mat-cell *matCellDef="let element"> {{element.NombreCar}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="Institucion">
+                            <th mat-header-cell *matHeaderCellDef> Institucion </th>
+                            <td mat-cell *matCellDef="let element"> {{element.SiglaInst}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="Dependencia">
+                            <th mat-header-cell *matHeaderCellDef> Dependencia </th>
+                            <td mat-cell *matCellDef="let element"> {{element.NombreDep}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="Opciones">
+                            <th mat-header-cell *matHeaderCellDef> </th>
+                            <td mat-cell *matCellDef="let element">
+                                <button mat-button (click)="AsignarCuenta(element)">
+                                    Asignar
+                                    <mat-icon>assignment_ind</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                        <tr class="mat-row" *matNoDataRow>
+                            <td class="mat-cell" colspan="4">No se econtraron coicidencias con: "{{input.value}}"</td>
+                        </tr>
+                    </table>
+
+                </ng-container>
+                <div *ngIf="Tipo_Registro_cuenta=='Asignar' && dataSource.data.length==0" class="alert alert-warning" role="alert">
+                    No se tienen cuentas disponibles para asignar
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="data.id_cuenta">
+
+                <form [formGroup]="Form_Cuenta">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <img src="../../../../../assets/img/user-mail.png" class="img-user">
+                        </div>
+                        <div class="col" *ngIf="Cuenta">
+                            <div *ngIf="Tipo_Registro_cuenta == 'Asignar'" class="alert alert-success d-flex align-items-center" role="alert">
+                                <mat-icon>check_circle</mat-icon>
+                                <div style="margin-left: 20px;">
+                                    Cuenta asignada!. Guarde los cambios
+                                </div>
+                            </div>
+                            <h2>Detalles cuenta</h2>
+                            <p class="card-text">Fecha creacion: {{Cuenta.fecha_creacion|date:'medium'}}</p>
+                            <p class="card-text">Fecha actualizacion: {{Cuenta.fecha_actualizacion|date:'medium'}}</p>
+                            <div class="row">
+                                <div class="col">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Login</mat-label>
+                                        <input matInput formControlName="login">
+                                    </mat-form-field>
+                                </div>
+                                <div *ngIf="Tipo_Registro_cuenta=='Asignar'" class="col">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Nueva contraseña</mat-label>
+                                        <input [type]="hide ? 'password' : 'text'" matInput formControlName="password" type="password" autocomplete="off">
+                                        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                        </button>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col">
+                                    <mat-form-field *ngIf="isChecked" appearance="outline">
+                                        <mat-label>Nueva contraseña</mat-label>
+                                        <input [type]="hide ? 'password' : 'text'" matInput formControlName="password" type="password" autocomplete="off">
+                                        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                        </button>
+                                    </mat-form-field>
+                                </div>
+
+                            </div>
+                            <div class="row" *ngIf="Tipo_Registro_cuenta!='Asignar' && tituloDialog == 'Edicion datos de funcionario'">
+                                <div class="col">
+                                    <mat-slide-toggle #txt_edit_pass (change)="toggleChanges($event)">{{isChecked?'Actualizar contraseña':"No actualizar contraseña"}}</mat-slide-toggle>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </ng-container>
+        </mat-step>
+        <mat-step label="Permisos" *ngIf="Tipo_Registro_cuenta=='Crear'">
+            <mat-selection-list #shoes [multiple]="false" [(ngModel)]="Permisos">
+                <mat-list-option *ngFor="let tipo of Tipo_Permisos" [value]="tipo.value" name="permisos">
+                    <ng-container mat-line *ngIf="tipo.value=='ADMIN_ROLE'">
+                        <img matListAvatar src="../../../../../assets/img-Administracion Usuarios/admin-icon.png"> {{tipo.viewValue|titlecase}}
+                    </ng-container>
+                    <ng-container *ngIf="tipo.value=='USER1_ROLE'">
+                        <img *ngIf="tipo.value=='USER1_ROLE'" matListAvatar src="../../../../../assets/img-Administracion Usuarios/recepcion-icon.png"> {{tipo.viewValue|titlecase}}
+                    </ng-container>
+                    <ng-container *ngIf="tipo.value=='USER2_ROLE'">
+                        <img *ngIf="tipo.value=='USER2_ROLE'" matListAvatar src="../../../../../assets/img-Administracion Usuarios/evaluacion-icon.png"> {{tipo.viewValue|titlecase}}
+                    </ng-container>
+                </mat-list-option>
+            </mat-selection-list>
+
+
+
+        </mat-step>
+    </mat-stepper>
+
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="cancelar()">Cancelar</button>
+    <!-- botones caso registro -->
+    <button *ngIf="!Form_Cuenta" mat-raised-button color="primary" (click)="guardar_datos()" [disabled]="!Form_Funcionario.valid">Guardar</button>
+    <button *ngIf="Form_Cuenta && Tipo_Registro_cuenta=='Crear'" mat-raised-button color="primary" (click)="guardar_datos()" [disabled]="!Form_Funcionario.valid || !Form_Cuenta.valid || Permisos==''">Guardar</button>
+    <button *ngIf="Form_Cuenta && Tipo_Registro_cuenta=='Asignar'" mat-raised-button color="primary" (click)="guardar_datos()" [disabled]="!Form_Funcionario.valid || Form_Cuenta.controls['login'].value=='' || Form_Cuenta.controls['password'].value==''">Guardar</button>
+    <button *ngIf="Form_Cuenta && Tipo_Registro_cuenta=='' && isChecked" mat-raised-button color="primary" (click)="guardar_datos()" [disabled]="!Form_Funcionario.valid || Form_Cuenta.controls['login'].value=='' || Form_Cuenta.controls['password'].value==''">Guardar</button>
+    <button *ngIf="Form_Cuenta && Tipo_Registro_cuenta=='' && !isChecked" mat-raised-button color="primary" (click)="guardar_datos()" [disabled]="!Form_Funcionario.valid || Form_Cuenta.controls['login'].value==''">Guardar</button>
+</div>

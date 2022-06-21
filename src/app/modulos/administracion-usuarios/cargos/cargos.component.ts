@@ -5,6 +5,8 @@ import { DialogCargoComponent } from 'src/app/componentes/dialogs/dialogs-m1/dia
 import { Mensajes } from 'src/app/componentes/mensaje/mensaje';
 import { ConfiguracionService } from 'src/app/servicios/servicios-m1/configuracion.service';
 import decode from 'jwt-decode'
+import { CargoService } from 'src/app/servicios/servicios-m1/cargo.service';
+import { CargoModel } from 'src/app/modelos/administracion-usuarios/cargo.model';
 
 @Component({
   selector: 'app-cargos',
@@ -25,29 +27,22 @@ export class CargosComponent implements OnInit {
     { key: "Fecha_creacion", titulo: "CREACION" }
     // { key: "Activo", titulo: "HABILITADO" }
   ]
-  Cargo: any
+  Cargos: CargoModel[]
 
 
-  constructor(private configService: ConfiguracionService, public dialog: MatDialog) { }
+  constructor(private cargoService: CargoService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.obtener_CargosHabilitados()
-    console.log(this.Info_cuenta_actual);
   }
 
   obtener_CargosHabilitados() {
-    this.verHabilitados = true
-    this.OpcionesTabla = ['Editar', 'Eliminar']
-    this.configService.getCargos_Habilitados().subscribe((resp: any) => {
-      if (resp.ok) {
-        if (resp.Cargos.length > 0) {
-          this.Cargo = resp.Cargos
-          this.dataSource.data = this.Cargo
 
-        }
-        else {
-          this.msg.mostrarMensaje('info', "No hay cargos habilitadas")
-        }
+    this.OpcionesTabla = ['Editar', 'Eliminar']
+    this.cargoService.getCargos_Habilitados().subscribe((resp: any) => {
+      if (resp.ok) {
+        this.Cargos = resp.Cargos
+        this.dataSource.data = this.Cargos
       }
       else {
         this.msg.mostrarMensaje('error', resp.message)
@@ -55,17 +50,12 @@ export class CargosComponent implements OnInit {
     })
   }
   obtener_CargosNoHabilitados() {
-
-    this.configService.getCargos_NoHabilitados().subscribe((resp: any) => {
+    this.OpcionesTabla = ['Editar', 'Habilitar']
+    this.cargoService.getCargos_NoHabilitados().subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Cargos.length > 0) {
+        this.Cargos = resp.Cargos
+        this.dataSource.data = this.Cargos
 
-          this.dataSource.data = resp.Cargos
-          this.OpcionesTabla = ['Editar']
-        }
-        else {
-          this.msg.mostrarMensaje('info', "No hay cargos no habilitados")
-        }
       }
       else {
         this.msg.mostrarMensaje('error', resp.message)
@@ -73,22 +63,13 @@ export class CargosComponent implements OnInit {
     })
   }
   agregar_Cargo() {
-    const vacio = { Activo: true } //para que dialog inicie en vacion
     const dialogRef = this.dialog.open(DialogCargoComponent, {
-      data: vacio
+      data: {}
     })
     dialogRef.afterClosed().subscribe(datosFormulario => {
       if (datosFormulario) {
-
-        this.Cargo = datosFormulario
-        this.Cargo.Fecha_creacion = this.Cargo.Fecha_actualizacion = this.getFecha()
-        this.Cargo.Responsable_regis = this.Info_cuenta_actual.Nombre
-        this.configService.addCargo(this.Cargo).subscribe((res: any) => {
-          if (res.ok) {
-            this.obtener_CargosHabilitados()
-            this.msg.mostrarMensaje('success', res.message)
-          }
-        })
+        this.Cargos.unshift(datosFormulario)
+        this.dataSource.data = this.Cargos
       }
     });
   }
@@ -99,41 +80,45 @@ export class CargosComponent implements OnInit {
     else if (datos.Activo == '1') {
       datos.Activo = true
     }
-    let id = datos.id_cargo;
     const dialogRef = this.dialog.open(DialogCargoComponent, {
       data: datos
     })
     dialogRef.afterClosed().subscribe(datosFormulario => {
       if (datosFormulario) {
-        this.Cargo = datosFormulario
-        this.Cargo.Fecha_actualizacion = this.getFecha()
-        this.Cargo.Responsable_regis = "Admin"
-        this.configService.putCargo(id, this.Cargo).subscribe((res: any) => {
-          if (res.ok) {
-            this.obtener_CargosHabilitados()
-          }
-        })
+        const index = this.Cargos.findIndex((item: any) => item.id_cargo == datos.id_cargo);
+        this.Cargos[index] = Object.assign(this.Cargos[index], datosFormulario)
+        this.dataSource.data = this.Cargos
+
       }
     });
   }
 
   eliminar_Cargo(datos: any) {
-    this.configService.putCargo(datos.id_cargo, { Activo: false }).subscribe((resp: any) => {
+    this.cargoService.putCargo(datos.id_cargo, { Activo: false }).subscribe((resp: any) => {
       if (resp.ok) {
+        this.Cargos = this.Cargos.filter(elemento => elemento.id_cargo != datos.id_cargo);
+        this.dataSource.data = this.Cargos
         this.msg.mostrarMensaje('success', 'El cargo fue desabilidato')
-        this.obtener_CargosHabilitados()
+      }
+    })
+
+  }
+  habilitar_cargo(datos: any) {
+    this.cargoService.putCargo(datos.id_cargo, { Activo: true }).subscribe((resp: any) => {
+      if (resp.ok) {
+        this.Cargos = this.Cargos.filter(elemento => elemento.id_cargo != datos.id_cargo);
+        this.dataSource.data = this.Cargos
+        this.msg.mostrarMensaje('success', 'El cargo se habilito')
       }
     })
 
   }
   ver_Habilitados() {
-    this.dataSource.data = this.Cargo
-    this.OpcionesTabla = ['Editar', 'Eliminar']
+
     this.verHabilitados = !this.verHabilitados
     if (this.verHabilitados) {
 
-      this.dataSource.data = this.Cargo
-      this.OpcionesTabla = ['Editar', 'Eliminar']
+      this.obtener_CargosHabilitados()
 
     }
     else {

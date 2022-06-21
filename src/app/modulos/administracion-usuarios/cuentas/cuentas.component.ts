@@ -11,8 +11,16 @@ import Swal from 'sweetalert2';
   styleUrls: ['./cuentas.component.css']
 })
 export class CuentasComponent implements OnInit {
-  displayedColumns: any
   Cuentas: any[] = []
+  displayedColumns = [
+    { key: "Dni", titulo: "Dni" },
+    { key: "NombreCompleto", titulo: "Nombre" },
+    { key: "login", titulo: "Login" },
+    { key: "NombreCar", titulo: "Cargo" },
+    { key: "NombreDep", titulo: "Dependencia" },
+    { key: "SiglaInst", titulo: "Institucion" }
+  ]
+
   dataSource = new MatTableDataSource();
   msg = new Mensajes()
   OpcionesTabla: string[] = []
@@ -25,38 +33,16 @@ export class CuentasComponent implements OnInit {
     this.obtener_cuentasAsignadas()
   }
 
-  crear_tabla_cuentas() {
-    this.displayedColumns = [
-      { key: "Dni", titulo: "Dni" },
-      // { key: "Nombre", titulo: "Nombre" },
-      { key: "NombreCompleto", titulo: "Nombre" },
-      // { key: "Apellido_P", titulo: "Paterno" },
-      // { key: "Apellido_M", titulo: "Materno" },
-      { key: "login", titulo: "Login" },
-      { key: "NombreCar", titulo: "Cargo" },
-      { key: "NombreDep", titulo: "Dependencia" },
-      { key: "SiglaInst", titulo: "Institucion" }
-    ]
-    this.OpcionesTabla = ['Finalizar']
-  }
 
   obtener_cuentasAsignadas() {
+    this.OpcionesTabla = ['Finalizar']
     this.usuariosService.getCuentasAsignadas().subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Cuentas.length > 0) {
-          this.Cuentas = resp.Cuentas
-          resp.Cuentas.forEach((cuenta: any, index: number) => {
-            this.Cuentas[index]['NombreCompleto'] = `${cuenta.Nombre} ${cuenta.Apellido_P} ${cuenta.Apellido_M}`
-
-          });
-          this.dataSource.data = this.Cuentas;
-          this.crear_tabla_cuentas()
-
-        }
-        else {
-          this.msg.mostrarMensaje('info', 'No hay cuentas asignadas')
-          this.dataSource.data = []
-        }
+        this.Cuentas = resp.Cuentas
+        resp.Cuentas.forEach((cuenta: any, index: number) => {
+          this.Cuentas[index]['NombreCompleto'] = `${cuenta.Nombre} ${cuenta.Apellido_P} ${cuenta.Apellido_M}`
+        });
+        this.dataSource.data = this.Cuentas;
 
       }
     })
@@ -68,9 +54,11 @@ export class CuentasComponent implements OnInit {
     let Cargo: string = datos.NombreCar
     Swal.fire({
       icon: 'question',
-      title: `Finalizar el cargo "${Cargo.toLocaleUpperCase()}" del funcionario: "${NombreFuncionario}" con DNI: ${Dni}`,
+      title: `Desvincular la cuenta "${Cargo}"?`,
+      text:`El funcionario ${NombreFuncionario.toUpperCase()} dejara de ser el propietario`,
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
         this.usuariosService.finalizarCuenta(id_cuenta).subscribe((resp: any) => {
@@ -92,11 +80,7 @@ export class CuentasComponent implements OnInit {
     })
 
   }
-  Cargar_tablaCuentas() {
-    this.OpcionesTabla = ['Finalizar']
-    this.generar_titulosTabla_Cuentas()
-    this.obtener_cuentasAsignadas()
-  }
+
   generar_titulosTabla_Cuentas() {
     this.displayedColumns = [
       { key: "Dni", titulo: "Dni" },
@@ -110,27 +94,7 @@ export class CuentasComponent implements OnInit {
       { key: "SiglaInst", titulo: "Institucion" }
     ]
   }
-  ver_Habilitados() {
-    this.verHabilitados = !this.verHabilitados
-    if (this.verHabilitados) {
-      this.OpcionesTabla = ['Editar', 'VerDetalles', 'Eliminar']
-      this.generar_titulosTabla_Cuentas()
-      this.dataSource.data = this.Cuentas
-
-    }
-    else {
-      this.OpcionesTabla = ['Editar']
-      this.obtener_cuentasNoAsignadas()
-      
-      this.displayedColumns = [
-        { key: "login", titulo: "Login" },
-        { key: "NombreCar", titulo: "Cargo" },
-        { key: "NombreDep", titulo: "Dependencia" },
-        { key: "SiglaInst", titulo: "Institucion" }
-      ]
-    }
-
-  }
+  
   desactivar_busqueda() {
     this.dataSource.filter = ""
     this.modo_busqueda = false
@@ -146,14 +110,7 @@ export class CuentasComponent implements OnInit {
   obtener_cuentasNoAsignadas() {
     this.usuariosService.getCuentasNoAsignadas().subscribe((resp: any) => {
       if (resp.ok) {
-        if (resp.Cuentas.length > 0) {
-          this.dataSource.data = resp.Cuentas;
-        }
-        else {
-          this.msg.mostrarMensaje('info', 'No hay cuentas sin asignar')
-          this.verHabilitados = true
-          this.OpcionesTabla = ['Finalizar']
-        }
+        this.dataSource.data = resp.Cuentas;
       }
     })
   }

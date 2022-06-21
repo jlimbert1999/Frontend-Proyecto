@@ -9,7 +9,10 @@ export class ConsultaService {
   private URL = entorno.baseUrl;
 
   constructor(private http: HttpClient) { }
-  get_InformacionTramite(codigo: any) {
-    return this.http.post(`${this.URL}/consulta-tramite`, codigo)
+  get_InformacionTramite(pin: string, dni: string) {
+    return this.http.get(`${this.URL}/consulta-tramite?pin=${pin}&dni=${dni}`)
+  }
+  get_verificacionConsulta(telefono: string, code: string, id_tramite:number) {
+    return this.http.get(`${this.URL}/verificar-consulta?telefono=${telefono}&code=${code}&id_tramite=${id_tramite}`)
   }
 }

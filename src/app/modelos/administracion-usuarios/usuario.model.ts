@@ -1,4 +1,5 @@
 export interface FuncionarioModel {
+    id_cuenta?:number
     id_funcionario?: number;
     Nombre: string;
     Apellido_P: string;

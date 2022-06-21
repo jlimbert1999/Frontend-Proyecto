@@ -1,0 +1,21 @@
+.img-user {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px;
+    height: 100px;
+}
+
+.mat-form-field ::ng-deep .mat-form-field-outline {
+    color: black;
+    border-width: 1px !important;
+}
+
+.filtro {
+    font-size: 14px;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+}

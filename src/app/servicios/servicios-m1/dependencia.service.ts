@@ -11,10 +11,13 @@ export class DependenciaService {
 
   constructor(private http:HttpClient) { }
   addDependencia(dependencia:DependenciaModel) {
-    return this.http.post(`${this.URL}/dependencia`, dependencia)
+    return this.http.post(`${this.URL}/api/dependencia`, dependencia)
   }
   getDependencia_Habilitadas(){
-    return this.http.get(`${this.URL}/dependencias/1`)
+    return this.http.get(`${this.URL}/api/dependencias?tipo=1`)
+  }
+  getDependencia_NoHabilitadas(){
+    return this.http.get(`${this.URL}/api/dependencias?tipo=0`)
   }
   putDependencia(id:number, datos:object){
     return this.http.put(`${this.URL}/dependencia/${id}`, datos)
@@ -22,7 +25,7 @@ export class DependenciaService {
   deleteDependencia(id:number){
     return this.http.delete(`${this.URL}/dependencia/${id}`)
   }
-  getDependencias_de_Instituto(id_institucion:number){
-    return this.http.get(`${this.URL}/dependencias-instituto/${id_institucion}`)
+  getDependenciasActivas_de_Instituto(id_institucion:number){
+    return this.http.get(`${this.URL}/api/dependencias-activas-institucion/${id_institucion}`)
   }
 }

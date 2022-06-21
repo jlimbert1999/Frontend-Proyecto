@@ -1,12 +1,12 @@
-<h1 mat-dialog-title>Detalles Funcionario</h1>
-
-<div mat-dialog-content *ngIf="detalles_Funcionario">
-
-    <p style=" margin-bottom: 20px; text-align: center;">
-        {{detalles_Funcionario.Nombre}} <span>({{detalles_Funcionario.Cargo}})</span>
+<h2 mat-dialog-title>Detalles Funcionario</h2>
+<div>
+    <p matLine style=" text-align: center;">
+        <img class="logouser" src="../../../../../assets/img/user-mail.png" alt=""> {{data.Nombre|titlecase }} {{data.Apellido_P|titlecase }} {{data.Apellido_M|titlecase }}
 
     </p>
+</div>
 
+<div mat-dialog-content *ngIf="dataSource.data.length>0">
     <mat-table *ngIf="dataSource" [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" class="mat-elevation-z8">
         <ng-container matColumnDef="Fecha">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </mat-header-cell>
@@ -26,8 +26,9 @@
     </mat-table>
 
 </div>
-<p *ngIf="!detalles_Funcionario" style="text-align: center;">Sin registros</p>
-
+<div *ngIf="dataSource.data.length==0" class="alert alert-warning" role="alert">
+    El funcionario no ha adquirido ningun cargo
+</div>
 <div mat-dialog-actions>
     <button mat-button mat-dialog-close>Cerrar</button>
 </div>

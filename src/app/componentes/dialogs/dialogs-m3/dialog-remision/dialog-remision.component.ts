@@ -73,7 +73,7 @@ export class DialogRemisionComponent implements OnInit {
     })
   }
   obtener_DependenciasInst(id_institucion: number) {
-    this.depService.getDependencias_de_Instituto(id_institucion).subscribe((resp: any) => {
+    this.depService. getDependenciasActivas_de_Instituto(id_institucion).subscribe((resp: any) => {
       if (resp.ok) {
         this.dependencias = resp.Dependencias
       }

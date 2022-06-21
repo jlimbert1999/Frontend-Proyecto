@@ -1,7 +1,7 @@
 <p>
     <mat-toolbar>
         <ng-container *ngIf="!modo_busqueda">
-            <span>Administracion tipos de tramites</span>
+            <span>Tipos de tramites</span>
             <span class="example-spacer"></span>
             <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
    
@@ -16,9 +16,9 @@
             <mat-icon>more_vert</mat-icon>
           </button>
             <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)=" Ver_NoHabilitados() ">
+                <button mat-menu-item (click)="Ver_NoHabilitados()">
               <mat-icon>visibility</mat-icon>
-              <span>Ver {{VerHabilitados?'Habilidatos':'No habilitados'}}</span>
+              <span>Ver {{VerHabilitados?'No Habilidatos':'Habilitados'}}</span>
             </button>
 
             </mat-menu>
@@ -39,5 +39,5 @@
 </p>
 
 <div class="container-fluid">
-    <app-tabla [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla" (llamarEliminar)="eliminar_TipoTramite($event)" (llamarEditar)="editar_TipoTramite($event)"></app-tabla>
+    <app-tabla [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla" (llamarEliminar)="eliminar_TipoTramite($event)" (llamarEditar)="editar_TipoTramite($event)" (llamarHabilitar)=" habilitar_TipoTramite($event)"></app-tabla>
 </div>
