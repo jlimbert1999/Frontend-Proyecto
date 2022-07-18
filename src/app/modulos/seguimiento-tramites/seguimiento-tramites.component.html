@@ -1,85 +1,105 @@
-<div class="card" *ngIf="Tramite && Solicitante">
-    <div class="card-header">
-        <div matLine>
-            <button (click)="regresar()" mat-raised-button color="primary">
-                <mat-icon>arrow_back</mat-icon>
-                Atras
+<p>
+    <mat-toolbar>
+        <button matTooltip="Regresar" (click)="regresar()" mat-icon-button color="primary">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        <span>Flujo de trabajo</span>
+        <span class="example-spacer"></span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="crear_HojaRuta()">
+              <mat-icon>print</mat-icon>
+              <span>Imprimir hoja de ruta</span>
             </button>
-            <strong style="margin-left: 10px;">Tramite: </strong>{{Tramite.alterno}}
-        </div>
-    </div>
+        </mat-menu>
+    </mat-toolbar>
+</p>
 
-    <div class="card-body">
-        <div class="container">
+<div class="container-fluid">
+    <mat-progress-bar *ngIf="spiner_carga1" mode="indeterminate"></mat-progress-bar>
+    <div class="card" *ngIf="Tramite && Solicitante">
+        <h4 class="card-header">
+            <strong>Tramite: </strong> {{Tramite.titulo}} - {{Tramite.alterno}}
+        </h4>
+        <div class="card-body">
             <div class="row">
                 <div class="col">
-                    <p class="card-text"><strong>Cantidad hojas: </strong>{{Tramite.cantidad}}</p>
+                    <p class="card-text"><strong>Hojas: </strong>{{Tramite.cantidad}}</p>
                 </div>
                 <div class="col">
-                    <p class="card-text"><strong>Registrado: </strong>{{Tramite.Fecha_creacion|date}}</p>
-                </div>
-                <div class="col">
-                    <div matLine>
-                        <strong>Estado:</strong>
-                        <span class="badge bg-primary" *ngIf="Tramite.estado=='Inscrito'">{{Tramite.estado }}</span>
-                        <span class="badge bg-warning text-dark" *ngIf="Tramite.estado=='Observado'">{{Tramite.estado }}</span>
-                        <span class="badge bg-secondary" *ngIf="Tramite.estado=='En revision'">{{Tramite.estado }}</span>
-                        <span class="badge bg-info text-dark" *ngIf="Tramite.estado=='Devuelto'">{{Tramite.estado }}</span>
-                        <span class="badge bg-dark" *ngIf="Tramite.estado=='Concluido'">{{Tramite.estado}}</span>
-                        <span class="badge bg-warning text-dark" *ngIf="Tramite.estado=='Anulado'">{{Tramite.estado}}</span>
-
-                    </div>
-                </div>
-                <div class="col">
-                    <p class="card-text"><strong>Descripcion: </strong>{{Tramite.detalle}}</p>
+                    <p class="card-text"><strong>Registrado: </strong>{{Tramite.Fecha_creacion|date:'short'}}</p>
                 </div>
                 <div class="col" *ngIf="Tramite.Fecha_finalizacion">
                     <p class="card-text"><strong>Tiempo empleado </strong>{{Tramite.Fecha_finalizacion|date}}</p>
                 </div>
+                <div class="col">
+                    <p class="card-text"><strong>Solicitante: </strong>{{Solicitante.nombres|titlecase}} {{Solicitante.paterno|titlecase}} {{Solicitante.materno|titlecase}} - {{Solicitante.expedido|uppercase}} {{Solicitante.dni}}</p>
+                </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <p class="card-text"><strong>Solicitante: </strong>{{Solicitante.nombres}} {{Solicitante.paterno}} {{Solicitante.materno}} - {{Solicitante.expedido}} {{Solicitante.dni}}</p>
+                    <p class="card-text"><strong>Descripcion: </strong>{{Tramite.detalle}}</p>
+                </div>
+                <div class="col">
+                    <div matLine>
+                        <strong>Estado:</strong>
+                        <span class="badge bg-primary" *ngIf="Tramite.estado=='Inscrito'">{{Tramite.estado|uppercase }}</span>
+                        <span class="badge bg-warning text-dark" *ngIf="Tramite.estado=='Observado'">{{Tramite.estado|uppercase  }}</span>
+                        <span class="badge bg-secondary" *ngIf="Tramite.estado=='En revision'">{{Tramite.estado|uppercase  }}</span>
+                        <span class="badge bg-info text-dark" *ngIf="Tramite.estado=='Devuelto'">{{Tramite.estado|uppercase  }}</span>
+                        <span class="badge bg-dark" *ngIf="Tramite.estado=='Concluido'">{{Tramite.estado|uppercase }}</span>
+                        <span class="badge bg-warning text-dark" *ngIf="Tramite.estado=='Anulado'">{{Tramite.estado|uppercase }}</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div *ngIf=" listaWorkflow.length==0" class=" text-center alert alert-primary" role="alert">Este tramite aun no ha sido enviado o aceptado para la evaluacion </div>
-<mat-tab-group *ngIf=" listaWorkflow.length>0" mat-align-tabs="center">
-    <mat-tab label="Flujo de trabajo">
-        <div class="container-fluid">
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <div *ngIf="sin_flujo" class=" text-center alert alert-primary" role="alert">Este tramite aun no ha sido enviado o recepcionado para su evaluacion </div>
+    <mat-tab-group mat-align-tabs="center">
+        <mat-tab label="Flujo de trabajo">
+            <!-- <div class="container-fluid"> -->
+            <mat-progress-bar *ngIf="spiner_carga2" mode="indeterminate"></mat-progress-bar>
+            <table *ngIf="listaWorkflow.length>0" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
                 <ng-container matColumnDef="Emisor">
                     <th mat-header-cell *matHeaderCellDef> Emisor</th>
                     <td mat-cell *matCellDef="let element">
-                        <div matLine class="texto_celda_Nombre">{{element.NombreEmi}}</div>
-                        <div matLine class="texto_celda_DepInst">{{element.NombreInstEmi}} - {{element.NombreDepEmi}}</div>
+
+                        <div style="color:#013A63 ;" matLine class="texto_celda_Nombre">
+                            {{element.NombreEmi|titlecase}}
+                        </div>
+                        <div matLine class="texto_celda_DepInst">
+                            <p class="fw-lighter">{{element.NombreInstEmi}} - {{element.NombreDepEmi}}</p>
+                        </div>
                     </td>
                 </ng-container>
 
                 <ng-container matColumnDef="Receptor">
                     <th mat-header-cell *matHeaderCellDef> Receptor </th>
                     <td mat-cell *matCellDef="let element">
-                        <div matLine class="texto_celda_Nombre">{{element.NombreRecep}}</div>
-                        <div matLine class="texto_celda_DepInst">{{element.NombreInstRecep}} - {{element.NombreDepRecep}}</div>
+                        <div style="color:#013A63 ;" matLine class="texto_celda_Nombre">{{element.NombreRecep|titlecase}}</div>
+                        <div matLine class="texto_celda_DepInst">
+                            <p class="fw-lighter">{{element.NombreInstRecep}} - {{element.NombreDepRecep}}</p>
+                        </div>
 
                     </td>
                 </ng-container>
 
                 <!-- <ng-container matColumnDef="Detalle">
-                    <th mat-header-cell *matHeaderCellDef> Detalle </th>
-                    <td mat-cell *matCellDef="let element"> {{element.detalle}} </td>
-                </ng-container> -->
+                        <th mat-header-cell *matHeaderCellDef> Detalle </th>
+                        <td mat-cell *matCellDef="let element"> {{element.detalle}} </td>
+                    </ng-container> -->
 
                 <ng-container matColumnDef="Enviado">
                     <th mat-header-cell *matHeaderCellDef> Fecha emision </th>
-                    <td mat-cell *matCellDef="let element"> {{element.fecha_envio|date:'dd/MM/yyyy, h:mm:ss a'}} </td>
+                    <td mat-cell *matCellDef="let element"> {{element.fecha_envio|date:'short'}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="Recibido">
                     <th mat-header-cell *matHeaderCellDef> Fecha recepcion </th>
-                    <td mat-cell *matCellDef="let element"> {{element.fecha_recibido|date:'dd/MM/yyyy, h:mm:ss a'}}</td>
+                    <td mat-cell *matCellDef="let element"> {{element.fecha_recibido|date:'short'}}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="Duracion">
@@ -90,72 +110,61 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-        </div>
-    </mat-tab>
-    <mat-tab label="Flujo de trabajo grafico">
-        <!-- <div class="row"> -->
-        <!-- <div class="col-sm-9 nodo_grafica"> -->
-        <button mat-button color="primary" class="button" (click)="center$.next(true)">Centrar</button>
-        <button mat-button [matMenuTriggerFor]="menu">Tipo grafica</button>
-        <mat-menu #menu="matMenu">
-            <button mat-menu-item *ngFor="let l of layouts" (click)="setLayout(l.value)">{{l.label}}</button>
-        </mat-menu>
-        <ngx-graph class="chart-container" (window:resize)="onResize($event)" [view]="view" [links]="links" [nodes]="nodos" [layout]="layout" [nodeWidth]="300" [nodeHeight]="120" [showMiniMap]="true" [center$]="center$">
-            <ng-template #defsTemplate>
-                <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
-                    <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-                </svg:marker>
-            </ng-template>
-            <ng-template #nodeTemplate let-node>
-                <svg:g class="node" width="300" height="120" (click)="obtener_info_funcionario(node.data)">
-                    <svg:foreignObject width="300" height="120">
-                        <mat-card class="example-card">
-                            <mat-card-header>
-                                <div mat-card-avatar class="example-header-image"></div>
-                                <mat-card-title style="font-size: 16px;">{{node.data.Nombre|titlecase}} {{node.data.Apellido_P|titlecase}} {{node.data.Apellido_M|titlecase }}
-                                </mat-card-title>
-                                <mat-card-subtitle>{{node.data.NombreCar|titlecase}}</mat-card-subtitle>
-                            </mat-card-header>
-                            <mat-card-content style="line-height: 5px;">
-                                <p class="card-text"><small class="text-muted"><strong>Dependencia</strong> {{node.data.NombreDep}}</small></p>
-                                <p> <small class="text-muted">{{node.data.NombreInst}}</small></p>
-                            </mat-card-content>
-                        </mat-card>
-                    </svg:foreignObject>
-                </svg:g>
-            </ng-template>
-            <ng-template #linkTemplate let-link>
-                <svg:g class="edge">
-                    <svg:path class="line" stroke-width="5" marker-end="url(#arrow)"></svg:path>
-                    <svg:text class="edge-label" text-anchor="middle">
-                        <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline" startOffset="50%">
-                            {{link.label}}
-                        </textPath>
-                    </svg:text>
-                </svg:g>
+            <!-- </div> -->
+        </mat-tab>
+        <mat-tab label="Flujo de trabajo grafico">
+            <!-- <div class="row"> -->
+            <!-- <div class="col-sm-9 nodo_grafica"> -->
+            <button mat-button color="primary" class="button" (click)="center$.next(true)">Centrar</button>
+            <button mat-button [matMenuTriggerFor]="menu">Tipo grafica</button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item *ngFor="let l of layouts" (click)="setLayout(l.value)">{{l.label}}</button>
+            </mat-menu>
+            <ngx-graph class="chart-container" (window:resize)="onResize($event)" [view]="view" [links]="links" [nodes]="nodos" [layout]="layout" [nodeWidth]="320" [nodeHeight]="125" [showMiniMap]="true" [center$]="center$">
+                <ng-template #defsTemplate>
+                    <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                        <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                    </svg:marker>
+                </ng-template>
+                <ng-template #nodeTemplate let-node>
+                    <svg:g class="node" width="350" height="120">
+                        <svg:foreignObject width="350" height="120">
+                            <mat-card class="example-card" [matTooltip]="node.data.Detalle">
+                                <mat-card-header>
+                                    <div mat-card-avatar class="example-header-image"></div>
+                                    <mat-card-title *ngIf="node.data.Nombre" style="font-size: 16px; color: #013A63;">{{node.data.Nombre|titlecase}}
+                                    </mat-card-title>
+                                    <mat-card-title *ngIf="!node.data.Nombre" style="font-size: 16px; color: red;">Sin asignar
+                                    </mat-card-title>
 
-            </ng-template>
-        </ngx-graph>
-        <!-- </div> -->
+                                    <mat-card-subtitle>{{node.data.NombreCar|titlecase}}</mat-card-subtitle>
+                                </mat-card-header>
+                                <mat-card-content style="line-height: 5px;">
+                                    <p class="card-text"><small class="text-muted"><strong>Dependencia: </strong> {{node.data.NombreDep}}</small></p>
+                                    <p> <small class="text-muted"> <strong>Institucion: </strong>{{node.data.Sigla}}</small></p>
+                                </mat-card-content>
+                            </mat-card>
+                        </svg:foreignObject>
+                    </svg:g>
+                </ng-template>
+                <ng-template #linkTemplate let-link>
+                    <svg:g class="edge">
+                        <svg:path class="line" stroke-width="5" marker-end="url(#arrow)"></svg:path>
+                        <svg:text class="edge-label" text-anchor="middle">
+                            <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline" startOffset="50%">
+                                {{link.label}}
+                            </textPath>
+                        </svg:text>
+                    </svg:g>
 
-        <!-- </div> -->
-    </mat-tab>
-</mat-tab-group>
+                </ng-template>
+            </ngx-graph>
+            <!-- </div> -->
 
-<!-- <div class="card" *ngIf="info_User" style="width: 90%;">
-    <div class="card-header">
-        Informacion usuario
-    </div>
-    <div class="card-body" style="line-height:12px">
-        <p class="card-text"><strong>Funcionario </strong>{{info_User.Nombre}} {{info_User.Apellido_P}} {{info_User.Apellido_M}} </p>
-        <p *ngIf="info_User.tiempo_empleado" class="card-text"><strong>Tiempo empleado: </strong>{{info_User.tiempo_empleado.tiempo}} {{info_User.tiempo_empleado.formato}}</p>
+            <!-- </div> -->
+        </mat-tab>
+    </mat-tab-group>
 
-        <ul class="list-group">
-            <li *ngFor="let item of observacione_user" class="list-group-item d-flex justify-content-between align-items-center">
-                {{item.detalle}}
-                <span class="badge bg-primary rounded-pill">14</span>
-            </li>
 
-        </ul>
-    </div>
-</div> -->
+
+</div>

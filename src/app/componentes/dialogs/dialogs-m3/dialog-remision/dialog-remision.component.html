@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col">
                 <mat-form-field appearance="legacy">
-                    <mat-label>Institucion</mat-label>
+                    <mat-label>Seleccione la institucion</mat-label>
                     <mat-select #txtInsti>
                         <mat-option *ngFor="let inst of instituciones" (click)="obtener_DependenciasInst(inst.id_institucion!)" [value]="inst.id_institucion">
                             {{inst.Nombre}}
@@ -19,7 +19,7 @@
             </div>
             <div class="col">
                 <mat-form-field appearance="legacy">
-                    <mat-label>Dependencia</mat-label>
+                    <mat-label>Seleccione la Dependencia</mat-label>
                     <mat-select #txtDep>
                         <mat-option *ngFor="let dep of dependencias" (click)="obtener_users_desconectados(txtInsti.value, txtDep.value)" [value]="dep.id_dependencia">
                             {{dep.Nombre}}
@@ -30,34 +30,19 @@
 
         </div>
     </div>
-    <mat-spinner *ngIf="spiner_carga" style="margin:0 auto;"></mat-spinner>
-
-    <!-- <mat-selection-list *ngIf="usuarios_Desconectados" #shoes [multiple]="false">
-        <mat-list-option *ngFor="let user of usuarios_Desconectados" (click)="seleccionar_User(user)">
-            <img matListAvatar src="../../../../../assets/img/user-mail.png" alt="...">
-            <h4 matLine> {{user.Nombre}}
-                <span *ngIf="user.id" style="font-size: 12px; position:absolute; right:20px; color: green;">En linea</span>
-                <span *ngIf="!user.id" style="font-size: 12px; position:absolute; right:20px; color: red;">Sin conexion</span>
-            </h4>
-            <p matLine style="font-size: 12px;">
-                <span> {{user.NombreCar}} </span>
-            </p>
-
-        </mat-list-option>
-    </mat-selection-list> -->
-
     <mat-divider></mat-divider>
+    <mat-progress-bar *ngIf="spiner_carga" mode="indeterminate"></mat-progress-bar>
     <form class="row g-3">
 
         <div class="col-12">
             <label for="inputAddress" class="form-label">Funcionario que recibira el tramite</label>
             <mat-form-field class="example-full-width" appearance="outline" dis>
                 <mat-label>Nombre y cargo del funcionario</mat-label>
-                <input matInput aria-label="State" [matAutocomplete]="auto" [formControl]="stateCtrl">
+                <input matInput aria-label="State" #txt_UserRecep [matAutocomplete]="auto" [formControl]="stateCtrl">
                 <mat-autocomplete #auto="matAutocomplete">
                     <mat-option *ngFor="let user of filteredStates | async" (click)="seleccionar_User(user)" [value]="user.Nombre+' '+user.Apellido_P+' '+user.Apellido_M+' ('+user.NombreCar+')'">
                         <img matListAvatar src="../../../../../assets/img/user-mail.png" alt="..." height="25">
-                        <span style="margin-left: 10px; font-size: 12px;">{{user.Nombre}} {{user.Apellido_P}} {{user.Apellido_M}}</span> (<small style="font-size:11px ;">{{user.NombreCar}}</small>)
+                        <span style="margin-left: 10px; font-size: 12px;">{{user.Nombre | titlecase}} {{user.Apellido_P| titlecase}} {{user.Apellido_M| titlecase}}</span> (<small style="font-size:11px ;">{{user.NombreCar}}</small>)
                         <span *ngIf="user.id" style="font-size: 12px; position:absolute; right:20px; color: green;">En linea</span>
                         <span *ngIf="!user.id" style="font-size: 12px; position:absolute; right:20px; color: red;">Sin conexion</span>
                     </mat-option>
@@ -83,21 +68,7 @@
 <mat-dialog-actions>
     <div class="input-group">
         <input class="form-control" placeholder="Ingrese una descripcion" [(ngModel)]="data.Mensaje">
-        <!-- <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button> -->
         <button align="end" [disabled]="!Info_UserReceptor" mat-raised-button color="primary" (click)="Enviar_Tramite()"> Enviar</button>
     </div>
-    <!-- <div class="row">
-        <div class="col-8">
-            <mat-form-field class="example-full-width" appearance="legacy">
-                <mat-label>Favorite food</mat-label>
-                <input matInput placeholder="Ex. Pizza" value="Sushi">
-            </mat-form-field>
-        </div>
-        <div class="col-4">
-
-        </div>
-    </div> -->
-
-    <!-- <button mat-raised-button color="danger" (click)="dismiss()">Cancelar</button> -->
 
 </mat-dialog-actions>

@@ -112,7 +112,7 @@
             <td class="mat-cell" colspan="4">No se econtraron registros con: "{{palabraFiltro}}"</td>
         </tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 20, 30]" showFirstLastButtons aria-label="Select page of periodic elements">
+    <mat-paginator [ngStyle]="{display: isLargeScreen ? 'block' : 'none'}" [pageSizeOptions]="[5, 10, 20, 30]" showFirstLastButtons>
     </mat-paginator>
 
 </div>

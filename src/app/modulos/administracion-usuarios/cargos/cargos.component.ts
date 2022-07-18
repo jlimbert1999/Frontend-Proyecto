@@ -28,6 +28,7 @@ export class CargosComponent implements OnInit {
     // { key: "Activo", titulo: "HABILITADO" }
   ]
   Cargos: CargoModel[]
+  spiner_carga:boolean=false
 
 
   constructor(private cargoService: CargoService, public dialog: MatDialog) { }
@@ -39,10 +40,12 @@ export class CargosComponent implements OnInit {
   obtener_CargosHabilitados() {
 
     this.OpcionesTabla = ['Editar', 'Eliminar']
+    this.spiner_carga=true
     this.cargoService.getCargos_Habilitados().subscribe((resp: any) => {
       if (resp.ok) {
         this.Cargos = resp.Cargos
         this.dataSource.data = this.Cargos
+        this.spiner_carga=false
       }
       else {
         this.msg.mostrarMensaje('error', resp.message)
@@ -51,10 +54,12 @@ export class CargosComponent implements OnInit {
   }
   obtener_CargosNoHabilitados() {
     this.OpcionesTabla = ['Editar', 'Habilitar']
+    this.spiner_carga=true
     this.cargoService.getCargos_NoHabilitados().subscribe((resp: any) => {
       if (resp.ok) {
         this.Cargos = resp.Cargos
         this.dataSource.data = this.Cargos
+        this.spiner_carga=false
 
       }
       else {

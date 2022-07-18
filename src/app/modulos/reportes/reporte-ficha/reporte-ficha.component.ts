@@ -88,11 +88,13 @@ export class ReporteFichaComponent implements OnInit {
     doc.text("Datos del tramite", 20, 40);
     doc.setFontSize(10)
     doc.setFont('helvetica', "normal");
-    doc.text(`Tipo: ${this.data_ReporteFicha.titulo}`, 20, 50);
-    doc.text(`Tramite: ${this.data_ReporteFicha.Tramite.alterno}`, 20, 55);
-    doc.text(`Detalle: ${this.data_ReporteFicha.Tramite.detalle}`, 20, 60);
-    doc.text(`Registrado: ${moment(parseInt(this.data_ReporteFicha.Tramite.Fecha_creacion)).format('DD-MM-YYYY HH:mm:ss')}`, 20, 65);
-    doc.text(`Hojas: ${this.data_ReporteFicha.Tramite.cantidad}`, 20, 70);
+    doc.text(`Tipo: ${this.data_ReporteFicha.titulo}`, 20, 50, {
+      maxWidth: 80
+    });
+    doc.text(`Tramite: ${this.data_ReporteFicha.Tramite.alterno}`, 20, 60);
+    doc.text(`Detalle: ${this.data_ReporteFicha.Tramite.detalle}`, 20, 65);
+    doc.text(`Registrado: ${moment(parseInt(this.data_ReporteFicha.Tramite.Fecha_creacion)).format('DD-MM-YYYY HH:mm:ss')}`, 20, 70);
+    doc.text(`Hojas: ${this.data_ReporteFicha.Tramite.cantidad}`, 20, 75);
     let segmento = this.data_ReporteFicha.Tramite.alterno.split('-')
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12)
@@ -141,19 +143,24 @@ export class ReporteFichaComponent implements OnInit {
     this.data_ReporteFicha.Cronologia.forEach((element: any) => {
       lista_cronologica.push([moment(parseInt(element.fecha_recibido)).format('DD-MM-YYYY HH:mm:ss'), moment(parseInt(element.fecha_recibido)).format('DD-MM-YYYY HH:mm:ss'), `${element.instEmi}-${element.depEmi}`, `${element.instRecep}-${element.depRecep}`, element.detalle])
     });
-
-
-    autoTable(doc, {
-      startY: posY + 15,
-      head: [['Emision', 'Recepcion', 'Dependencia origen', 'Dependencia Destino', 'Motivo']],
-      body: lista_cronologica,
-      theme: 'grid',
-      margin: { horizontal: 20 },
-      headStyles: {
-        'fillColor': [255, 255, 255],
-        'textColor': [0, 0, 0]
-      }
-    })
+    
+    if(lista_cronologica.length>0){
+      autoTable(doc, {
+        startY: posY + 15,
+        head: [['Emision', 'Recepcion', 'Dependencia origen', 'Dependencia Destino', 'Motivo']],
+        body: lista_cronologica,
+        theme: 'grid',
+        margin: { horizontal: 20 },
+        headStyles: {
+          'fillColor': [255, 255, 255],
+          'textColor': [0, 0, 0]
+        }
+      })
+    }
+    else if(lista_cronologica.length==0){
+      doc.text("El tramite aun no ha sido remitido", 105, posY + 20, undefined, "center");
+    }
+    
     switch (tipo) {
       case 'ver': {
         //statements; 

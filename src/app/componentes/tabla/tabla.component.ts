@@ -2,8 +2,9 @@ import { Component, OnInit, Input, Output, EventEmitter, AfterViewInit, ViewChil
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatSort } from '@angular/material/sort';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { tap } from 'rxjs/operators';  
 
 @Component({
   selector: 'app-tabla',
@@ -28,6 +29,10 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
   TitulosTabla: string[] = []
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  isLargeScreen: boolean = false;
+
+
   ngAfterViewInit(): void {
     this.data.paginator = this.paginator;
     this.data.sort = this.sort;
@@ -36,7 +41,7 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
 
 
 
-  constructor(private _liveAnnouncer: LiveAnnouncer
+  constructor(private breakpointObserver: BreakpointObserver
   ) {
     this.llamarEditar = new EventEmitter();
     this.llamarHabilitar=new EventEmitter()
@@ -61,6 +66,18 @@ export class TablaComponent implements OnInit, AfterViewInit, OnChanges {
 
 
   ngOnInit(): void {
+    this.breakpointObserver.observe([
+      '(min-width: 600px)'
+    ]).pipe(
+      tap(result => this.isLargeScreen = result.matches)
+    ).subscribe(result => {
+      if (result.matches) {
+        
+        this.data.paginator = this.paginator;
+      } else {
+        this.data.paginator = null;
+      }
+    });
   }
   editarDatos(datos: object, pos: number) {
     this.llamarEditar.emit(datos);

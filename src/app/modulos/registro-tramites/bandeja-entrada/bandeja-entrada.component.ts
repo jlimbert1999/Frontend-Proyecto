@@ -4,6 +4,10 @@ import decode from 'jwt-decode'
 import { SocketService } from 'src/app/servicios/servicios-m3/socket.service';
 import { Workflow } from 'src/app/modelos/seguimiento-tramites/workflow.model'
 import { BandejaService } from 'src/app/servicios/servicios-m4/bandeja.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { FichaTramiteComponent } from '../ficha-tramite/ficha-tramite.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-bandeja-entrada',
@@ -17,19 +21,27 @@ export class BandejaEntradaComponent implements OnInit {
   aux_busqueda: any[] = [] //para realizar bsuquedas guardar los valores recuperados antes
   modo_busqueda: boolean = false
 
+  Tipo_vista: string = "Tabla"
+  displayedColumns: string[] = []
+  dataSource = new MatTableDataSource();
+
+  spiner_carga: boolean = false
+  sin_recibidos: boolean = false
+
+
   constructor(
     private bandejaService: BandejaService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    public dialog: MatDialog,
+    private router: Router
   ) {
   }
 
 
 
   ngOnInit(): void {
-
     this.recibir_tramite()
     this.obtener_tramitesRecibidos()
-
   }
 
 
@@ -38,17 +50,26 @@ export class BandejaEntradaComponent implements OnInit {
   recibir_tramite() {
     this.socketService.Escuchar('recibirTramite').subscribe((tramite_recibido: any) => {
       this.Tramites_Recibidos.push(tramite_recibido)
+      this.dataSource.data = this.Tramites_Recibidos
+      this.sin_recibidos = false
     })
   }
   obtener_tramitesRecibidos() {
+    this.spiner_carga = true
     this.Tramites_Recibidos = []
     this.bandejaService.getListaRecibida(this.Info_Cuenta_Actual.id_cuenta).subscribe((resp: any) => {
       if (resp.ok) {
+        if (resp.Tramites_Recibidos.length == 0) {
+          this.sin_recibidos = true
+
+        }
         resp.Tramites_Recibidos.forEach((elemento: any) => {
           let Datos_Envio = {
             id_cuenta: elemento.id_cuentaEmisor, //id_cuenta del emisor
+            id_funcionario: elemento.id_funcionario,
             Nombre: `${elemento.Nombre} ${elemento.Apellido_P} ${elemento.Apellido_M}`,
             NombreCargo: elemento.NombreCargo,
+
             Mensaje: elemento.detalle,
             id_tramite: elemento.id_tramite,
             Titulo: elemento.titulo,
@@ -57,19 +78,29 @@ export class BandejaEntradaComponent implements OnInit {
             Recibido: (elemento.aceptado == 1 ? true : false),
             Estado: elemento.estado
           }
-          this.Tramites_Recibidos.unshift(Datos_Envio)
+          this.Tramites_Recibidos.push(Datos_Envio)
         })
+        this.spiner_carga = false
         this.aux_busqueda = this.Tramites_Recibidos
+        this.dataSource.data = this.Tramites_Recibidos
+        this.displayedColumns = ['Tramite', 'Alterno', 'Estado', 'Emisor', 'Recibido']
 
       }
     })
   }
-  ver_fichaTramite(tramite: any, pos: number) {
-    // this.Mail_Seleccionado = posicion
-    this.datosFicha = tramite
+  ver_fichaTramite(tramite: any) {
+    if (this.Tipo_vista == "Tabla") {
+      this.router.navigate(['inicio/tramite-recibido', tramite.id_tramite])
+    }
+    else {
+      this.datosFicha = tramite
+    }
+
+
   }
 
   decodificarToken(): any {
+
     let token: any = localStorage.getItem('token')
     return decode(token)
   }
@@ -82,10 +113,21 @@ export class BandejaEntradaComponent implements OnInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.Tramites_Recibidos = this.aux_busqueda.filter(obj => Object.values(obj).some((val: any) => val.toString().toLowerCase().includes(filterValue)));
-    if (filterValue == "" || filterValue == null) {
-      this.Tramites_Recibidos = this.aux_busqueda
+    if (this.Tipo_vista == 'Tabla') {
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
     }
+    else if (this.Tipo_vista == 'Dividido') {
+
+      this.Tramites_Recibidos = this.aux_busqueda.filter(obj => Object.values(obj).some((val: any) => val.toString().toLowerCase().includes(filterValue)));
+      if (filterValue == "" || filterValue == null) {
+        this.Tramites_Recibidos = this.aux_busqueda
+      }
+
+    }
+
 
   }
   obtnener_no_recibidos() {
@@ -103,20 +145,38 @@ export class BandejaEntradaComponent implements OnInit {
   }
   desactivar_busqueda() {
     this.modo_busqueda = false
-    this.Tramites_Recibidos=this.aux_busqueda
+    this.Tramites_Recibidos = this.aux_busqueda
   }
   filtrar_listado(tipo: string) {
-    if (tipo == "aceptados") {
-      this.Tramites_Recibidos = this.aux_busqueda.filter((tramite: any) => tramite.Recibido == true || tramite.Recibido == 1)
+    if (this.Tipo_vista == "Tabla") {
+      this.dataSource.filter = tipo.trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+
     }
-    else if (tipo == "nuevos") {
-      this.Tramites_Recibidos = this.aux_busqueda.filter((tramite: any) => tramite.Recibido == false || tramite.Recibido == 0)
-    }
-    else if (tipo == "todos") {
-      this.Tramites_Recibidos = this.aux_busqueda
+    else if (this.Tipo_vista == 'Dividido') {
+      if (tipo == "aceptados") {
+        this.Tramites_Recibidos = this.aux_busqueda.filter((tramite: any) => tramite.Recibido == true || tramite.Recibido == 1)
+      }
+      else if (tipo == "nuevos") {
+        this.Tramites_Recibidos = this.aux_busqueda.filter((tramite: any) => tramite.Recibido == false || tramite.Recibido == 0)
+      }
+      else if (tipo == "todos") {
+        this.Tramites_Recibidos = this.aux_busqueda
+      }
+
+
     }
 
 
+  }
+  cambiar_tipo_vista(tipo: string) {
+    if (tipo == "Tabla") {
+      this.dataSource.data = this.Tramites_Recibidos
+      this.displayedColumns = ['Tramite', 'Alterno', 'Estado', 'Emisor', 'Recibido']
+    }
+    this.Tipo_vista = tipo
   }
 
 

@@ -1,22 +1,18 @@
 <p *ngIf="Tipo_Vista_Ficha == 'Ficha_detalles'">
     <mat-toolbar>
-        <button *ngIf="DatosEnvio.Recibido!=true" mat-raised-button color="primary" (click)="regresar()">
+        <button matTooltip="Regresar" (click)="regresar()" *ngIf="DatosEnvio.Recibido!=true" mat-icon-button color="primary" aria-label="Example icon button with a home icon">
             <mat-icon>arrow_back</mat-icon>
-            Atras
-        </button>
-
+          </button>
         <span style="margin-left: 10px;">Ficha de tramite</span>
-
-
     </mat-toolbar>
 </p>
 
-<mat-spinner *ngIf="!Tramite && !Solicitante" diameter="150" style="margin:0 auto; margin-top: 20%;"></mat-spinner>
+<mat-spinner *ngIf="spiner_carga" diameter="150" style="margin:0 auto; margin-top: 10%;"></mat-spinner>
 <mat-card class="card border-dark" [ngClass]="{'container': Tipo_Vista_Ficha == 'Ficha_detalles'}">
     <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_envio'">
         <mat-card-header>
             <div mat-card-avatar class="example-header-image"></div>
-            <mat-card-title>{{DatosEnvio.Nombre}} </mat-card-title>
+            <mat-card-title>{{DatosEnvio.Nombre|titlecase}} </mat-card-title>
             <mat-card-subtitle>{{DatosEnvio.NombreCargo}}</mat-card-subtitle>
             <span class="example-spacer"></span>
             <span>{{DatosEnvio.Fecha_Envio|date:'medium'}}</span>
@@ -24,9 +20,11 @@
     </ng-container>
     <mat-card-content>
         <ng-container *ngIf="Tipo_Vista_Ficha == 'Ficha_envio'">
-            <p mat-line>
-                <span> Detalle:</span>
-                <span> {{DatosEnvio.Mensaje}}</span>
+
+            <p>
+                <mat-icon style="vertical-align: middle; margin-right: 10px;">sms</mat-icon>
+                <strong>Detalle: </strong>
+                <span class="fst-italic"> {{DatosEnvio.Mensaje}}</span>
             </p>
             <div *ngIf="DatosEnvio.Recibido==false" class="alert alert-danger d-flex align-items-center" role="alert">
                 <mat-icon class="align_txt-icon">report_gmailerrorred</mat-icon>
@@ -41,10 +39,12 @@
                 <strong>Informacion del Tramite </strong>
             </h4>
             <div class="card-body">
-                <p class="card-text"><strong>Titulo:</strong> {{DatosEnvio.Titulo}} / {{Tramite.alterno}}</p>
+                <p class="card-text"><strong>Titulo: </strong>
+                    <span *ngIf="DatosEnvio.Titulo">{{DatosEnvio.Titulo|titlecase}} </span>
+                    <span *ngIf="!DatosEnvio.Titulo">{{Tramite.titulo}} </span> / {{Tramite.alterno}}
+                </p>
                 <p class="card-text">
                     <strong>Descripcion:</strong> {{Tramite.detalle}}
-
                 </p>
                 <p class="card-text"><strong>Cantidad:</strong> {{Tramite.cantidad}}</p>
 
@@ -58,9 +58,6 @@
                         <span class="badge bg-dark" *ngSwitchCase="'Concluido'"> {{Tramite.estado | uppercase}}</span>
                         <span class="badge bg-warning text-dark" *ngSwitchCase="'Anulado'"> {{Tramite.estado | uppercase}}</span>
                     </ng-container>
-                    <!-- <span class="badge bg-primary text-wrap">
-                        {{Tramite.estado | uppercase}}
-                    </span> -->
                 </p>
             </div>
         </div>
@@ -73,7 +70,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <p><strong>Nombre:</strong> {{Solicitante.nombres}} {{Solicitante.paterno}} {{Solicitante.materno}}</p>
+                                <p><strong>Nombre:</strong> {{Solicitante.nombres | titlecase }} {{Solicitante.paterno | titlecase }} {{Solicitante.materno | titlecase }}</p>
                                 <p class="card-text"><strong>CI: </strong> {{Solicitante.expedido | uppercase}} {{Solicitante.dni}} </p>
                                 <p><strong>Telefono:</strong> {{Solicitante.telefono}}</p>
                             </div>
@@ -89,7 +86,7 @@
                     </h4>
                     <div class="card-body">
                         <div class="row">
-                            <p><strong>Nombre:</strong> {{Representante.nombres}} {{Representante.paterno}} {{Representante.materno}}</p>
+                            <p><strong>Nombre:</strong> {{Representante.nombres | titlecase }} {{Representante.paterno| titlecase}} {{Representante.materno| titlecase}}</p>
                             <p class="card-text"><strong>CI: </strong> {{Representante.expedido | uppercase}} {{Representante.dni}} </p>
                             <p><strong>Telefono:</strong> {{Representante.telefono}}</p>
                         </div>
@@ -103,7 +100,15 @@
                 <strong>Requisitos presentados </strong>
             </h4>
             <div class="card-body">
-                <li *ngFor="let requisito of Requerimientos_presentados">{{requisito.detalle}}</li>
+                <mat-list>
+                    <mat-list-item *ngFor="let requisito of Requerimientos_presentados">
+                        <mat-icon mat-list-icon style="color: green;">check_box</mat-icon>
+                        <div mat-line>{{requisito.detalle}}</div>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+                </mat-list>
+
+                <!-- <li *ngFor="let requisito of Requerimientos_presentados">{{requisito.detalle}}</li> -->
             </div>
         </div>
 
@@ -143,7 +148,7 @@
                     </ng-container>
                     <ng-container matColumnDef="op">
                         <th mat-header-cell *matHeaderCellDef></th>
-                        <td mat-cell *matCellDef="let element; let pos=index"> <button mat-icon-button color="primary" (click)="corregir_Observacion(element.id_observacion, pos)"><mat-icon>build_circle</mat-icon></button></td>
+                        <td mat-cell *matCellDef="let element; let pos=index"> <button mat-icon-button matTooltip="Marcar como corregido" color="primary" (click)="corregir_Observacion(element.id_observacion, pos)"><mat-icon>build_circle</mat-icon></button></td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="displayColumns_misObservaciones"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayColumns_misObservaciones;"></tr>
@@ -161,13 +166,10 @@
                     <mat-expansion-panel *ngFor="let obs of observaciones; let i=index">
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                {{obs[0].NombreCar}}
-                            </mat-panel-title>
-                            <mat-panel-description>
-                                {{obs[0].Nombre}} {{obs[0].Apellido_P}} {{obs[0].Apellido_M}}
                                 <mat-icon>account_circle</mat-icon>
+                                {{obs[0].Nombre}} {{obs[0].Apellido_P}} {{obs[0].Apellido_M}} ({{obs[0].NombreCar}})
+                            </mat-panel-title>
 
-                            </mat-panel-description>
                         </mat-expansion-panel-header>
                         <table mat-table [dataSource]="obs" class="mat-elevation-z8 demo-table">
 

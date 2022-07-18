@@ -52,7 +52,7 @@
         <button (click)="mostrar_Habilitados()" mat-raised-button color="primary" style="width: 100%;"><mat-icon>remove_red_eye</mat-icon> Ver {{(verHabilitados ? "No Habilitados":"Habilitados")}}</button>
     </div>
 </div>
-
+<mat-progress-bar *ngIf="spinner_carga && tituloDialog == 'Edicion tipo de tramite'" mode="indeterminate"></mat-progress-bar>
 <div *ngIf="Requerimientos.length==0 && tituloDialog == 'Edicion tipo de tramite'" class="alert alert-warning" role="alert">
     No se encontraron requisitos para este tramite
 </div>
@@ -105,5 +105,5 @@
 
 <div mat-dialog-actions align="end">
     <button mat-raised-button mat-dialog-close color="warn">Cancelar</button>
-    <button mat-raised-button [mat-dialog-close]="DatosTramite" (click)="registrar_datos()" cdkFocusInitial color="primary">Guardar</button>
+    <button mat-raised-button (click)="registrar_datos()" color="primary" [disabled]="!Form_TipoTramite.valid">Guardar</button>
 </div>

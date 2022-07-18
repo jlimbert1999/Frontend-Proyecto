@@ -21,6 +21,7 @@
     </mat-toolbar>
 </p>
 <div class="container-fluid">
+    <mat-progress-bar *ngIf="spiner_carga" mode="indeterminate"></mat-progress-bar>
     <app-tabla [data]="dataSource" [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla" (llamarFinalizar)="FinalizarCargo($event)"></app-tabla>
 
 </div>

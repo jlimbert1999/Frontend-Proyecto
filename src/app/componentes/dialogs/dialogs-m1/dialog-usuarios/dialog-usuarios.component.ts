@@ -33,7 +33,7 @@ export class DialogUsuariosComponent implements OnInit {
   hide = true;
   Permisos: string = ''
   isChecked: boolean = false
-  User_habilitado:boolean=true
+  User_habilitado: boolean = true
 
   tituloDialog: string = "";
   Cargos: any[] = [];
@@ -108,8 +108,8 @@ export class DialogUsuariosComponent implements OnInit {
         this.iniciar_Form_Cuenta()
         this.obtener_Cuenta(this.data.id_cuenta)
       }
-      if(!this.Funcionario.Activo){
-        this.User_habilitado=false
+      if (!this.Funcionario.Activo) {
+        this.User_habilitado = false
       }
     }
   }
@@ -159,7 +159,7 @@ export class DialogUsuariosComponent implements OnInit {
     this.usuariosService.getCuentasNoAsignadas().subscribe((resp: any) => {
       if (resp.ok) {
         this.dataSource.data = resp.Cuentas;
-        
+
 
       }
     })
@@ -320,6 +320,12 @@ export class DialogUsuariosComponent implements OnInit {
 
 
             }
+            else if (this.Tipo_Registro_cuenta == '') {
+              this.data = this.Funcionario
+              this.data.id_funcionario = resp.Usuario.insertId
+              this.data.id_cuenta = null
+              this.dialogRef.close(this.data)
+            }
 
           }
         })
@@ -391,20 +397,20 @@ export class DialogUsuariosComponent implements OnInit {
             }
 
           }
-          else if (!this.isChecked){
+          else if (!this.isChecked) {
             cuanta_actualizar = {
               login: this.Form_Cuenta.controls['login'].value,
               fecha_actualizacion: fecha
             }
           }
-          if(!this.Funcionario.Activo){
-            if(this.User_habilitado){
-              this.Funcionario=Object.assign(this.Funcionario, this.Form_Funcionario.value)
-              this.Funcionario.Activo=true
+          if (!this.Funcionario.Activo) {
+            if (this.User_habilitado) {
+              this.Funcionario = Object.assign(this.Funcionario, this.Form_Funcionario.value)
+              this.Funcionario.Activo = true
               console.log('volviendo a habilitar', this.Funcionario);
             }
           }
-          
+
           forkJoin([this.usuariosService.putUsuario(this.Funcionario.id_funcionario!, this.Form_Funcionario.value), this.usuariosService.putCuenta(this.data.id_cuenta, cuanta_actualizar)]).subscribe((results: any) => {
             if (results[0].ok && results[1].ok) {
               this.Funcionario = this.Form_Funcionario.value
@@ -415,10 +421,10 @@ export class DialogUsuariosComponent implements OnInit {
 
         }
         else if (this.Form_Funcionario.touched) {
-          if(!this.Funcionario.Activo){
-            if(this.User_habilitado){
-              this.Funcionario=Object.assign(this.Funcionario, this.Form_Funcionario.value)
-              this.Funcionario.Activo=true
+          if (!this.Funcionario.Activo) {
+            if (this.User_habilitado) {
+              this.Funcionario = Object.assign(this.Funcionario, this.Form_Funcionario.value)
+              this.Funcionario.Activo = true
               console.log('volviendo a habilitar', this.Funcionario);
             }
           }
@@ -457,7 +463,7 @@ export class DialogUsuariosComponent implements OnInit {
 
       }
 
-      
+
 
 
     }

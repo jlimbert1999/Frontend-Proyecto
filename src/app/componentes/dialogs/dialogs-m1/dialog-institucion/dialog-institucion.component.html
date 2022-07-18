@@ -40,5 +40,5 @@
 
 <div mat-dialog-actions align="end">
     <button mat-raised-button color="warn" (click)="cerrarDialog()">Cancelar</button>
-    <button mat-raised-button color="primary" [mat-dialog-close]="data" (click)="guardar_registro()" [disabled]="!Form_Institucion.valid">Guardar</button>
+    <button mat-raised-button color="primary" (click)="guardar_registro()" [disabled]="!Form_Institucion.valid">Guardar</button>
 </div>

@@ -1,27 +1,26 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
-import { UsuariosService } from 'src/app/servicios/servicios-m1/usuarios.service';
-import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RegistroTramiteService } from 'src/app/servicios/servicios-m3/registro-tramite.service';
 import { SocketService } from 'src/app/servicios/servicios-m3/socket.service';
 import { InstitucionService } from 'src/app/servicios/servicios-m1/institucion.service'
 import { DependenciaService } from 'src/app/servicios/servicios-m1/dependencia.service'
 import Swal from 'sweetalert2';
 import decode from 'jwt-decode'
-import { WorkflowServiceService } from 'src/app/servicios/servicios-m4/workflow-service.service';
 import { Mensajes } from 'src/app/componentes/mensaje/mensaje';
-import { Workflow, Bandeja_Entrada, Bandeja_Salida } from 'src/app/modelos/seguimiento-tramites/workflow.model'
 import { InstitucionModel } from 'src/app/modelos/administracion-usuarios/institucion.model';
 import { BandejaService } from 'src/app/servicios/servicios-m4/bandeja.service';
 import { forkJoin, map, Observable, startWith } from 'rxjs';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormControl } from '@angular/forms';
+import { Bandeja_Entrada, Bandeja_Salida } from 'src/app/modelos/seguimiento-tramites/workflow.model';
 @Component({
   selector: 'app-dialog-remision',
   templateUrl: './dialog-remision.component.html',
   styleUrls: ['./dialog-remision.component.css']
 })
 export class DialogRemisionComponent implements OnInit {
+
+
   msg = new Mensajes()
   Info_Cuenta_Actual = this.decodificarToken()
   usuarios_Conectados: any[] = []
@@ -32,11 +31,12 @@ export class DialogRemisionComponent implements OnInit {
   instituciones: InstitucionModel[] = []
   dependencias: any[] = []
   Bandeja_entrada: Bandeja_Entrada
-  Bandeja_salida: Bandeja_Salida
-
+  Bandeja_salida: Bandeja_Salida;
   enviar_tiempo_real: boolean = false //verificar si se envia a user activo
   stateCtrl = new FormControl();
   filteredStates: Observable<any[]>;
+
+  @ViewChild('txt_UserRecep') inputUserRecep: any;
   constructor(
     public dialogRef: MatDialogRef<DialogRemisionComponent>,
     private tramiteService: RegistroTramiteService,
@@ -55,10 +55,7 @@ export class DialogRemisionComponent implements OnInit {
   }
   spiner_carga: boolean = false
 
-  Nombre_Receptor: string = ""
-
   ngOnInit(): void {
-    //data recibe id_tramite, titulo, alterno y un mensaje vacio
     this.obtener_users_conectados()
     this.obtener_Instituciones()
 
@@ -73,7 +70,7 @@ export class DialogRemisionComponent implements OnInit {
     })
   }
   obtener_DependenciasInst(id_institucion: number) {
-    this.depService. getDependenciasActivas_de_Instituto(id_institucion).subscribe((resp: any) => {
+    this.depService.getDependenciasActivas_de_Instituto(id_institucion).subscribe((resp: any) => {
       if (resp.ok) {
         this.dependencias = resp.Dependencias
       }
@@ -82,12 +79,12 @@ export class DialogRemisionComponent implements OnInit {
 
   obtener_users_conectados() {
     this.socketService.Emitir('getUsers_Activos', null).subscribe((resp: any) => {
-      console.log("Usuarios activos para envio", resp);
       this.usuarios_Conectados = resp.filter((user: any) => user.id_cuenta != this.Info_Cuenta_Actual.id_cuenta)
     })
   }
 
   obtener_users_desconectados(id_inst: number, id_dep: number) {
+    this.inputUserRecep.nativeElement.value = '';
     this.spiner_carga = true
     let datos_busqueda = {
       id_institucion: id_inst,
@@ -96,7 +93,6 @@ export class DialogRemisionComponent implements OnInit {
     this.tramiteService.getFuncionarioEspecifico(datos_busqueda).subscribe((resp: any) => {
       if (resp.ok) {
         let user: any
-        //juntar users activos con los desconectados
         this.usuarios_Desconectados = resp.Funcionarios.filter((user: any) => user.id_cuenta != this.Info_Cuenta_Actual.id_cuenta)
         this.usuarios_Desconectados.forEach((element: any) => {
           user = this.usuarios_Conectados.find(user => user.id_cuenta == element.id_cuenta)
@@ -128,11 +124,13 @@ export class DialogRemisionComponent implements OnInit {
       id_receptor: this.Info_UserReceptor.id, //id_socket
       Tramite: {
         id_cuenta: this.Info_Cuenta_Actual.id_cuenta,
+        id_funcionario: this.Info_Cuenta_Actual.id_funcionario,
         Nombre: this.Info_Cuenta_Actual.Nombre,
         NombreCargo: this.Info_Cuenta_Actual.NombreCargo,
         Mensaje: this.data.Mensaje,
         id_tramite: this.data.id_tramite,
         Titulo: this.data.Titulo,
+        Estado: this.data.Estado,
         Alterno: this.data.Alterno,
         Fecha_Envio: Fecha,
         Enviado: true,
@@ -143,35 +141,11 @@ export class DialogRemisionComponent implements OnInit {
   }
 
   Enviar_Tramite() {
-    // if (this.Opcion_Envio == 'Funcionarios activos') {
-    //   Swal.fire({
-    //     title: `Remitir tramite a ${this.Info_UserReceptor.Nombre} (${this.Info_UserReceptor.NombreCargo})`,
-    //     showCancelButton: true,
-    //     confirmButtonText: 'Aceptar',
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       this.Fecha=this.getFecha()  //para tener una unica fecha al registrar y al enviar
-    //       this.socketService.Emitir('enviarTramite', this.armar_datos_Envio_UserActivo(this.Fecha)).subscribe()
-    //       this.registrar_Workflow(this.Fecha)
-    //     }
-    //   })
-    // }
-    // if(this.Opcion_Envio == 'Funcionario especifico'){
-    //   Swal.fire({
-    //     title: `Remitir tramite a ${this.Info_UserReceptor.Nombre} (${this.Info_UserReceptor.NombreCargo})`,
-    //     showCancelButton: true,
-    //     confirmButtonText: 'Aceptar',
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       this.Fecha=this.getFecha()
-    //       this.registrar_Workflow(this.Fecha)
-    //     }
-    //   })
-    // }
     Swal.fire({
       title: `Remitir tramite a ${this.Info_UserReceptor.Nombre} ${this.Info_UserReceptor.Apellido_P} ${this.Info_UserReceptor.Apellido_M} (${this.Info_UserReceptor.NombreCar})?`,
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
       icon: 'question'
     }).then((result) => {
       if (result.isConfirmed) {
@@ -240,21 +214,6 @@ export class DialogRemisionComponent implements OnInit {
     return Date.now()
   }
 
-  //metodos nuevos
-  registrar_en_bandejaSalida(datos: any) {
-    this.bandejasService.add_bandejaSalida(datos).subscribe((resp: any) => {
-      if (resp.ok) {
-        console.log('se agregago a la badenja salida correctamente');
-      }
-    })
-  }
-  registrar_en_bandejaEntrada(datos: any) {
-    this.bandejasService.add_bandejaEntrada(datos).subscribe((resp: any) => {
-      if (resp.ok) {
-        console.log('se agregago a la badenja entrada correctamente');
-      }
-    })
-  }
 
   actualizar_estadoTramite(estado: string) {
     this.tramiteService.putTramite(this.data.id_tramite, { estado }).subscribe((resp: any) => {

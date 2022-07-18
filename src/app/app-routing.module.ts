@@ -28,6 +28,8 @@ import { ReporteEstadoComponent } from './modulos/reportes/reporte-estado/report
 import { ReporteEstadisticoComponent } from './modulos/reportes/reporte-estadistico/reporte-estadistico.component';
 import { GroupwareComponent } from './modulos/administracion-usuarios/groupware/groupware.component';
 import { AyudaComponent } from './paginas/consulta/ayuda/ayuda.component';
+import { MailComponent } from './modulos/registro-tramites/mail/mail.component';
+import { MainComponent } from './paginas/main/main.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
@@ -56,6 +58,9 @@ const routes: Routes = [
   {
     path: 'inicio', component: InicioComponent, canActivate: [LoginGuardGuard],
     children: [
+      //INICIO
+      { path: '', pathMatch: 'full', redirectTo:'main' },
+      { path: 'main', component: MainComponent},
       //USUARIOS
       { path: 'administrar-usuarios', component: AdministracionUsuariosComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
       { path: 'administrar-funcionarios', component: FuncionariosComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
@@ -67,7 +72,11 @@ const routes: Routes = [
       { path: 'groupware', component: GroupwareComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'ADMIN_ROLE' } },
       //REGISTRO DE TRAMIES
       { path: 'administrar-tramite', component: AdmTramiteComponent, canActivate: [LoginGuardGuard, RoleGuard], data: { expectedRole: 'USER1_ROLE' } },
-      { path: 'bandeja-entrada', component: BandejaEntradaComponent },
+      {
+        path: 'bandeja-entrada', component: BandejaEntradaComponent
+      },
+      { path: 'tramite-recibido/:id', component: MailComponent },
+
       { path: 'bandeja-salida', component: BandejaSalidaComponent },
       { path: 'ficha/:id', component: FichaTramiteComponent },
       //SEGUIMIENTO TRAMITES
@@ -81,7 +90,7 @@ const routes: Routes = [
   },
   {
     path: 'Consulta', component: ConsultaComponent,
-    
+
 
   },
   { path: 'Ayuda', component: AyudaComponent },

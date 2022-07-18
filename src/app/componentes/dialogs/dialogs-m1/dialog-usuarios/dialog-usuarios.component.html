@@ -205,7 +205,7 @@
                                 <div *ngIf="Tipo_Registro_cuenta=='Asignar'" class="col">
                                     <mat-form-field appearance="outline">
                                         <mat-label>Nueva contraseña</mat-label>
-                                        <input [type]="hide ? 'password' : 'text'" matInput formControlName="password" type="password" autocomplete="off">
+                                        <input [type]="hide ? 'password' : 'text'" matInput formControlName="password" type="password" autocomplete="current-password">
                                         <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
                                             <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                                         </button>

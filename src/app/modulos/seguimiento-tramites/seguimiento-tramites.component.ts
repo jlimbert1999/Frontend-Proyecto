@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WorkflowServiceService } from 'src/app/servicios/servicios-m4/workflow-service.service';
 import { RegistroTramiteService } from 'src/app/servicios/servicios-m3/registro-tramite.service';
-import { Subject } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { Layout } from '@swimlane/ngx-graph';
 import * as moment from 'moment';
@@ -10,6 +10,7 @@ import { Workflow } from 'src/app/modelos/seguimiento-tramites/workflow.model';
 import { TramiteModel } from 'src/app/modelos/registro-tramites/resistro-tramites.model';
 import { Location } from '@angular/common';
 import { SolicitanteModel } from 'src/app/modelos/registro-tramites/solicitante.model';
+import jsPDF from 'jspdf';
 @Component({
   selector: 'app-seguimiento-tramites',
   templateUrl: './seguimiento-tramites.component.html',
@@ -18,41 +19,40 @@ import { SolicitanteModel } from 'src/app/modelos/registro-tramites/solicitante.
 export class SeguimientoTramitesComponent implements OnInit {
   nodos: any[] = []
   links: any[] = []
-  ids_Cuentas: number[] = []
+  clusters: any[] = []
   id_tramite: number = 0
   listaWorkflow: any[] = []
   dataSource = new MatTableDataSource()
   displayedColumns: string[] = ['Emisor', 'Enviado', 'Receptor', 'Recibido', 'Duracion']
-  Participantes: any[] = []
   view: [number, number]
+  Tramite: any
+  Solicitante: SolicitanteModel
+
+  spiner_carga1: boolean = false
+  spiner_carga2: boolean = false
+  sin_flujo: boolean = false
 
   // Variables para grafica
   layout: any | Layout = 'dagre';
   center$: Subject<boolean> = new Subject();
   layouts: any[] = [
     {
-      label: 'Dagre',
+      label: 'Completa',
       value: 'dagre',
     },
     {
-      label: 'Dagre Cluster',
-      value: 'dagreCluster',
-      isClustered: true,
-    },
-    {
-      label: 'Cola Force Directed',
+      label: 'Minimizada',
       value: 'colaForceDirected',
       isClustered: true,
     },
     {
-      label: 'D3 Force Directed',
+      label: 'Flotante',
       value: 'd3ForceDirected',
     },
   ];
-  info_User: any
-  observacione_user: any
-  Tramite: TramiteModel
-  Solicitante: SolicitanteModel
+
+
+
 
 
   constructor(
@@ -61,7 +61,7 @@ export class SeguimientoTramitesComponent implements OnInit {
     private tramiteService: RegistroTramiteService,
     private _location: Location
   ) {
-    this.view = [innerWidth, innerHeight];
+
 
   }
 
@@ -72,27 +72,33 @@ export class SeguimientoTramitesComponent implements OnInit {
       this.obtener_InfoTramite()
       this.obtener_Datos_Solicitante(this.id_tramite)
     });
+    this.view = [innerWidth / 1.1, innerHeight / 1.5];
 
   }
 
 
   obtener_Workflow(id_tramite: number) {
+    this.spiner_carga1 = true
+    let ids_Cuentas: number[] = []
     this.workflowService.getWorkflow(id_tramite).subscribe((resp: any) => {
       if (resp.ok) {
+        if (resp.Workflow.length == 0) {
+          this.sin_flujo = true
+        }
+        this.spiner_carga1 = false
         this.listaWorkflow = resp.Workflow
-        this.dataSource.data = resp.Workflow
+        // this.dataSource.data = resp.Workflow
         resp.Workflow.forEach((element: any) => {
-          
-          if (!this.ids_Cuentas.includes(element.id_cuentaEmisor)) {
-            this.ids_Cuentas.push(element.id_cuentaEmisor)
+          if (!ids_Cuentas.includes(element.id_cuentaEmisor)) {
+            ids_Cuentas.push(element.id_cuentaEmisor)
           }
-          if (!this.ids_Cuentas.includes(element.id_cuentaReceptor)) {
-            this.ids_Cuentas.push(element.id_cuentaReceptor)
+          if (!ids_Cuentas.includes(element.id_cuentaReceptor)) {
+            ids_Cuentas.push(element.id_cuentaReceptor)
           }
         });
-        this.crear_Nodos(this.ids_Cuentas)
+        this.crear_Nodos(ids_Cuentas)
         this.crear_Vinculos()
-        this.armar_tabla(this.ids_Cuentas)
+        this.armar_tabla(ids_Cuentas)
       }
     })
   }
@@ -123,27 +129,48 @@ export class SeguimientoTramitesComponent implements OnInit {
     })
   }
   armar_tabla(ids_Cuentas: number[]) {
+    this.spiner_carga2 = true
+    let fecha1: any = 0
+    let fecha2: any = 0
+    let duration: any
+    let years: any,
+      months,
+      days,
+      hrs,
+      mins,
+      secs;
     ids_Cuentas.forEach((element: any, index: number) => {
-      this.tramiteService.getDatosFuncionario(element).subscribe((resp: any) => {
-        this.Participantes.push(resp.Funcionario[0])
-        this.nodos[index].data = resp.Funcionario[0]
+      this.tramiteService.getUser_Workflow(element).subscribe((resp: any) => {
         this.listaWorkflow.forEach((lista: any, i: number) => {
-          if (lista.id_cuentaEmisor == resp.Funcionario[0].id_cuenta) {
-            this.listaWorkflow[i]['NombreEmi'] = `${resp.Funcionario[0].Nombre} ${resp.Funcionario[0].Apellido_P} ${resp.Funcionario[0].Apellido_M}`
-            this.listaWorkflow[i]['CargoEmi'] = `${resp.Funcionario[0].NombreCar}`
-            this.listaWorkflow[i]['NombreDepEmi'] = `${resp.Funcionario[0].NombreDep}`
-            this.listaWorkflow[i]['NombreInstEmi'] = `${resp.Funcionario[0].Sigla}`
-          }
-          if (lista.id_cuentaReceptor == resp.Funcionario[0].id_cuenta) {
-            this.listaWorkflow[i]['NombreRecep'] = `${resp.Funcionario[0].Nombre} ${resp.Funcionario[0].Apellido_P} ${resp.Funcionario[0].Apellido_M}`
-            this.listaWorkflow[i]['CargoRecep'] = `${resp.Funcionario[0].NombreCar}`
-            this.listaWorkflow[i]['NombreDepRecep'] = `${resp.Funcionario[0].NombreDep}`
-            this.listaWorkflow[i]['NombreInstRecep'] = `${resp.Funcionario[0].Sigla}`
 
+          if (lista.id_cuentaEmisor == resp.Funcionario.id_cuenta) {
+            this.nodos[index].data = {
+              Nombre: lista.Funcionario_Emisor,
+              NombreCar: resp.Funcionario.NombreCar,
+              NombreInst: resp.Funcionario.NombreInst,
+              NombreDep: resp.Funcionario.NombreDep,
+              Sigla: resp.Funcionario.Sigla,
+              Detalle: lista.detalle
+            }
+            this.listaWorkflow[i]['NombreEmi'] = `${lista.Funcionario_Emisor}`
+            this.listaWorkflow[i]['CargoEmi'] = `${resp.Funcionario.NombreCar}`
+            this.listaWorkflow[i]['NombreDepEmi'] = `${resp.Funcionario.NombreDep}`
+            this.listaWorkflow[i]['NombreInstEmi'] = `${resp.Funcionario.Sigla}`
+          }
+          if (lista.id_cuentaReceptor == resp.Funcionario.id_cuenta) {
+            this.nodos[index].data = {
+              Nombre: lista.Funcionario_Receptor,
+              NombreCar: resp.Funcionario.NombreCar,
+              NombreInst: resp.Funcionario.NombreInst,
+              NombreDep: resp.Funcionario.NombreDep,
+              Sigla: resp.Funcionario.Sigla,
+            }
+            this.listaWorkflow[i]['NombreRecep'] = `${lista.Funcionario_Receptor}`
+            this.listaWorkflow[i]['CargoRecep'] = `${resp.Funcionario.NombreCar}`
+            this.listaWorkflow[i]['NombreDepRecep'] = `${resp.Funcionario.NombreDep}`
+            this.listaWorkflow[i]['NombreInstRecep'] = `${resp.Funcionario.Sigla}`
           }
           //duracion
-          let fecha1: any = 0
-          let fecha2: any = 0
           if (i == 0) {
             fecha1 = moment(new Date(parseInt(this.Tramite.Fecha_creacion.toString())));
             fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
@@ -151,38 +178,70 @@ export class SeguimientoTramitesComponent implements OnInit {
           else if (i > 0) {
             fecha1 = moment(new Date(parseInt(this.listaWorkflow[i - 1]['fecha_recibido'])));
             fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
-
           }
-          // fecha1 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
-          // fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_recibido'])));
-
-          let duration = moment.duration(fecha2.diff(fecha1));
-          let years = duration.years(),
+          duration = moment.duration(fecha2.diff(fecha1))
+          years = duration.years(),
             months = duration.months(),
             days = duration.days(),
             hrs = duration.hours(),
             mins = duration.minutes(),
             secs = duration.seconds();
-          this.listaWorkflow[i]['Duracion'] = days + ' Dia ' + hrs + ' hrs ' + mins + ' mins ' + secs + ' seg.'
+          this.listaWorkflow[i]['Duracion'] = days + ' Dias ' + hrs + ' hrs. ' + mins + ' mins. ' + secs + ' seg.'
         })
       })
     });
+    this.spiner_carga2 = false
+    this.dataSource.data = this.listaWorkflow
+
   }
 
-  obtener_info_funcionario(data: any) {
-    this.info_User = data
-    const index = this.listaWorkflow.findIndex((item: any) => item.id_cuentaEmisor == this.info_User.id_cuenta);
-    this.info_User['tiempo_empleado'] = this.listaWorkflow[index].Duracion
-    
-    // this.obtener_Observaciones(data.id_cuenta)
-  }
-  obtener_Observaciones(id_cuenta: number) {
-    this.tramiteService.getObservaciones_deUsuario(id_cuenta).subscribe((resp: any) => {
-      if (resp.ok) {
-        this.observacione_user = resp.Observaciones
-      }
-    })
-  }
+  // armar_tabla(ids_Cuentas: number[]) {
+  //   ids_Cuentas.forEach((element: any, index: number) => {
+  //     this.tramiteService.getDatosFuncionario(element).subscribe((resp: any) => {
+  //       // console.log(resp.Funcionario[0]);
+  //       this.nodos[index].data = resp.Funcionario[0]
+  //       this.listaWorkflow.forEach((lista: any, i: number) => {
+  //         if (lista.id_cuentaEmisor == resp.Funcionario[0].id_cuenta) {
+  //           this.listaWorkflow[i]['NombreEmi'] = `${resp.Funcionario[0].Nombre} ${resp.Funcionario[0].Apellido_P} ${resp.Funcionario[0].Apellido_M}`
+  //           this.listaWorkflow[i]['CargoEmi'] = `${resp.Funcionario[0].NombreCar}`
+  //           this.listaWorkflow[i]['NombreDepEmi'] = `${resp.Funcionario[0].NombreDep}`
+  //           this.listaWorkflow[i]['NombreInstEmi'] = `${resp.Funcionario[0].Sigla}`
+  //         }
+  //         if (lista.id_cuentaReceptor == resp.Funcionario[0].id_cuenta) {
+  //           this.listaWorkflow[i]['NombreRecep'] = `${resp.Funcionario[0].Nombre} ${resp.Funcionario[0].Apellido_P} ${resp.Funcionario[0].Apellido_M}`
+  //           this.listaWorkflow[i]['CargoRecep'] = `${resp.Funcionario[0].NombreCar}`
+  //           this.listaWorkflow[i]['NombreDepRecep'] = `${resp.Funcionario[0].NombreDep}`
+  //           this.listaWorkflow[i]['NombreInstRecep'] = `${resp.Funcionario[0].Sigla}`
+
+  //         }
+  //         //duracion
+  //         let fecha1: any = 0
+  //         let fecha2: any = 0
+  //         if (i == 0) {
+  //           fecha1 = moment(new Date(parseInt(this.Tramite.Fecha_creacion.toString())));
+  //           fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
+  //         }
+  //         else if (i > 0) {
+  //           fecha1 = moment(new Date(parseInt(this.listaWorkflow[i - 1]['fecha_recibido'])));
+  //           fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
+
+  //         }
+  //         // fecha1 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_envio'])));
+  //         // fecha2 = moment(new Date(parseInt(this.listaWorkflow[i]['fecha_recibido'])));
+
+  //         let duration = moment.duration(fecha2.diff(fecha1));
+  //         let years = duration.years(),
+  //           months = duration.months(),
+  //           days = duration.days(),
+  //           hrs = duration.hours(),
+  //           mins = duration.minutes(),
+  //           secs = duration.seconds();
+  //         this.listaWorkflow[i]['Duracion'] = days + ' Dia ' + hrs + ' hrs ' + mins + ' mins ' + secs + ' seg.'
+  //       })
+  //     })
+  //   });
+  // }
+
   setLayout(layoutName: string): void {
     const layout = this.layouts.find(l => l.value === layoutName);
     this.layout = layoutName;
@@ -209,7 +268,12 @@ export class SeguimientoTramitesComponent implements OnInit {
   }
 
   onResize(event: any) {
-    this.view = [event.target.innerWidth , event.target.innerHeight/1.35];
+    this.view = [event.target.innerWidth / 1.1, event.target.innerHeight / 1.5];
+  }
+
+  crear_HojaRuta() {
+
+
   }
 
 

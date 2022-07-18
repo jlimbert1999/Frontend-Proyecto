@@ -25,6 +25,7 @@ export class DependenciasComponent implements OnInit {
     { key: "Sigla", titulo: "SIGLA" },
     { key: "Fecha_creacion", titulo: "FECHA CREACION" }
   ]
+  spiner_carga:boolean=false
 
 
   constructor(private depService: DependenciaService, public dialog: MatDialog) { }
@@ -36,10 +37,12 @@ export class DependenciasComponent implements OnInit {
   obtener_Dephabilitadas() {
     this.OpcionesTabla = ['Editar', 'Eliminar']
     this.verHabilitados = true
+    this.spiner_carga=true
     this.depService.getDependencia_Habilitadas().subscribe((resp: any) => {
       if (resp.ok) {
         this.Dependencias = resp.Dependencias
         this.dataSource.data = this.Dependencias
+        this.spiner_carga=false
       }
       else {
         this.msg.mostrarMensaje('error', resp.message)
@@ -49,10 +52,12 @@ export class DependenciasComponent implements OnInit {
 
   obtener_DepNohabilitadas() {
     this.OpcionesTabla = ['Editar', 'Habilitar']
+    this.spiner_carga=true
     this.depService.getDependencia_NoHabilitadas().subscribe((resp: any) => {
       if (resp.ok) {
         this.Dependencias = resp.Dependencias
         this.dataSource.data = this.Dependencias
+        this.spiner_carga=false
       }
       else {
         this.msg.mostrarMensaje('error', resp.message)

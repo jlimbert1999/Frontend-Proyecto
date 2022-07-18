@@ -83,7 +83,7 @@ export class DialogDependenciaComponent implements OnInit {
         this.depService.putDependencia(this.data.id_dependencia!, this.Dependencia).subscribe((resp: any) => {
           if (resp.ok) {
             this.dialogRef.close(this.Dependencia)
-            this.msg.mostrarMensaje('success', "Dependencia actualizada")
+            
           }
         })
 

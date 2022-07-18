@@ -39,5 +39,6 @@
 </p>
 
 <div class="container-fluid">
+    <mat-progress-bar *ngIf="spiner_carga" mode="indeterminate"></mat-progress-bar>
     <app-tabla [data]="dataSource" [displayedColumns]="displayedColumns" [TiposOpciones]="OpcionesTabla" (llamarEliminar)="eliminar_Institucion($event)" (llamarEditar)="editar_Institucion($event)" (llamarHabilitar)="habilitar_Institucion($event)"></app-tabla>
 </div>

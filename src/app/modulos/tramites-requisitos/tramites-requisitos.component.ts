@@ -51,6 +51,7 @@ export class TramitesRequisitosComponent implements OnInit {
     this.OpcionesTabla = ['Editar', 'Eliminar']
     this.tipoTramitesService.getTipoTramite_Habilitados().subscribe((resp: any) => {
       if (resp.ok) {
+        
         if (resp.TiposTramites.length == 0) {
           this.msg.mostrarMensaje('info', resp.message)
         }
@@ -88,6 +89,7 @@ export class TramitesRequisitosComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(dataDialog => {
       if (dataDialog) {
+
         this.obtner_TiposTramites_Habilitados()
       }
     })

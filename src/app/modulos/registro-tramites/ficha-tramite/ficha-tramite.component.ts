@@ -26,7 +26,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
   @Input() tipoBandeja: any
   @Output() Actualizar_listaRecibidos: EventEmitter<object>;
   Info_cuenta_Actual = this.decodificarToken()
-  Tramite: TramiteModel
+  Tramite: any
   Solicitante: SolicitanteModel
   Representante: RepresentanteModel
   Requerimientos_presentados: any[] = []
@@ -49,6 +49,8 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
   //ver si se abre desde bandeja o desde admin tramite
   //2 tipos de vista Ficha_envio, Ficha_detalle
   Tipo_Vista_Ficha: string
+
+  spiner_carga: boolean = false
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
 
@@ -89,6 +91,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
   }
 
   obtener_InfoFicha(id_tramite: number) {
+    this.spiner_carga = true
     forkJoin(
       [
         this.tramiteService.getFicha_InfoTramite(id_tramite),
@@ -98,6 +101,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
       ]
     ).subscribe((results: any) => {
       if (results[0].ok, results[1].ok, results[2].ok, results[3].ok) {
+        this.spiner_carga = false
         this.Tramite = results[0].Tramite[0]
         this.Solicitante = results[1].Solicitante[0]
         if (results[2].Representante) {
@@ -240,11 +244,11 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
 
 
   //metodo usado para traer info de emisor o receptor
-  obtener_detallesFuncionario(id_cuenta: number) {
-    this.tramiteService.getDatosFuncionario(id_cuenta).subscribe((resp: any) => {
-      this.datos_Funcionario = resp.Funcionario[0]
-    })
-  }
+  // obtener_detallesFuncionario(id_cuenta: number) {
+  //   this.tramiteService.getDatosFuncionario(id_cuenta).subscribe((resp: any) => {
+  //     this.datos_Funcionario = resp.Funcionario[0]
+  //   })
+  // }
 
 
 
@@ -290,10 +294,10 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     });
     dialogRef.afterClosed().subscribe((dataDialog: any) => {
 
-      if(dataDialog){
+      if (dataDialog) {
         this.Actualizar_listaRecibidos.emit(this.DatosEnvio.id_tramite)
       }
-      
+
     })
 
   }
@@ -354,6 +358,8 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
     this.datosWorkflow = {
       id_cuentaEmisor: this.DatosEnvio.id_cuenta,
       id_cuentaReceptor: this.Info_cuenta_Actual.id_cuenta,
+      Funcionario_Emisor:this.DatosEnvio.Nombre,
+      Funcionario_Receptor:this.Info_cuenta_Actual.Nombre,
       id_tramite: this.DatosEnvio.id_tramite,
       fecha_envio: this.DatosEnvio.Fecha_Envio,
       fecha_recibido: Fecha,
@@ -392,7 +398,7 @@ export class FichaTramiteComponent implements OnInit, OnChanges {
         let data = {
           estado: 'Concluido',
           activo: true,
-          Fecha_finalizacion:this.getFecha()
+          Fecha_finalizacion: this.getFecha()
         }
         this.tramiteService.putTramite(this.DatosEnvio.id_tramite, data).subscribe((resp: any) => {
           if (resp.ok) {

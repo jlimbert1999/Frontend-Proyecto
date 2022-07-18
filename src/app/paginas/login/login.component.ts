@@ -37,7 +37,16 @@ export class LoginComponent implements OnInit {
         })
         this.guardarToken(res.token)
         this.unirse_Groupware()
-        this.router.navigate(['inicio'])
+        if (this.decodificarToken().Tipo == 'USER1_ROLE') {
+          this.router.navigate(['inicio/administrar-tramite'])
+        }
+        else if (this.decodificarToken().Tipo == 'USER2_ROLE') {
+          this.router.navigate(['inicio/bandeja-entrada'])
+        }
+        else{
+          this.router.navigate(['inicio'])
+        }
+
       }
       else {
         this.msg.mostrarMensaje('error', res.message)
@@ -57,9 +66,7 @@ export class LoginComponent implements OnInit {
         NombreCargo: User.NombreCargo
       }
 
-      this.socketService.Emitir('unirse', infoUser).subscribe((resp) => {
-        console.log(resp);
-      })
+      this.socketService.Emitir('unirse', infoUser).subscribe()
     }
 
 

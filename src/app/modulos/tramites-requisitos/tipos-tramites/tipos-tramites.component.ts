@@ -29,6 +29,7 @@ export class TiposTramitesComponent implements OnInit {
   Requisitos: Requerimientos[] = []
   msg = new Mensajes()
   modo_busqueda: boolean = false
+  spiner_carga:boolean=false
 
   constructor(public dialog: MatDialog,
     private tipoTramitesService: TipoTramitesService) { }
@@ -42,16 +43,19 @@ export class TiposTramitesComponent implements OnInit {
   obtner_TiposTramites_Habilitados() {
     this.VerHabilitados = true
     this.OpcionesTabla = ['Editar', 'Eliminar']
+    this.spiner_carga=true
     this.tipoTramitesService.getTipoTramite_Habilitados().subscribe((resp: any) => {
       if (resp.ok) {
         this.Tipos_Tramites = resp.TiposTramites
         this.dataSource.data = this.Tipos_Tramites
+        this.spiner_carga=false
       }
 
     })
   }
   obtner_TiposTramites_NoHabilitados() {
     this.OpcionesTabla = ['Editar', 'Habilitar']
+    this.spiner_carga=true
     this.tipoTramitesService.getTipoTramite_NoHabilitados().subscribe((resp: any) => {
       if (resp.ok) {
         if (resp.TiposTramites.length == 0) {
@@ -59,6 +63,7 @@ export class TiposTramitesComponent implements OnInit {
         }
         this.Tipos_Tramites = resp.TiposTramites
         this.dataSource.data = this.Tipos_Tramites
+        this.spiner_carga=false
       }
 
     })
@@ -70,6 +75,7 @@ export class TiposTramitesComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(dataDialog => {
       if (dataDialog) {
+
         this.Tipos_Tramites.unshift(dataDialog)
         this.dataSource.data = this.Tipos_Tramites
       }

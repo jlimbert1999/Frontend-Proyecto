@@ -1,22 +1,25 @@
 <p>
     <mat-toolbar>
         <ng-container *ngIf="modo_busqueda==false">
-            <span>Total: {{Tramites_Emitidos.length}}</span>
+            <span>Bandeja de salida</span>
+
             <span class="example-spacer"></span>
             <button (click)="recargar()" matTooltip="Recargar" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
                 <mat-icon>refresh</mat-icon>
             </button>
 
+            <button [matMenuTriggerFor]="menu" matTooltip="Filtro" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                <mat-icon>filter_alt</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="filtrar_listado('Aceptados')">Aceptados</button>
+                <button mat-menu-item (click)="filtrar_listado('Rechazados')">Rechazados</button>
+                <button mat-menu-item (click)="filtrar_listado('Enviados')">Enviados</button>
+                <button mat-menu-item (click)="filtrar_listado('Todos')">Todos</button>
+            </mat-menu>
+
             <ng-container *ngIf="Tramites_Emitidos.length>0">
-                <button [matMenuTriggerFor]="menu" matTooltip="Filtro" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
-                    <mat-icon>filter_alt</mat-icon>
-                </button>
-                <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="filtrar_listado('Aceptados')">Aceptados</button>
-                    <button mat-menu-item (click)="filtrar_listado('Rechazados')">Rechazados</button>
-                    <button mat-menu-item (click)="filtrar_listado('Enviados')">Enviados</button>
-                    <button mat-menu-item (click)="filtrar_listado('Todos')">Todos</button>
-                </mat-menu>
+
                 <button (click)="modo_busqueda=true" matTooltip="Busqueda" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
                     <mat-icon>search</mat-icon>
                 </button>
@@ -37,56 +40,60 @@
 </p>
 
 
-<p *ngIf="Tramites_Emitidos.length<=0" class="fs-1" style="margin:  10%; text-align: center;">No se ha enviado ningun tramite.</p>
-<cdk-accordion class="example-accordion">
-    <cdk-accordion-item *ngFor="let tramite of Tramites_Emitidos; let index = index;" #accordionItem="cdkAccordionItem" class="example-accordion-item" role="button" tabindex="0" [attr.id]="'accordion-header-' + index" [attr.aria-expanded]="accordionItem.expanded"
-        [attr.aria-controls]="'accordion-body-' + index" [ngClass]="{'select': accordionItem.expanded}">
-        <div class="example-accordion-item-header" (click)="accordionItem.toggle()">
-            <blockquote class="blockquote mb-0">
-                <p>
-                    {{ tramite.titulo }} / {{tramite.alterno}}
-                </p>
-                <footer class="blockquote-footer" style="margin-top: 5px;"><cite title="Source Title"><strong>Enviado a: </strong>  <mat-icon style="vertical-align: middle;">account_circle</mat-icon>{{tramite.Nombre}} {{tramite.Apellido_P}} {{tramite.Apellido_M}} <span>({{tramite.NombreCargo}})</span> en: {{tramite.fecha_envio|date:'medium'}} </cite></footer>
-            </blockquote>
-            <span class="example-accordion-item-description" style="font-size: 18px;">
-                <span class="badge bg-warning text-dark" *ngIf="tramite.aceptado==false && tramite.rechazado==false">Enviado</span>
-            <span class="badge bg-success" *ngIf="tramite.aceptado==true && tramite.rechazado==false">Recibido</span>
-            <span class="badge bg-danger" *ngIf="tramite.rechazado==true && tramite.aceptado==false">Rechazado</span>
-            <span class="badge bg-info" *ngIf="tramite.rechazado==true && tramite.aceptado==true">Reenviado</span>
-            </span>
-        </div>
-        <div class="example-accordion-item-body" role="region" [style.display]="accordionItem.expanded ? '' : 'none'" [attr.id]="'accordion-body-' + index" [attr.aria-labelledby]="'accordion-header-' + index">
-            <div class="card border-dark mb-3" style="max-width: 100%;">
-                <div class="card-header"><strong>Tramite: </strong> {{ tramite.titulo}} / {{tramite.alterno}}</div>
-                <div class="card-body text-dark">
-                    <h5 class="card-title"><strong>Detalle:</strong> {{tramite.detalle}}</h5>
-                    <p class="card-text">Enviado: {{tramite.fecha_envio | date:'medium'}} </p>
-                    <p *ngIf="tramite.aceptado" class="card-text">Recibido: {{tramite.fecha_recibido | date:'medium'}} </p>
-                    <div matLine>
-                        Tramite: <a [routerLink]="['/inicio/ficha', tramite.id_tramite]">{{tramite.titulo}} / {{tramite.alterno}}</a>
-                    </div>
 
-                    <section>
-                        <div class="example-button-row">
-                            <button mat-raised-button color="primary" (click)="ver_flujo(tramite.id_tramite)">Ver flujo</button>
-                            <ng-container *ngIf="tramite.rechazado==1 && tramite.aceptado!=1">
-                                <button mat-raised-button (click)="abrir_DialogRemision(tramite)">Nuevo envio</button>
+<div class="container-fluid">
+    <div *ngIf="sin_emitidos" class="alert alert-info position-relative" role="alert">
+        <mat-icon>outgoing_mail</mat-icon>
+        Usted aun no remitido ningun tramite.
+    </div>
 
-                                <!-- <button mat-raised-button color="accent">Accent</button>
-                                    <button mat-raised-button color="warn">Warn</button>
-                                    <button mat-raised-button disabled>Disabled</button> -->
-                            </ng-container>
+    <mat-progress-bar *ngIf="spiner_carga" mode="indeterminate"></mat-progress-bar>
 
+    <cdk-accordion class="example-accordion">
+        <cdk-accordion-item *ngFor="let tramite of Tramites_Emitidos; let index = index;" #accordionItem="cdkAccordionItem" class="example-accordion-item" role="button" tabindex="0" [attr.id]="'accordion-header-' + index" [attr.aria-expanded]="accordionItem.expanded"
+            [attr.aria-controls]="'accordion-body-' + index" [ngClass]="{'select': accordionItem.expanded}">
+            <div class="example-accordion-item-header" (click)="accordionItem.toggle()">
+                <blockquote class="blockquote mb-0">
+                    <p>
+                        {{ tramite.titulo|titlecase }} - {{tramite.alterno|uppercase}}
+                    </p>
+                    <footer class="blockquote-footer" style="margin-top: 5px;"><cite title="Source Title"><strong>Enviado a: </strong>  <mat-icon style="vertical-align: middle;">account_circle</mat-icon>{{tramite.Nombre}} {{tramite.Apellido_P}} {{tramite.Apellido_M}} <span>({{tramite.NombreCargo}})</span>    en: {{tramite.fecha_envio|date:'medium'}} </cite></footer>
+                </blockquote>
+                <span class="example-accordion-item-description" style="font-size: 18px;">
+                    <span class="badge bg-warning text-dark" *ngIf="tramite.aceptado==false && tramite.rechazado==false">Enviado</span>
+                <span class="badge bg-success" *ngIf="tramite.aceptado==true && tramite.rechazado==false">Recibido</span>
+                <span class="badge bg-danger" *ngIf="tramite.rechazado==true && tramite.aceptado==false">Rechazado</span>
+                <span class="badge bg-info" *ngIf="tramite.rechazado==true && tramite.aceptado==true">Reenviado</span>
+                </span>
+            </div>
+            <div class="example-accordion-item-body" role="region" [style.display]="accordionItem.expanded ? '' : 'none'" [attr.id]="'accordion-body-' + index" [attr.aria-labelledby]="'accordion-header-' + index">
+                <div class="card border-dark mb-3" style="max-width: 100%;">
+                    <div class="card-header"><strong>Tramite: </strong> {{ tramite.titulo}} - {{tramite.alterno}}</div>
+                    <div class="card-body text-dark">
+                        <h5 class="card-title"><strong>Detalle:</strong> {{tramite.detalle}}</h5>
+                        <p class="card-text">Enviado: {{tramite.fecha_envio | date:'medium'}} </p>
+                        <p *ngIf="tramite.aceptado" class="card-text">Recibido: {{tramite.fecha_recibido | date:'medium'}} </p>
+                        <div matLine>
+                            Tramite: <a [routerLink]="['/inicio/ficha', tramite.id_tramite]">{{tramite.titulo}} / {{tramite.alterno}}</a>
                         </div>
-                    </section>
 
+                        <section>
+                            <div class="example-button-row">
+                                <button mat-raised-button color="primary" (click)="ver_flujo(tramite.id_tramite)">Ver flujo</button>
+                                <button mat-raised-button *ngIf="Info_Cuenta_Actual.Tipo=='USER1_ROLE'" (click)="crear_Hoja_Ruta(tramite)">Hoja de ruta</button>
+                                <ng-container *ngIf="tramite.rechazado==1 && tramite.aceptado!=1">
+                                    <button mat-raised-button (click)="abrir_DialogRemision(tramite)">Nuevo envio</button>
+                                </ng-container>
+
+                            </div>
+                        </section>
+
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </cdk-accordion-item>
-</cdk-accordion>
-
+        </cdk-accordion-item>
+    </cdk-accordion>
 
 
-<!-- </div> -->
+</div>

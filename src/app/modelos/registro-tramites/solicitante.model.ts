@@ -7,6 +7,7 @@ export interface SolicitanteModel {
     materno: string
     nombres: string
     telefono: string
+    tipo_solicitante:string
 }
 export interface RepresentanteModel {
     id_representante?:number

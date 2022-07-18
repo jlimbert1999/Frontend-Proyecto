@@ -133,8 +133,15 @@
                     </div>
                 </div>
             </form>
-            <button mat-raised-button color="primary" (click)="actualizar_datosCuenta()">Aceptar</button>
-            <button mat-raised-button color="accent" (click)="cancelar()">Cancelar</button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelar()">Cancalar</button>
+                <button type="button" class="btn btn-primary" (click)="actualizar_datosCuenta()">Guardar</button>
+            </div>
+
+
+
+
+
         </div>
     </div>
 </div>

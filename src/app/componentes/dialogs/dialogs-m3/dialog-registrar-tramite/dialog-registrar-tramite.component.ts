@@ -13,6 +13,7 @@ import { forkJoin } from 'rxjs';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatListOption, MatSelectionList } from '@angular/material/list'
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -51,17 +52,10 @@ export class DialogRegistrarTramiteComponent implements OnInit {
     paterno: '',
     materno: '',
     nombres: '',
-    telefono: ''
+    telefono: '',
+    tipo_solicitante: ''
   }
-  tramite: TramiteModel = {
-    estado: '',
-    alterno: '',
-    pin: 0,
-    detalle: '',
-    cantidad: 0,
-    id_cuenta: 0,
-    Fecha_creacion: 0
-  }
+  tramite: TramiteModel
   representante: RepresentanteModel = {
     id_documento: 0,
     dni: '',
@@ -89,6 +83,12 @@ export class DialogRegistrarTramiteComponent implements OnInit {
   SolicitanteFormGroup: FormGroup;
   RepresentanteFormGroup: FormGroup;
 
+  Tipos_Solicitantes = [
+    { tipo: 'natural', nombre: 'Persona natural' },
+    { tipo: 'juridico', nombre: 'Persona juridica' }
+  ]
+  Tipo_Solicitante: string = ""
+
 
   constructor(
     private tiposTramiteService: TipoTramitesService,
@@ -101,7 +101,7 @@ export class DialogRegistrarTramiteComponent implements OnInit {
 
   ngOnInit(): void {
     this.iniciar_form_Tramite()
-    this.iniciar_form_Solicitante()
+    this.iniciar_form_Solicitante_Natural()
     this.generarTitulo()
   }
   generarTitulo() {
@@ -123,13 +123,13 @@ export class DialogRegistrarTramiteComponent implements OnInit {
     })
   }
 
-
   seleccionar_TipoTramite(tipoTramite: TipoTramite) {
     this.CodigoUnicoTramite = tipoTramite.segmento
     this.TituloTramite = tipoTramite.titulo
     this.obtener_Requerimientos_Tramite(tipoTramite.id_TipoTramite)
   }
   obtener_Requerimientos_Tramite(id_TipoTramite: any) {
+
     this.spiner_carga = true
     this.tiposTramiteService.getRequerimientos_Habilitados(id_TipoTramite).subscribe((resp: any) => {
       if (resp.ok) {
@@ -140,6 +140,13 @@ export class DialogRegistrarTramiteComponent implements OnInit {
   }
 
   registrar_Tramite() {
+    Swal.fire({
+      title: 'Espere',
+      text: 'Guardando informacion',
+      icon: 'info',
+      allowOutsideClick: false
+    })
+    Swal.showLoading();
     let year = new Date()
     let pin: number = this.generar_numRandom()
     this.tramite = {
@@ -153,11 +160,13 @@ export class DialogRegistrarTramiteComponent implements OnInit {
       id_TipoTramite: this.TramiteFormGroup.controls['id_TipoTramite'].value
     }
     this.solicitante = this.SolicitanteFormGroup.value
+    this.solicitante.tipo_solicitante = this.Tipo_Solicitante
     if (this.regis_Representante) {
       this.representante = this.RepresentanteFormGroup.value
       forkJoin([this.regitroTramiteService.addTramite(this.tramite), this.regitroTramiteService.addSolicitante(this.solicitante), this.regitroTramiteService.addRepresentante(this.representante)]).subscribe((results: any) => {
         if (results[0].ok && results[1].ok && results[2].ok) {
           this.registrar_solicitud_ConRepresentante(results[1].Solicitante.insertId, results[2].Representante.insertId, results[0].Tramite.insertId, this.Ids_requisitos_presentados)
+          
         }
         else {
           this.msg.mostrarMensaje('error', "Error al registrar tramite, solicitante y representante")
@@ -194,6 +203,8 @@ export class DialogRegistrarTramiteComponent implements OnInit {
           titulo: this.TituloTramite,
           enviado: false,
           solicitante: `${this.solicitante.nombres} ${this.solicitante.paterno} ${this.solicitante.materno}`,
+          dni: this.solicitante.dni,
+          expedido: this.solicitante.expedido,
           detalle: this.tramite.detalle,
           cantidad: this.tramite.cantidad,
           id_TipoTramite: this.tramite.id_TipoTramite,
@@ -201,6 +212,11 @@ export class DialogRegistrarTramiteComponent implements OnInit {
           id_solicitante,
           id_solicitud: resp.Solicitud.insertId
         }
+        Swal.fire({
+          title: "Se registro el tramite",
+          // text: "Se actualizo correctamente",
+          icon: 'success'
+        })
         this.dialogRef.close(this.elemento_tabla);
         // this.msg.mostrarMensaje('success', "Registro de tramite y solicitante correcto")
       }
@@ -231,6 +247,11 @@ export class DialogRegistrarTramiteComponent implements OnInit {
           id_solicitante,
           id_solicitud: resp.Solicitud.insertId
         }
+        Swal.fire({
+          title: "Se registro el tramite",
+          // text: "Se actualizo correctamente",
+          icon: 'success'
+        })
         this.dialogRef.close(this.elemento_tabla);
         // this.msg.mostrarMensaje('success', "Registro de tramite, solicitante y representante correcto")
       }
@@ -321,9 +342,10 @@ export class DialogRegistrarTramiteComponent implements OnInit {
     })
   }
   obtener_requisito_presentados(id_tramite: number) {
-
+    this.spiner_carga = true
     this.regitroTramiteService.getRequisitos_presentados(id_tramite).subscribe((resp: any) => {
       if (resp.ok) {
+        this.spiner_carga = true
         if (resp.Requisitos.length > 0) { //ids de los requisitos
           this.Ids_requisitos_presentados = resp.Requisitos[0].presento.split(',').map(Number);
           this.obtener_Requerimientos_Tramite(this.data.id_TipoTramite)
@@ -338,6 +360,16 @@ export class DialogRegistrarTramiteComponent implements OnInit {
         this.RepresentanteFormGroup.patchValue(resp.Representante[0])
       }
     })
+  }
+  seleccionar_tipo_solicitante(tipo: string) {
+    console.log(tipo);
+    this.Tipo_Solicitante = tipo
+    if (tipo == 'natural') {
+      this.iniciar_form_Solicitante_Natural()
+    }
+    else if (tipo == 'juridico') {
+      this.iniciar_form_Solicitante_Juridico()
+    }
   }
 
 
@@ -361,6 +393,11 @@ export class DialogRegistrarTramiteComponent implements OnInit {
     this.allSelected.selectAll();
     this.Ids_requisitos_presentados = this.lista_Requerimientos.map(o => o.id_requerimiento!)
   }
+  deselectAll() {
+    this.allSelected.deselectAll();
+    this.Ids_requisitos_presentados = []
+
+  }
   iniciar_form_Tramite() {
     this.TramiteFormGroup = this._formBuilder.group({
       cantidad: ['', Validators.required],
@@ -369,7 +406,7 @@ export class DialogRegistrarTramiteComponent implements OnInit {
     });
 
   }
-  iniciar_form_Solicitante() {
+  iniciar_form_Solicitante_Natural() {
     this.SolicitanteFormGroup = this._formBuilder.group({
       nombres: ['', Validators.required],
       paterno: ['', Validators.required],
@@ -377,6 +414,12 @@ export class DialogRegistrarTramiteComponent implements OnInit {
       id_documento: ['', Validators.required],
       dni: ['', Validators.required],
       expedido: ['', Validators.required],
+      telefono: ['', Validators.required]
+    });
+  }
+  iniciar_form_Solicitante_Juridico() {
+    this.SolicitanteFormGroup = this._formBuilder.group({
+      nombres: ['', Validators.required],
       telefono: ['', Validators.required]
     });
   }

@@ -30,7 +30,8 @@ export class DialogTramitesRequisitosComponent implements OnInit {
   }
   Requerimientos: Requerimientos[] = []
   displayedColumns: string[] = [];
-  verHabilitados: boolean = true
+  verHabilitados: boolean = true;
+  spinner_carga: boolean = false
 
 
 
@@ -74,6 +75,7 @@ export class DialogTramitesRequisitosComponent implements OnInit {
 
   registrar_datos() {
     if (this.tituloDialog == "Registro tipo de tramite") {
+
       this.Tipo_Tramite = this.Form_TipoTramite.value
       this.Tipo_Tramite.Fecha_creacion = this.Tipo_Tramite.Fecha_actualizacion = this.getFecha()
       this.Tipo_Tramite.Activo = true
@@ -85,6 +87,7 @@ export class DialogTramitesRequisitosComponent implements OnInit {
               requisito.id_TipoTramite = resp.TipoTramite.insertId
               this.tipoTramitesService.addRequerimientos(requisito).subscribe()
             })
+
             this.dialogRef.close(this.Tipo_Tramite)
             this.msg.mostrarMensaje('success', 'Tramite y requisitos registrados')
 
@@ -138,9 +141,11 @@ export class DialogTramitesRequisitosComponent implements OnInit {
   }
 
   obtener_Requerimientos_habilitados_Tramite(id_TipoTramite: number) {
+    this.spinner_carga = true
     this.verHabilitados = true
     this.tipoTramitesService.getRequerimientos_Habilitados(id_TipoTramite).subscribe((resp: any) => {
       if (resp.ok) {
+        this.spinner_carga = false
         this.Requerimientos = resp.Requerimientos
       }
     })

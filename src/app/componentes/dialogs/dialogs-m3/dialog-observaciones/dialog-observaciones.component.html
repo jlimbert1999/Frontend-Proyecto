@@ -1,13 +1,19 @@
-<h1 mat-dialog-title>Agregar observacion</h1>
+<h2 mat-dialog-title>Registro de observaciones</h2>
 <mat-dialog-content>
-    <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>Obserbacion.....</mat-label>
-        <input matInput name="observacion" [(ngModel)]="data">
-    </mat-form-field>
+
+    <form>
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Observacion</label>
+            <input type="text" class="form-control" name="observacion" [(ngModel)]="data">
+            <div id="emailHelp" class="form-text">Las observaciones seran vistas por los solicitantes</div>
+        </div>
+
+    </form>
+
 
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancelar</button>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Agregar</button>
+    <button mat-raised-button color="warn" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="primary" [mat-dialog-close]="data" cdkFocusInitial>Agregar</button>
 </mat-dialog-actions>

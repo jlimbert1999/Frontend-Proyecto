@@ -69,3 +69,7 @@ footer {
 .select {
     background-color: #CAF0F8;
 }
+
+mat-icon {
+    vertical-align: middle;
+}

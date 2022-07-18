@@ -26,6 +26,8 @@ export class CuentasComponent implements OnInit {
   OpcionesTabla: string[] = []
   modo_busqueda: boolean = false
   verHabilitados: boolean = true
+  spiner_carga:boolean=false
+  
   constructor(private usuariosService: UsuariosService,
     public dialog: MatDialog) { }
 
@@ -36,6 +38,7 @@ export class CuentasComponent implements OnInit {
 
   obtener_cuentasAsignadas() {
     this.OpcionesTabla = ['Finalizar']
+    this.spiner_carga=true
     this.usuariosService.getCuentasAsignadas().subscribe((resp: any) => {
       if (resp.ok) {
         this.Cuentas = resp.Cuentas
@@ -43,6 +46,7 @@ export class CuentasComponent implements OnInit {
           this.Cuentas[index]['NombreCompleto'] = `${cuenta.Nombre} ${cuenta.Apellido_P} ${cuenta.Apellido_M}`
         });
         this.dataSource.data = this.Cuentas;
+        this.spiner_carga=false
 
       }
     })

@@ -65,7 +65,6 @@ export class DialogCargoComponent implements OnInit {
           if (resp.ok) {
            
             this.dialogRef.close(this.Cargo)
-            this.msg.mostrarMensaje('success', "Cargo actualizado")
           }
         })
 

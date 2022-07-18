@@ -26,6 +26,8 @@ export class InstitucionesComponent implements OnInit {
     { key: "Telefono", titulo: "Telefono" },
     { key: "Fecha_creacion", titulo: "Fecha creacion" }
   ]
+  spiner_carga:boolean=false
+  
   constructor(private InstiService: InstitucionService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -34,20 +36,24 @@ export class InstitucionesComponent implements OnInit {
 
   obtener_Instihabilitadas() {
     this.OpcionesTabla = ['Editar', 'Eliminar']
+    this.spiner_carga=true
     this.InstiService.getInstituciones_Habilitadas().subscribe((resp: any) => {
       if (resp.ok) {
         this.Institucion = resp.Instituciones
         this.dataSource.data = resp.Instituciones
+        this.spiner_carga=false
       }
 
     })
   }
   obtener_InstNohabilitadas() {
     this.OpcionesTabla = ['Editar', 'Habilitar']
+    this.spiner_carga=true
     this.InstiService.getInstituciones_NoHabilitadas().subscribe((resp: any) => {
       if (resp.ok) {
         this.Institucion = resp.Instituciones
         this.dataSource.data = resp.Instituciones
+        this.spiner_carga=false
       }
 
     })
@@ -71,6 +77,7 @@ export class InstitucionesComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(DataDialog => {
       if (DataDialog) {
+        console.log(DataDialog);
         const index = this.Institucion.findIndex((item: InstitucionModel) => item.id_institucion == datos.id_institucion);
         this.Institucion[index] = DataDialog
         this.dataSource.data = this.Institucion

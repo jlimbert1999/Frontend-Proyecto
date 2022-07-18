@@ -49,3 +49,15 @@
 mat-list-option[aria-selected="true"] {
     background-color: #ADB5BD;
 }
+
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+table {
+    width: 100%;
+}
+
+mat-icon {
+    vertical-align: middle;
+}

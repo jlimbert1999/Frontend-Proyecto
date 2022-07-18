@@ -33,6 +33,7 @@ export class FuncionariosComponent implements OnInit {
   OpcionesTabla: string[] = []
   dataSource = new MatTableDataSource()
   modo_busqueda: boolean = false
+  spiner_carga: boolean = false
 
   //Variables para mensajes
   swalWithBootstrapButtons = Swal.mixin({
@@ -58,22 +59,25 @@ export class FuncionariosComponent implements OnInit {
 
   obtener_Funcionarios_Habilitados() {
     this.OpcionesTabla = ['Editar', 'VerDetalles', 'Eliminar']
+    this.spiner_carga = true
     this.usuariosService.getUsuarios_Habilitados().subscribe((res: any) => {
       if (res.ok) {
+        this.spiner_carga = false
         this.Funcionarios = res.usuarios
         this.dataSource.data = this.Funcionarios
-
+        
       }
     })
   }
   obtener_Funcionarios_NoHabilitados() {
     this.OpcionesTabla = ['Editar', 'VerDetalles', 'Habilitar']
-
+    this.spiner_carga = true
     this.usuariosService.getUsuarios_noHabilitados().subscribe((res: any) => {
       if (res.ok) {
+        this.spiner_carga = false
         this.Funcionarios = res.usuarios
         this.dataSource.data = res.usuarios
-        
+
       }
     })
   }

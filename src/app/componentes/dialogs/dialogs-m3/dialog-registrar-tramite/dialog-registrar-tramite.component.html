@@ -10,7 +10,7 @@
                         <mat-label>Seleccion del tipo de tramite a realizar</mat-label>
                         <mat-select formControlName="id_TipoTramite">
                             <mat-option *ngFor="let tipo of lista_TiposTramites; let i=index" [value]="tipo.id_TipoTramite" (click)="seleccionar_TipoTramite(tipo)">
-                                {{i+1}} .- {{tipo.titulo| uppercase}}
+                                {{i+1}} . {{tipo.titulo| titlecase}}
                             </mat-option>
                         </mat-select>
                         <mat-error *ngIf="TramiteFormGroup.controls['id_TipoTramite'].invalid">Seleccione un tramite</mat-error>
@@ -33,22 +33,43 @@
                     </div>
                 </div>
                 <ng-container *ngIf="tituloDialog == 'Nuevo tramite'">
-                    <mat-spinner *ngIf="spiner_carga" style="margin:0 auto;"></mat-spinner>
-                    <mat-selection-list *ngIf="lista_Requerimientos.length>0 " #listaRequerimientos (selectionChange)="onGroupsChange(listaRequerimientos.selectedOptions.selected)">
-                        <div mat-subheader>
-                            <div matLine>Listado de requisitos
-                                <span class="example-spacer"></span>
 
+                    <mat-progress-bar *ngIf="spiner_carga" mode="query"></mat-progress-bar>
+                    <div *ngIf="lista_Requerimientos.length>0 ">
+
+                        <nav class="navbar navbar-expand-lg bg-light justify-content-end">
+                            <div class="container-fluid">
+                                <p>Requisitos</p>
+                                <div id="navbarNavAltMarkup">
+                                    <div matLine class="navbar-nav ">
+
+                                        <mat-button-toggle-group align="left" name="fontStyle" aria-label="Font Style">
+                                            <mat-button-toggle (click)="selectAll()">
+                                                Marcar todo
+                                                <mat-icon>checklist_rtl</mat-icon>
+                                            </mat-button-toggle>
+                                            <mat-button-toggle (click)="deselectAll()">
+                                                Desmarcar todo
+                                                <mat-icon>clear_all</mat-icon>
+                                            </mat-button-toggle>
+
+                                        </mat-button-toggle-group>
+                                    </div>
+                                </div>
                             </div>
-                            <button mat-raised-button (click)="selectAll()">Marcar todo</button>
-                        </div>
-                        <mat-list-option *ngFor="let requerimiento of lista_Requerimientos" [value]="requerimiento.id_requerimiento">
-                            <mat-icon mat-list-icon>text_snippet</mat-icon>{{requerimiento.detalle}}
-                        </mat-list-option>
-                    </mat-selection-list>
+                        </nav>
+                        <mat-selection-list dense #listaRequerimientos (selectionChange)="onGroupsChange(listaRequerimientos.selectedOptions.selected)">
+                            <mat-list-option *ngFor="let requerimiento of lista_Requerimientos" [value]="requerimiento.id_requerimiento">
+                                {{requerimiento.detalle}}
+                            </mat-list-option>
+                        </mat-selection-list>
+
+                    </div>
+
                 </ng-container>
 
                 <ng-container *ngIf="tituloDialog == 'Edicion de tramite'">
+                    <mat-progress-bar *ngIf="spiner_carga" mode="query"></mat-progress-bar>
                     <mat-selection-list #listaRequerimientos (selectionChange)="onGroupsChange(listaRequerimientos.selectedOptions.selected)">
                         <div mat-subheader>
                             Listado de requisitos
@@ -58,8 +79,10 @@
                         </mat-list-option>
                     </mat-selection-list>
                 </ng-container>
+                <div style="margin-top: 20px;" *ngIf="lista_Requerimientos.length==0 && CodigoUnicoTramite!=''" class="alert alert-warning" role="alert">
+                    El tramite no tiene requisitos
+                </div>
 
-                <p style="text-align: center;" *ngIf="lista_Requerimientos.length==0 && CodigoUnicoTramite!=''">Sin requisitos</p>
                 <div>
                     <button mat-button matStepperNext>Siguiente
                         <mat-icon>navigate_next</mat-icon>
@@ -70,90 +93,147 @@
         </mat-step>
 
         <mat-step [stepControl]="SolicitanteFormGroup">
-            <form [formGroup]="SolicitanteFormGroup">
-                <ng-template matStepLabel>Detalles solicitante</ng-template>
-                <div class="row">
-                    <div class="col-sm">
-                        <mat-form-field class="example-full-width" appearance="legacy">
-                            <mat-label>Nombres</mat-label>
-                            <input matInput formControlName="nombres">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm">
-                        <mat-form-field class="example-full-width" appearance="legacy">
-                            <mat-label>Apellido paterno</mat-label>
-                            <input matInput formControlName="paterno">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm">
-                        <mat-form-field class="example-full-width" appearance="legacy">
-                            <mat-label>Apellido materno</mat-label>
-                            <input matInput formControlName="materno">
-                        </mat-form-field>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <mat-form-field appearance="legacy" #TipoDoc>
-                            <mat-label>Tipo documento</mat-label>
-                            <mat-select formControlName="id_documento">
-                                <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
-                                    {{documento.titulo}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm">
-                        <mat-form-field class="example-full-width" appearance="legacy">
-                            <mat-label>DNI</mat-label>
-                            <input matInput formControlName="dni">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm">
-                        <mat-form-field appearance="legacy">
-                            <mat-label>Expedido</mat-label>
-                            <mat-select formControlName="expedido">
-                                <mat-option *ngFor="let lugar of  Lugares" [value]="lugar.sigla">
-                                    {{lugar.nombre}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm">
-                        <mat-form-field class="example-full-width" appearance="legacy">
-                            <mat-label>Telefono de referencia</mat-label>
-                            <input matInput formControlName="telefono">
-                        </mat-form-field>
-                    </div>
-                    <ng-container>
+            <ng-template matStepLabel>Detalles solicitante</ng-template>
+
+            <mat-form-field appearance="legacy">
+                <mat-label>Seleccione el tipo de solicitante</mat-label>
+                <mat-select #txt_tipo_solicitante>
+                    <mat-option *ngFor="let tipo of Tipos_Solicitantes" [value]="tipo.tipo" (click)="seleccionar_tipo_solicitante(tipo.tipo)">
+                        {{tipo.nombre}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
 
-                    </ng-container>
-                    <div class="row" *ngIf="tituloDialog == 'Nuevo tramite'">
-                        <mat-form-field *ngIf="tiene_representante==false" appearance="legacy">
-                            <mat-label>Representante legal</mat-label>
-                            <mat-select>
-                                <mat-option (click)=" habilitar_representante(false)" value="Sin representante legal">
-                                    Sin representante legal
-                                </mat-option>
-                                <mat-option (click)="habilitar_representante(true)" value="Con representante legal">
-                                    Con representante legal
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
+
+            <div *ngIf="txt_tipo_solicitante.value=='natural'">
+                <form [formGroup]="SolicitanteFormGroup">
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Nombres</mat-label>
+                                <input matInput formControlName="nombres">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Apellido paterno</mat-label>
+                                <input matInput formControlName="paterno">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Apellido materno</mat-label>
+                                <input matInput formControlName="materno">
+                            </mat-form-field>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <button mat-button matStepperPrevious>
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy" #TipoDoc>
+                                <mat-label>Tipo documento</mat-label>
+                                <mat-select formControlName="id_documento">
+                                    <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
+                                        {{documento.titulo}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>DNI</mat-label>
+                                <input matInput formControlName="dni">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Expedido</mat-label>
+                                <mat-select formControlName="expedido">
+                                    <mat-option *ngFor="let lugar of  Lugares" [value]="lugar.sigla">
+                                        {{lugar.nombre}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Telefono de referencia</mat-label>
+                                <input matInput formControlName="telefono">
+                            </mat-form-field>
+                        </div>
+
+
+                    </div>
+                </form>
+            </div>
+
+            <div *ngIf="txt_tipo_solicitante.value=='juridico'">
+                <form [formGroup]="SolicitanteFormGroup">
+                    <div class="row">
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Nombres</mat-label>
+                                <input matInput formControlName="nombres">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-sm">
+                            <mat-form-field class="example-full-width" appearance="legacy">
+                                <mat-label>Telefono de referencia</mat-label>
+                                <input matInput formControlName="telefono">
+                            </mat-form-field>
+                        </div>
+
+                    </div>
+                    <!-- <div class="row">
+
+
+                        
+                       
+                        <div class="row" *ngIf="tituloDialog == 'Nuevo tramite'">
+                            <mat-form-field *ngIf="tiene_representante==false" appearance="legacy">
+                                <mat-label>Representante legal</mat-label>
+                                <mat-select>
+                                    <mat-option (click)=" habilitar_representante(false)" value="Sin representante legal">
+                                        Sin representante legal
+                                    </mat-option>
+                                    <mat-option (click)="habilitar_representante(true)" value="Con representante legal">
+                                        Con representante legal
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div> -->
+                </form>
+
+            </div>
+            <div class="row" *ngIf="tituloDialog == 'Nuevo tramite'">
+                <mat-form-field *ngIf="tiene_representante==false" appearance="legacy">
+                    <mat-label>Representante legal</mat-label>
+                    <mat-select>
+                        <mat-option (click)=" habilitar_representante(false)" value="Sin representante legal">
+                            Sin representante legal
+                        </mat-option>
+                        <mat-option (click)="habilitar_representante(true)" value="Con representante legal">
+                            Con representante legal
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+
+
+            <div>
+                <button mat-button matStepperPrevious>
                         <mat-icon>navigate_before</mat-icon>
                         Anterior
                     </button>
 
-                    <button *ngIf="regis_Representante" mat-button matStepperNext>Siguiente
+                <button *ngIf="regis_Representante" mat-button matStepperNext>Siguiente
                         <mat-icon>navigate_next</mat-icon>
                     </button>
-                </div>
-            </form>
+            </div>
+
         </mat-step>
         <mat-step [stepControl]="RepresentanteFormGroup" *ngIf="regis_Representante">
             <form [formGroup]="RepresentanteFormGroup">

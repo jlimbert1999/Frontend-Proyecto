@@ -8,7 +8,9 @@
 
 <div class="example-container" [class.example-is-mobile]="mobileQuery.matches">
     <mat-toolbar class="example-toolbar">
-        <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+        <button mat-icon-button (click)="snav.toggle()">
+            <mat-icon color="primary">menu</mat-icon>
+        </button>
         <!-- <h1 class="example-app-name"> -->
         <span class="campo_cuenta">
                 <div mat-line> {{Info_cuenta_actual.Nombre|titlecase}}</div>
@@ -33,9 +35,9 @@
 
     </mat-toolbar>
 
-    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
-        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
 
+    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+        <mat-sidenav #snav [opened]="true" [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
             <mat-nav-list>
                 <ng-container *ngFor="let item of Modulos">
                     <div mat-subheader>{{item.modulo}}</div>
@@ -47,7 +49,6 @@
                 </ng-container>
             </mat-nav-list>
         </mat-sidenav>
-
         <mat-sidenav-content>
             <router-outlet></router-outlet>
         </mat-sidenav-content>

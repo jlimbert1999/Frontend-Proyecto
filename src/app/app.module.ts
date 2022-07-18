@@ -68,7 +68,9 @@ import { PdfViewerModule } from "ng2-pdf-viewer";
 import { ReporteEstadisticoComponent } from './modulos/reportes/reporte-estadistico/reporte-estadistico.component';
 
 import { GroupwareComponent } from './modulos/administracion-usuarios/groupware/groupware.component';
-import { AyudaComponent } from './paginas/consulta/ayuda/ayuda.component'
+import { AyudaComponent } from './paginas/consulta/ayuda/ayuda.component';
+import { MailComponent } from './modulos/registro-tramites/mail/mail.component';
+import { MainComponent } from './paginas/main/main.component'
 registerLocaleData(localeEsAr, 'es-Ar');
 @NgModule({
   declarations: [
@@ -108,7 +110,9 @@ registerLocaleData(localeEsAr, 'es-Ar');
     ReporteEstadisticoComponent,
     GroupwareComponent,
     AyudaComponent,
-    CargosComponent
+    CargosComponent,
+    MailComponent,
+    MainComponent
   ],
   imports: [
     BrowserModule,
